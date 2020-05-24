@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/imgs">
+        <file alias="key">icons/key.png</file>
+        <file alias="new">icons/new.png</file>
+        <file alias="open">icons/open.png</file>
+        <file alias="save">icons/save.png</file>
+        <file alias="save_as">icons/save_as.png</file>
+    </qresource>
+    <qresource prefix="/styles">
+        <file alias="node">styles/node.css</file>
+        <file alias="nodeTitle">styles/nodeTitle.css</file>
+        <file alias="nodeMenu">styles/nodeMenu.css</file>
+        <file alias="nodeRow">styles/nodeRow.css</file>
+        <file alias="nodeRowClose">styles/nodeRowClose.css</file>
+        <file alias="nodeRowTypes">styles/nodeRowTypes.css</file>
+        <file alias="nodeRowTitle">styles/nodeRowTitle.css</file>
+        <file alias="nodeRowIsNull">styles/NodeRowIsNull.css</file>
+        <file alias="relationMaker">styles/relationMaker.css</file>
+        <file alias="relationMakerSelector">styles/relationMakerSelector.css</file>
+        <file alias="relationMakerButton">styles/relationMakerButton.css</file>
+        <file alias="relationMakerArrow">styles/relationMakerArrow.css</file>
+        <file alias="nodeRowKeyIcon">styles/nodeRowKeyIcon.css</file>
+        <file alias="deleteArrowButton">styles/delateArrowButton.css</file>
+    </qresource>
+</RCC>
