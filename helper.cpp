@@ -17,3 +17,10 @@ QString Helper::getStyleFromFile(const QString name) {
 
     return string;
 }
+
+template <typename T>
+QString Helper::pointToString(T ptr)
+{
+    return QString("0x%1").arg((quintptr)ptr, QT_POINTER_SIZE * 2, 16, QChar('0'));
+}
+template QString Helper::pointToString<NodeRow*>(NodeRow*);

@@ -34,8 +34,6 @@ private:
     void setCurrentNodeRow(const QString &,
                            QVector<QPair<QString, QPointer<NodeRow>>> &,
                            QPair<QString, QPointer<NodeRow>> &);
-
-    static QString pointerToStr(QPointer<NodeRow>);
 };
 
 #endif // RELATIONMAKER_H

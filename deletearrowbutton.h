@@ -14,7 +14,7 @@ public:
             );
 
 private:
-    QString relationName;
+    QString relationId;
 
     void deleteRalation();
 };

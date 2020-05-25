@@ -17,6 +17,7 @@ class NodeRow : public QWidget
 
         QString getTableName();
         QPair<QPoint, int> getGlobalPos();
+        int getRowType();
 
         QString getRowName() const;
 

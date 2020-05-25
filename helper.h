@@ -10,6 +10,8 @@ class Helper
 public:
     static QString getStyleFromFile(const QString);
 
+    template <typename T>
+    static QString pointToString(T);
 };
 
 #endif // HELPER_H

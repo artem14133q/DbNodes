@@ -133,10 +133,10 @@ void Node::addColoumn(const int NodeRowType)
     WorkArea* parentWorkArea = static_cast<WorkArea*>(this->parentWidget());
 
     if (NodeRowType == NodeRow::PK) {
-        parentWorkArea->pkList.push_back(row);
+        parentWorkArea->setNodeRow(row);
         this->pkLayout->addWidget(row);
     } else if (NodeRowType == NodeRow::FK) {
-        parentWorkArea->fkList.push_back(row);
+        parentWorkArea->setNodeRow(row);
         this->fkLayout->addWidget(row);
     } else {
         this->rowsLayout->addWidget(row);

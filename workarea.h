@@ -17,13 +17,13 @@ public:
 
     void makeRelation(QString, QPointer<NodeRow>, QPointer<NodeRow>);
     void deleteRalation(QString &);
-
-    QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations;
-    QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
-    QVector<QPointer<NodeRow>> pkList;
-    QVector<QPointer<NodeRow>> fkList;
+    void setNodeRow(QPointer<NodeRow>);
 
 private:
+    QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations;
+    QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
+    QVector<QPointer<NodeRow>> pkList, fkList;
+
     void contextMenuEvent(QContextMenuEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 

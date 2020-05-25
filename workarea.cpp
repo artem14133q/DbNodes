@@ -63,22 +63,23 @@ void WorkArea::paintEvent(QPaintEvent *)
         QPair<QString, QVector<QPointer<NodeRow>>> relationPair(relationIterator.next());
         QVector<QPointer<NodeRow>> relationArrowList(relationPair.second);
 
+        // Find button to move or delete
+        QPointer<DeleteArrowButton> closeBtn;
+        QVectorIterator<QPair<QString, QPointer<DeleteArrowButton>>>
+                relationCloseBtnsIterator(this->closeBtnList);
+        while (relationCloseBtnsIterator.hasNext()) {
+            QPair<QString, QPointer<DeleteArrowButton>> relationCloseBtnPair(relationCloseBtnsIterator.next());
+            if (relationCloseBtnPair.first == relationPair.first)
+                closeBtn = relationCloseBtnPair.second;
+        }
+
         // If one or two NodeRow widget delete pair
         if (!relationArrowList.first() || !relationArrowList.last()) {
             this->relations.removeOne(relationPair);
+            // If arrow was deleted, delete close butoon
+            if (closeBtn)
+                closeBtn->~DeleteArrowButton();
             continue;
-        }
-
-        QPointer<DeleteArrowButton> closeBtn;
-
-        QVectorIterator<QPair<QString, QPointer<DeleteArrowButton>>>
-                relationCloseBtnsIterator(this->closeBtnList);
-
-        while (relationCloseBtnsIterator.hasNext()) {
-            QPair<QString, QPointer<DeleteArrowButton>> relationCloseBtnPair(relationCloseBtnsIterator.next());
-
-            if (relationCloseBtnPair.first == relationPair.first)
-                closeBtn = relationCloseBtnPair.second;
         }
 
         // Get coords and widths from NodeRow
@@ -171,6 +172,14 @@ void WorkArea::cleanNodeRowsList(QVector<QPointer<NodeRow>> &list)
         if (!nodeRow)
             list.removeOne(nodeRow);
     }
+}
+
+void WorkArea::setNodeRow(QPointer<NodeRow> nodeRow)
+{
+    if (nodeRow->getRowType() == NodeRow::PK)
+        this->pkList.push_back(nodeRow);
+    else if (nodeRow->getRowType() == NodeRow::FK)
+        this->fkList.push_back(nodeRow);
 }
 
 void WorkArea::createNode(QPoint pos)

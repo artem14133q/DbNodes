@@ -8,7 +8,7 @@ DeleteArrowButton::DeleteArrowButton(QString &relationName, QWidget *parent)
 {
     this->setFixedSize(16, 16);
     this->setText("X");
-    this->relationName = relationName;
+    this->relationId = relationName;
     this->setStyleSheet(Helper::getStyleFromFile("deleteArrowButton"));
 
     connect(this, &QPushButton::clicked, this, &DeleteArrowButton::deleteRalation);
@@ -19,7 +19,7 @@ DeleteArrowButton::DeleteArrowButton(QString &relationName, QWidget *parent)
 void DeleteArrowButton::deleteRalation()
 {
     WorkArea *workArea = static_cast<WorkArea*>(parentWidget());
-    workArea->deleteRalation(this->relationName);
+    workArea->deleteRalation(this->relationId);
     workArea->update();
     this->~DeleteArrowButton();
 }

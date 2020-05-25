@@ -128,8 +128,8 @@ void RelationMaker::addNodeRows()
         WorkArea* workArea = static_cast<WorkArea*>(this->parentWidget());
 
         workArea->makeRelation(
-                        this->pointerToStr(currentPkNodeRow.second) +
-                        this->pointerToStr(currentFkNodeRow.second),
+                        Helper::pointToString<NodeRow*>(currentPkNodeRow.second.data()) +
+                        Helper::pointToString<NodeRow*>(currentFkNodeRow.second.data()),
                         currentPkNodeRow.second,
                         currentFkNodeRow.second
                     );
@@ -150,11 +150,6 @@ void RelationMaker::setCurrentNodeRow(const QString &currentNodeRowName,
         if (nodePair.first == currentNodeRowName)
             currentNodeRow = nodePair;
     }
-}
-
-QString RelationMaker::pointerToStr(QPointer<NodeRow> ptr)
-{
-    return QString("0x%1").arg((quintptr)ptr.data(), QT_POINTER_SIZE * 2, 16, QChar('0'));
 }
 
 void RelationMaker::exit()

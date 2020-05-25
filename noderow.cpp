@@ -159,6 +159,11 @@ QPair<QPoint, int> NodeRow::getGlobalPos()
                                      parentNode->width());
 }
 
+int NodeRow::getRowType()
+{
+    return this->rowType_;
+}
+
 void NodeRow::deleteNodeRow()
 {
     WorkArea* workArea = static_cast<WorkArea*>(parentWidget()->parentWidget());
