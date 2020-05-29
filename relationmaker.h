@@ -13,8 +13,9 @@ class RelationMaker : public QMainWindow
     Q_OBJECT
 public:
     explicit RelationMaker(QWidget *parent,
-                           QVector<QPointer<NodeRow>> pkList,
-                           QVector<QPointer<NodeRow>> fkList);
+                           QVector<QPointer<NodeRow>>,
+                           QVector<QPointer<NodeRow>>,
+                           QVector<QPair<QString, QVector<QPointer<NodeRow>>>>);
 
 private:
     QVector<QPair<QString, QPointer<NodeRow>>> pkNamedList, fkNamedList;

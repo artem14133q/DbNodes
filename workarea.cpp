@@ -121,7 +121,7 @@ void WorkArea::startRelationMaker()
     this->cleanNodeRowsList(this->pkList);
     this->cleanNodeRowsList(this->fkList);
     // Start window for create relation
-    new RelationMaker(this, this->pkList, this->fkList);
+    new RelationMaker(this, this->pkList, this->fkList, this->relations);
 }
 
 void WorkArea::makeRelation(QString relationName, QPointer<NodeRow> pkNodeRow, QPointer<NodeRow> fkNodeRow)

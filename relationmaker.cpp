@@ -10,7 +10,8 @@
 
 RelationMaker::RelationMaker(QWidget *parent,
                              QVector<QPointer<NodeRow>> pkList,
-                             QVector<QPointer<NodeRow>> fkList)
+                             QVector<QPointer<NodeRow>> fkList,
+                             QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations)
     : QMainWindow(parent)
 {
     this->setFixedSize(500, 200);
@@ -23,6 +24,21 @@ RelationMaker::RelationMaker(QWidget *parent,
     this->setEnabled(true);
 
     this->setStyleSheet(Helper::getStyleFromFile("relationMaker"));
+
+    // Delete items in fkList that use
+    QVectorIterator<QPointer<NodeRow>> fkListIterator(fkList);
+    while (fkListIterator.hasNext()) {
+        QPointer<NodeRow> node(fkListIterator.next());
+        QVectorIterator<QPair<QString, QVector<QPointer<NodeRow>>>>
+                relationIterator(relations);
+        while(relationIterator.hasNext()) {
+            QPair<QString, QVector<QPointer<NodeRow>>>
+                    relationPair(relationIterator.next());
+            if (relationPair.second.last() == node) {
+                fkList.removeOne(node);
+            }
+        }
+    }
 
     // Named vectors for QComboBoxes
     this->nameVectors(pkList, pkNames, pkNamedList);
