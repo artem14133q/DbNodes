@@ -6,6 +6,7 @@
 #include "iostream"
 #include "workarea.h"
 #include "qscrollarea.h"
+#include "helper.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Set minimum size
     this->setMinimumSize(800, 600);
     this->showMaximized();
+    this->setStyleSheet(Helper::getStyleFromFile("scrollArea"));
     // Insert menu bar into MainWindow
     this->setMenuBar(defineMenuBar());
 

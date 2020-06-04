@@ -1,5 +1,6 @@
 QMenu {
     background-color: #404142;
+    border-radius: 10px;
     color: #efefef;
 }
 

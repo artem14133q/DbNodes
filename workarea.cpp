@@ -13,6 +13,7 @@
 #include "qpainterpath.h"
 #include "QVectorIterator"
 #include "relationmaker.h"
+#include "helper.h"
 
 WorkArea::WorkArea(QWidget *parent)
     : QWidget(parent)
@@ -26,10 +27,11 @@ void WorkArea::contextMenuEvent(QContextMenuEvent* event)
 {
     // Define context menu
     QMenu* menu = new QMenu();
+    menu->setStyleSheet(Helper::getStyleFromFile("workAreaMenu"));
 
     // Define actions
     QAction* createTable = menu->addAction("Create Table");
-    QAction* makeRelation = menu->addAction("make Relation");
+    QAction* makeRelation = menu->addAction("Make Relation");
 
     // Define slots
     connect(createTable, &QAction::triggered, this, [this, event] {
