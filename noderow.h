@@ -16,6 +16,7 @@ class NodeRow : public QWidget
         static const int FK = 2;
 
         QString getTableName();
+        QString getRowId();
         QPair<QPoint, int> getGlobalPos();
         int getRowType();
 
@@ -23,6 +24,7 @@ class NodeRow : public QWidget
 
     private:
         QString rowName = "coloumn";
+        QString rowId_;
         const int rowType_;
 
         QStringList initTypes();

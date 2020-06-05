@@ -20,6 +20,7 @@ NodeRow::NodeRow(QWidget *parent, const int rowType)
       rowType_(rowType)
 {
     this->initUi();
+    this->rowId_ = "noderow:" + Helper::getCurrentTimeMS();
     this->setStyleSheet(Helper::getStyleFromFile("nodeRow"));
     this->show();
 }

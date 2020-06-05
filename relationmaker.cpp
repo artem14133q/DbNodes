@@ -143,12 +143,10 @@ void RelationMaker::addNodeRows()
     if (this->currentFkNodeRow.second && this->currentPkNodeRow.second) {
         WorkArea* workArea = static_cast<WorkArea*>(this->parentWidget());
 
-        workArea->makeRelation(
-                        Helper::pointToString<NodeRow*>(currentPkNodeRow.second.data()) +
-                        Helper::pointToString<NodeRow*>(currentFkNodeRow.second.data()),
-                        currentPkNodeRow.second,
-                        currentFkNodeRow.second
-                    );
+        workArea->makeRelation(currentPkNodeRow.second->getRowId() + "&" +
+                               currentFkNodeRow.second->getRowId(),
+                               currentPkNodeRow.second,
+                               currentFkNodeRow.second);
     }
 
     this->exit();

@@ -12,6 +12,7 @@ public:
     explicit Node(QWidget *parent = nullptr);
 
     QString getTableName();
+    QString getTableId();
 
 private:
     QPoint oldPos;
@@ -20,6 +21,7 @@ private:
     QVBoxLayout* fkLayout;
 
     QString tableName = "table";
+    QString tableId;
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;

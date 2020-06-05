@@ -26,6 +26,7 @@ Node::Node(QWidget *parent)
     : QWidget(parent)
 {
     this->initUI();
+    this->tableId = "node:" + Helper::getCurrentTimeMS();
     this->setStyleSheet(Helper::getStyleFromFile("node"));
     this->show();
 }
@@ -155,4 +156,10 @@ void Node::setTableName(const QString &newTableName)
 QString Node::getTableName()
 {
     return this->tableName;
+}
+
+// Get table id
+QString Node::getTableId()
+{
+    return this->tableId;
 }
