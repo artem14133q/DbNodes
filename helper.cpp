@@ -8,7 +8,7 @@
 QString Helper::getStyleFromFile(const QString name) {
     QFile file(":/styles/" + name);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        return "";
+        return "0";
 
     QString string;
 
