@@ -172,3 +172,8 @@ void NodeRow::deleteNodeRow()
     // Update work area when relation delete
     workArea->update();
 }
+
+QString NodeRow::getRowId()
+{
+    return this->rowId_;
+}
