@@ -15,7 +15,7 @@ public:
     explicit RelationMaker(QWidget *parent,
                            QVector<QPointer<NodeRow>>,
                            QVector<QPointer<NodeRow>>,
-                           QVector<QPair<QString, QVector<QPointer<NodeRow>>>>);
+                           QVector<QPair<QString, QStringList>>);
 
 private:
     QVector<QPair<QString, QPointer<NodeRow>>> pkNamedList, fkNamedList;

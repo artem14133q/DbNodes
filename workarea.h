@@ -20,7 +20,7 @@ public:
     void setNodeRow(QPointer<NodeRow>);
 
 private:
-    QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations;
+    QVector<QPair<QString, QStringList>> relations;
     QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
     QVector<QPointer<NodeRow>> pkList, fkList;
     QVector<QPointer<Node>> nodeList;
@@ -32,6 +32,7 @@ private:
     void cleanNodeList();
     void createNode(QPoint);
     void cleanNodeRowsList(QVector<QPointer<NodeRow>>&);
+    QPointer<NodeRow> findNodeRow(QVector<QPointer<NodeRow>>&, QString);
 };
 
 #endif // WORKAREA_H

@@ -11,7 +11,7 @@
 RelationMaker::RelationMaker(QWidget *parent,
                              QVector<QPointer<NodeRow>> pkList,
                              QVector<QPointer<NodeRow>> fkList,
-                             QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations)
+                             QVector<QPair<QString, QStringList>> relations)
     : QMainWindow(parent)
 {
     this->setFixedSize(500, 200);
@@ -29,12 +29,10 @@ RelationMaker::RelationMaker(QWidget *parent,
     QVectorIterator<QPointer<NodeRow>> fkListIterator(fkList);
     while (fkListIterator.hasNext()) {
         QPointer<NodeRow> node(fkListIterator.next());
-        QVectorIterator<QPair<QString, QVector<QPointer<NodeRow>>>>
-                relationIterator(relations);
+        QVectorIterator<QPair<QString, QStringList>> relationIterator(relations);
         while(relationIterator.hasNext()) {
-            QPair<QString, QVector<QPointer<NodeRow>>>
-                    relationPair(relationIterator.next());
-            if (relationPair.second.last() == node) {
+            QPair<QString, QStringList> relationPair(relationIterator.next());
+            if (relationPair.second.last() == node->getRowId()) {
                 fkList.removeOne(node);
             }
         }
@@ -57,13 +55,11 @@ void RelationMaker::insertCurrentNodeRows(QPointer<NodeRow> pkNodeRow, QPointer<
 
         this->currentPkNodeRow = QPair<QString, QPointer<NodeRow>>(
                                     pkNodeRow->getTableName() + "." + pkNodeRow->getTableName(),
-                                    pkNodeRow
-                                );
+                                    pkNodeRow);
 
         this->currentFkNodeRow = QPair<QString, QPointer<NodeRow>>(
                                     fkNodeRow->getTableName() + "." + fkNodeRow->getTableName(),
-                                    fkNodeRow
-                                );
+                                    fkNodeRow);
 }
 
 QWidget* RelationMaker::getMainWindow()

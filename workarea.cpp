@@ -59,11 +59,11 @@ void WorkArea::paintEvent(QPaintEvent *)
     QPainterPath bezierPath;
 
     // Paint relations for NodeRows
-    QVectorIterator<QPair<QString, QVector<QPointer<NodeRow>>>> relationIterator(this->relations);
+    QVectorIterator<QPair<QString, QStringList>> relationIterator(this->relations);
     // Loop for paint arrows
     while (relationIterator.hasNext()) {
-        QPair<QString, QVector<QPointer<NodeRow>>> relationPair(relationIterator.next());
-        QVector<QPointer<NodeRow>> relationArrowList(relationPair.second);
+        QPair<QString, QStringList> relationPair(relationIterator.next());
+        QStringList relationArrowList(relationPair.second);
 
         // Find button to move or delete
         QPointer<DeleteArrowButton> closeBtn;
@@ -75,8 +75,14 @@ void WorkArea::paintEvent(QPaintEvent *)
                 closeBtn = relationCloseBtnPair.second;
         }
 
+        this->cleanNodeRowsList(this->pkList);
+        this->cleanNodeRowsList(this->fkList);
+
+        QPointer<NodeRow> pkNodeRow(this->findNodeRow(this->pkList, relationArrowList.first()));
+        QPointer<NodeRow> fkNodeRow(this->findNodeRow(this->fkList, relationArrowList.last()));
+
         // If one or two NodeRow widget delete pair
-        if (!relationArrowList.first() || !relationArrowList.last()) {
+        if (!pkNodeRow || !fkNodeRow) {
             this->relations.removeOne(relationPair);
             // If arrow was deleted, delete close butoon
             if (closeBtn)
@@ -85,8 +91,8 @@ void WorkArea::paintEvent(QPaintEvent *)
         }
 
         // Get coords and widths from NodeRow
-        QPair<QPoint, int> pkCoords(relationArrowList.first()->getGlobalPos());
-        QPair<QPoint, int> fkCoords(relationArrowList.last()->getGlobalPos());
+        QPair<QPoint, int> pkCoords(pkNodeRow->getGlobalPos());
+        QPair<QPoint, int> fkCoords(fkNodeRow->getGlobalPos());
 
         QPoint pkPoint(pkCoords.first);
         QPoint fkPoint(fkCoords.first);
@@ -129,40 +135,51 @@ void WorkArea::startRelationMaker()
 
 void WorkArea::makeRelation(QString relationName, QPointer<NodeRow> pkNodeRow, QPointer<NodeRow> fkNodeRow)
 {
-    QVectorIterator<QPair<QString, QVector<QPointer<NodeRow>>>> relationIterator(this->relations);
+    QVectorIterator<QPair<QString, QStringList>> relationIterator(this->relations);
     while (relationIterator.hasNext()) {
-        QVector<QPointer<NodeRow>> relationPair(relationIterator.next().second);
+        QStringList relationList(relationIterator.next().second);
         //If relation pair already in relation list
-        if (relationPair.first() == pkNodeRow && relationPair.last() == fkNodeRow)
+        if (relationList.first() == pkNodeRow->getRowId() && relationList.last() == fkNodeRow->getRowId())
             return;
         //If relation rows is children of one node
-        else if (relationPair.first() == relationPair.last())
+        else if (relationList.first() == relationList.last())
             return;
     }
 
     // Call from relation maker. Append Pointers of NodeRows to relations list
-    QVector<QPointer<NodeRow>> newRelationPair;
+    QStringList newRelationArrowList;
     QString newRelationName = relationName;
 
-    newRelationPair.insert(0, pkNodeRow);
-    newRelationPair.insert(1, fkNodeRow);
+    newRelationArrowList.insert(0, pkNodeRow->getRowId());
+    newRelationArrowList.insert(1, fkNodeRow->getRowId());
 
-    this->relations.push_back(QPair<QString, QVector<QPointer<NodeRow>>>(newRelationName, newRelationPair));
-    this->closeBtnList.push_back(QPair<QString, QPointer<DeleteArrowButton>>(
-                                     relationName,
-                                     QPointer<DeleteArrowButton>(new DeleteArrowButton(relationName, this))
-                                 ));
+    QPointer<DeleteArrowButton> newDeleteBtn(new DeleteArrowButton(relationName, this));
+
+    this->relations.push_back(QPair<QString, QStringList>(newRelationName, newRelationArrowList));
+    this->closeBtnList.push_back(QPair<QString, QPointer<DeleteArrowButton>>(relationName, newDeleteBtn));
 }
 
 void WorkArea::deleteRalation(QString & relationName)
 {
-    QVectorIterator<QPair<QString, QVector<QPointer<NodeRow>>>> relationIterator(this->relations);
+    QVectorIterator<QPair<QString, QStringList>> relationIterator(this->relations);
     while (relationIterator.hasNext()) {
-        QPair<QString, QVector<QPointer<NodeRow>>> relationPair(relationIterator.next());
+        QPair<QString, QStringList> relationPair(relationIterator.next());
 
         if (relationPair.first == relationName)
             this->relations.removeOne(relationPair);
     }
+}
+
+QPointer<NodeRow> WorkArea::findNodeRow(QVector<QPointer<NodeRow>> &nodeRowList, QString nodeRowId)
+{
+    QVectorIterator<QPointer<NodeRow>> nodeRowListIterator(nodeRowList);
+    while (nodeRowListIterator.hasNext()) {
+        QPointer<NodeRow> nodeRow(nodeRowListIterator.next());
+        if (nodeRow->getRowId() == nodeRowId)
+            return nodeRow;
+    }
+
+    return QPointer<NodeRow>(nullptr);
 }
 
 // Clean NodeRows list for delete pointer if pointer is empty
@@ -181,8 +198,7 @@ void WorkArea::cleanNodeList()
 {
     QVectorIterator<QPointer<Node>> nodeListIterator(this->nodeList);
     while (nodeListIterator.hasNext()) {
-        QPointer<Node> node;
-
+        QPointer<Node> node(nodeListIterator.next());
         if (!node)
             this->nodeList.removeOne(node);
     }
