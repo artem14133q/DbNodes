@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Set minimum size
     this->setMinimumSize(800, 600);
     this->showMaximized();
-    this->setStyleSheet(Helper::getStyleFromFile("scrollArea"));
+    this->setStyleSheet(Helper::getStyleFromFile("main"));
     // Insert menu bar into MainWindow
     this->setMenuBar(defineMenuBar());
 

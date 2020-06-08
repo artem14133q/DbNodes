@@ -23,11 +23,13 @@ private:
     QVector<QPair<QString, QVector<QPointer<NodeRow>>>> relations;
     QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
     QVector<QPointer<NodeRow>> pkList, fkList;
+    QVector<QPointer<Node>> nodeList;
 
     void contextMenuEvent(QContextMenuEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 
     void startRelationMaker();
+    void cleanNodeList();
     void createNode(QPoint);
     void cleanNodeRowsList(QVector<QPointer<NodeRow>>&);
 };

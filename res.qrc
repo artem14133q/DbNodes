@@ -21,7 +21,7 @@
         <file alias="nodeRowKeyIcon">styles/nodeRowKeyIcon.css</file>
         <file alias="deleteArrowButton">styles/delateArrowButton.css</file>
         <file alias="nodeRowIsNull">styles/nodeRowIsNull.css</file>
-        <file alias="scrollArea">styles/scrollArea.css</file>
         <file alias="workAreaMenu">styles/workAreaMenu.css</file>
+        <file alias="main">styles/main.css</file>
     </qresource>
 </RCC>

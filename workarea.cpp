@@ -122,6 +122,7 @@ void WorkArea::startRelationMaker()
 {
     this->cleanNodeRowsList(this->pkList);
     this->cleanNodeRowsList(this->fkList);
+    this->cleanNodeList();
     // Start window for create relation
     new RelationMaker(this, this->pkList, this->fkList, this->relations);
 }
@@ -176,6 +177,17 @@ void WorkArea::cleanNodeRowsList(QVector<QPointer<NodeRow>> &list)
     }
 }
 
+void WorkArea::cleanNodeList()
+{
+    QVectorIterator<QPointer<Node>> nodeListIterator(this->nodeList);
+    while (nodeListIterator.hasNext()) {
+        QPointer<Node> node;
+
+        if (!node)
+            this->nodeList.removeOne(node);
+    }
+}
+
 void WorkArea::setNodeRow(QPointer<NodeRow> nodeRow)
 {
     if (nodeRow->getRowType() == NodeRow::PK)
@@ -187,5 +199,6 @@ void WorkArea::setNodeRow(QPointer<NodeRow> nodeRow)
 void WorkArea::createNode(QPoint pos)
 {
     Node* node = new Node(this);
+    this->nodeList.push_back(QPointer<Node>(node));
     node->move(pos);
 }

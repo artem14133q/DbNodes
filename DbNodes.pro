@@ -46,3 +46,7 @@ DISTFILES += \
 
 RESOURCES += \
     res.qrc
+
+FORMS += \
+    dialog.ui \
+    mainwindow.ui
