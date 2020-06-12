@@ -22,9 +22,9 @@ private:
 
     void generateSaveFile(const int);
     void openSaveFile();
+    void createWorkArea();
 
-private slots:
-    void test();
+
 
 };
 #endif // MAINWINDOW_H

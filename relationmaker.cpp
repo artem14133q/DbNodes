@@ -139,8 +139,7 @@ void RelationMaker::addNodeRows()
     if (this->currentFkNodeRow.second && this->currentPkNodeRow.second) {
         WorkArea* workArea = static_cast<WorkArea*>(this->parentWidget());
 
-        workArea->makeRelation(currentPkNodeRow.second->getRowId() + "&" +
-                               currentFkNodeRow.second->getRowId(),
+        workArea->makeRelation("relation:" + Helper::getCurrentTimeMS(),
                                currentPkNodeRow.second,
                                currentFkNodeRow.second);
     }

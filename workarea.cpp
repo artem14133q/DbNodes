@@ -14,6 +14,7 @@
 #include "QVectorIterator"
 #include "relationmaker.h"
 #include "helper.h"
+#include "QDebug"
 
 WorkArea::WorkArea(QWidget *parent)
     : QWidget(parent)
@@ -22,6 +23,11 @@ WorkArea::WorkArea(QWidget *parent)
     this->setFixedSize(4096, 4096);
 }
 
+//bool WorkArea::event(QEvent *event)
+//{
+//    qDebug() << event->type();
+//    return true;
+//}
 
 void WorkArea::contextMenuEvent(QContextMenuEvent* event)
 {

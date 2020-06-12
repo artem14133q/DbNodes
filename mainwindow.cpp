@@ -21,7 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStyleSheet(Helper::getStyleFromFile("main"));
     // Insert menu bar into MainWindow
     this->setMenuBar(defineMenuBar());
+}
 
+void MainWindow::createWorkArea()
+{
     // Create scroll area for work area
     QScrollArea* scrollArea = new QScrollArea(this);
 
@@ -62,7 +65,7 @@ QMenuBar* MainWindow::defineMenuBar()
     project->addSeparator();
 
     // Define slots
-    connect(createProject, &QAction::triggered, this, &MainWindow::test);
+    connect(createProject, &QAction::triggered, this, &MainWindow::createWorkArea);
     connect(openProject, &QAction::triggered, this, &MainWindow::openSaveFile);
     connect(saveProject, &QAction::triggered, this, [this] () {
         this->generateSaveFile(MainWindow::SAVE_TYPE_REWRITE_FILE);
@@ -141,14 +144,14 @@ void MainWindow::generateSaveFile(const int saveType)
 
 void MainWindow::openSaveFile()
 {
-    QString filePath = QFileDialog::getOpenFileName(
+    this->filePath = QFileDialog::getOpenFileName(
                 nullptr,
                 tr("Open File"),
                 "/home/" + qgetenv("USER") + "/file.dbn",
                 tr("DbNodes File (*.dbn)"));
 
     QString fileString("");
-    QFile file(filePath);
+    QFile file(this->filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
@@ -164,6 +167,8 @@ void MainWindow::openSaveFile()
                        "#ENDDBNODESFILE#");
     if (filePreg.indexIn(fileString) == -1)
         return;
+
+    this->createWorkArea();
 
     QString fileData(filePreg.cap(0));
     QRegExp fileIndicatorPreg("#\\S+#");
@@ -240,9 +245,4 @@ void MainWindow::openSaveFile()
             }
         }
     }
-}
-
-void MainWindow::test()
-{
-    std::cout << "Test" << std::endl;
 }

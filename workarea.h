@@ -35,6 +35,7 @@ private:
 
     void contextMenuEvent(QContextMenuEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
+//    bool event(QEvent *event) override;
 
     void startRelationMaker();
     void cleanNodeList();
