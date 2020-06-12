@@ -15,9 +15,17 @@ class WorkArea : public QWidget
 public:
     explicit WorkArea(QWidget *parent = nullptr);
 
+    static const int GET_FK_NODE_ROWS = 2;
+    static const int GET_PK_NODE_ROWS = 1;
+
     void makeRelation(QString, QPointer<NodeRow>, QPointer<NodeRow>);
     void deleteRalation(QString &);
     void setNodeRow(QPointer<NodeRow>);
+    void createNodeFromFile(QString, QString, QPoint);
+
+    QVector<QPointer<Node>> getAllNodes();
+    QVector<QPair<QString, QStringList>> getAllrelations();
+    QPointer<NodeRow> findNodeRow(const int, QString);
 
 private:
     QVector<QPair<QString, QStringList>> relations;
@@ -32,7 +40,6 @@ private:
     void cleanNodeList();
     void createNode(QPoint);
     void cleanNodeRowsList(QVector<QPointer<NodeRow>>&);
-    QPointer<NodeRow> findNodeRow(QVector<QPointer<NodeRow>>&, QString);
 };
 
 #endif // WORKAREA_H

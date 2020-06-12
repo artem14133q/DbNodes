@@ -95,10 +95,10 @@ void RelationMaker::initUI()
     cbFkSelect->move(290, 50);
     cbFkSelect->setFixedWidth(200);
 
-    QLabel* arrow = new QLabel("<-", this);
+    QLabel* arrow = new QLabel("<", this);
     arrow->setStyleSheet(Helper::getStyleFromFile("relationMakerArrow"));
     arrow->setFixedWidth(30);
-    arrow->move(230, 50);
+    arrow->move(240, 50);
 
     // Exit PushButton
     QPushButton* pbCancel = new QPushButton("Cancel", this);

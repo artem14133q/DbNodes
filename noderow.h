@@ -7,33 +7,41 @@
 
 class NodeRow : public QWidget
 {
-    Q_OBJECT
-    public:
-        explicit NodeRow(QWidget *parent = nullptr,
-                         const int rowType = 0);
+Q_OBJECT
+public:
+    explicit NodeRow(QWidget *parent = nullptr, const int rowType = 0);
 
-        static const int PK = 1;
-        static const int FK = 2;
+    explicit NodeRow(QWidget *parent, QString rowId, QString rowName,
+                     int rowType, QString rowDbType, bool rowIsNull = false);
 
-        QString getTableName();
-        QString getRowId();
-        QPair<QPoint, int> getGlobalPos();
-        int getRowType();
+    static const int PK = 1;
+    static const int FK = 2;
 
-        QString getRowName() const;
+    QString getTableName();
+    QString getRowId();
+    QPair<QPoint, int> getGlobalPos();
+    int getRowType();
+    bool getRowIsNull();
 
-    private:
-        QString rowName = "coloumn";
-        QString rowId_;
-        const int rowType_;
+    QString getRowName() const;
+    QString getRowDbType();
 
-        QStringList initTypes();
+private:
+    QString rowName_;
+    QString rowId_;
+    QString rowDbType_;
+    bool rowIsNull_;
+    const int rowType_;
 
-        void initUi();
-        void deleteNodeRow();
-        void setRowName(const QString &);
+    QStringList initTypes();
 
-        void paintEvent(QPaintEvent *event) override;
+    void initUi();
+    void deleteNodeRow();
+    void setRowName(const QString &);
+    void setRowDbType(const QString &);
+    void setRowIsNull(bool);
+
+    void paintEvent(QPaintEvent *event) override;
 };
 
 #endif // NODEROW_H

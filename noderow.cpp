@@ -11,7 +11,6 @@
 #include "qlabel.h"
 #include "node.h"
 #include "qpair.h"
-#include "qdebug.h"
 #include "helper.h"
 #include "workarea.h"
 
@@ -19,66 +18,88 @@ NodeRow::NodeRow(QWidget *parent, const int rowType)
     : QWidget(parent),
       rowType_(rowType)
 {
-    this->initUi();
     this->rowId_ = "noderow:" + Helper::getCurrentTimeMS();
-    this->setStyleSheet(Helper::getStyleFromFile("nodeRow"));
+    this->rowName_ = "coloumn";
+    this->rowIsNull_ = false;
+
+    if (this->rowType_ != NodeRow::FK)
+        this->rowDbType_ = "integer";
+    else
+        this->rowDbType_ = "none";
+
+    this->initUi();
+    this->show();
+}
+
+NodeRow::NodeRow(QWidget *parent, QString rowId, QString rowName,
+                     int rowType, QString rowDbType, bool rowIsNull)
+    : QWidget(parent),
+      rowName_(rowName),
+      rowId_(rowId),
+      rowDbType_(rowDbType),
+      rowIsNull_(rowIsNull),
+      rowType_(rowType)
+{
+    this->initUi();
     this->show();
 }
 
 // Get row name. Call in work area
 QString NodeRow::getRowName() const
 {
-    return rowName;
+    return rowName_;
 }
 
 // Private Slot
 void NodeRow::setRowName(const QString &newRawName)
 {
-    rowName = newRawName;
+    rowName_ = newRawName;
 }
 
 // Define database types
 QStringList NodeRow::initTypes()
 {
-    QStringList* typesList = new QStringList();
+    QStringList typesList;
 
     // Numeric types
-    typesList->push_back("integer");
-    typesList->push_back("tinyint");
-    typesList->push_back("bigint");
+    typesList.push_back("integer");
+    typesList.push_back("tinyint");
+    typesList.push_back("bigint");
 
     /* If NodeRow type is PK return
     only numeric types */
     if (this->rowType_ == NodeRow::PK)
-        return *typesList;
+        return typesList;
 
     // Numeric types
-    typesList->push_back("float");
-    typesList->push_back("double");
+    typesList.push_back("float");
+    typesList.push_back("double");
 
     // Char types
-    typesList->push_back("char");
-    typesList->push_back("varchar");
-    typesList->push_back("text");
-    typesList->push_back("longtext");
+    typesList.push_back("char");
+    typesList.push_back("varchar");
+    typesList.push_back("text");
+    typesList.push_back("longtext");
 
     // Time types
-    typesList->push_back("time");
-    typesList->push_back("date");
-    typesList->push_back("datetime");
-    typesList->push_back("timestamp");
-    typesList->push_back("year");
+    typesList.push_back("time");
+    typesList.push_back("date");
+    typesList.push_back("datetime");
+    typesList.push_back("timestamp");
+    typesList.push_back("year");
 
     // Other
-    typesList->push_back("binary");
-    typesList->push_back("bool");
-    typesList->push_back("json");
+    typesList.push_back("binary");
+    typesList.push_back("bool");
+    typesList.push_back("json");
 
-    return *typesList;
+    return typesList;
 }
 
 void NodeRow::initUi()
 {
+    this->setStyleSheet(Helper::getStyleFromFile("nodeRow"));
+
     // Parent layout
     QHBoxLayout* hl = new QHBoxLayout(this);
     hl->setSizeConstraint(QHBoxLayout::SetFixedSize);
@@ -100,15 +121,15 @@ void NodeRow::initUi()
     }
 
     // Name of row
-    QLineEdit* leName = new QLineEdit("coloumn", this);
+    QLineEdit* leName = new QLineEdit(this->rowName_, this);
     connect(leName, &QLineEdit::textChanged, this, &NodeRow::setRowName);
 
     // Width for FK
     if (this->rowType_ == NodeRow::FK)
-        leName->setFixedWidth(219);
+        leName->setFixedWidth(202);
     // Width for PK
     else if (this->rowType_ == NodeRow::PK)
-        leName->setFixedWidth(100);
+        leName->setFixedWidth(125);
 
     leName->setStyleSheet(Helper::getStyleFromFile("nodeRowTitle"));
     hl->addWidget(leName);
@@ -116,8 +137,11 @@ void NodeRow::initUi()
     // If FK, not init db types combo box
     if (this->rowType_ != NodeRow::FK) {
         QComboBox* cbTypes = new QComboBox(this);
-        cbTypes->insertItems(0, this->initTypes());
+        QStringList dbTypes = this->initTypes();
+        cbTypes->addItems(dbTypes);
+        cbTypes->setCurrentIndex(dbTypes.indexOf(this->rowDbType_));
         cbTypes->setStyleSheet(Helper::getStyleFromFile("nodeRowTypes"));
+        connect(cbTypes, &QComboBox::textActivated, this, &NodeRow::setRowDbType);
 
         cbTypes->setFixedWidth(90);
         hl->addWidget(cbTypes);
@@ -126,9 +150,11 @@ void NodeRow::initUi()
     // If PK, not init NULL button
     if (this->rowType_ != NodeRow::PK) {
         QCheckBox* isNull = new QCheckBox("NULL", this);
+        isNull->setChecked(this->rowIsNull_);
         isNull->setFixedWidth(35);
         isNull->setStyleSheet(Helper::getStyleFromFile("nodeRowIsNull"));
         hl->addWidget(isNull);
+        connect(isNull, &QCheckBox::clicked, this, &NodeRow::setRowIsNull);
     }
 
     this->setLayout(hl);
@@ -173,7 +199,27 @@ void NodeRow::deleteNodeRow()
     workArea->update();
 }
 
+void NodeRow::setRowDbType(const QString &type)
+{
+    this->rowDbType_ = type;
+}
+
+QString NodeRow::getRowDbType()
+{
+    return this->rowDbType_;
+}
+
+bool NodeRow::getRowIsNull()
+{
+    return this->rowIsNull_;
+}
+
 QString NodeRow::getRowId()
 {
     return this->rowId_;
+}
+
+void NodeRow::setRowIsNull(bool checked)
+{
+    this->rowIsNull_ = checked;
 }

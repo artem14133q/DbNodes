@@ -25,20 +25,29 @@
 Node::Node(QWidget *parent)
     : QWidget(parent)
 {
-    this->initUI();
     this->tableId = "node:" + Helper::getCurrentTimeMS();
-    this->setStyleSheet(Helper::getStyleFromFile("node"));
+    this->tableName = "table";
+    this->initUI();
+    this->show();
+}
+
+Node::Node(QWidget *parent, QString id, QString name)
+    : QWidget(parent), tableName(name), tableId(id)
+{
+    this->initUI();
     this->show();
 }
 
 void Node::initUI()
 {
+    this->setStyleSheet(Helper::getStyleFromFile("node"));
+
     // Parent layout
     QVBoxLayout* vl = new QVBoxLayout(this);
     vl->setSizeConstraint(QVBoxLayout::SetFixedSize);
 
     // Name node
-    QLineEdit* title = new QLineEdit("table", this);
+    QLineEdit* title = new QLineEdit(this->tableName, this);
     connect(title, &QLineEdit::textChanged, this, &Node::setTableName);
 
     title->setFixedWidth(150);
@@ -111,7 +120,7 @@ void Node::contextMenuEvent(QContextMenuEvent *event)
 
     //Define Slots
     connect(deleteTable, &QAction::triggered, this, [this] {this->~Node();});
-    connect(addColomn, &QAction::triggered, this, &Node::addColoumn);
+    connect(addColomn, &QAction::triggered, this, [this] {this->addColoumn();});
     connect(addPkColomn, &QAction::triggered, this, [this] {this->addColoumn(NodeRow::PK);});
     connect(addFkColomn, &QAction::triggered, this, [this] {this->addColoumn(NodeRow::FK);});
 
@@ -128,22 +137,47 @@ void Node::paintEvent(QPaintEvent *)
  }
 
 // Create row of types
-void Node::addColoumn(const int NodeRowType)
+void Node::addColoumn(const int nodeRowType, QPointer<NodeRow> row)
 {
-    QPointer<NodeRow> row = new NodeRow(this, NodeRowType);
+    if (!row)
+        QPointer<NodeRow> row = new NodeRow(this, nodeRowType);
+
     WorkArea* parentWorkArea = static_cast<WorkArea*>(this->parentWidget());
 
-    if (NodeRowType == NodeRow::PK) {
-        parentWorkArea->setNodeRow(row);
+    if (nodeRowType == NodeRow::PK)
         this->pkLayout->addWidget(row);
-    } else if (NodeRowType == NodeRow::FK) {
-        parentWorkArea->setNodeRow(row);
+    else if (nodeRowType == NodeRow::FK)
         this->fkLayout->addWidget(row);
-    } else {
+    else
         this->rowsLayout->addWidget(row);
-    }
 
+    parentWorkArea->setNodeRow(row);
+
+    this->nodeRows.push_back(row);
     this->adjustSize();
+}
+
+void Node::addColumnFromFile(QString id, QString name, int type,
+                             QString dbType, bool isNull)
+{
+    QPointer<NodeRow> nodeRow = new NodeRow(this, id, name, type, dbType, isNull);
+    this->addColoumn(type, nodeRow);
+}
+
+void Node::cleanNodeRows()
+{
+    QVectorIterator<QPointer<NodeRow>> nodeRowsIterator(this->nodeRows);
+    while (nodeRowsIterator.hasNext()) {
+        QPointer<NodeRow> nodeRow(nodeRowsIterator.next());
+        if (!nodeRow)
+            this->nodeRows.removeOne(nodeRow);
+    }
+}
+
+QVector<QPointer<NodeRow>> Node::getAllNodeRows()
+{
+    this->cleanNodeRows();
+    return this->nodeRows;
 }
 
 // Named node slot

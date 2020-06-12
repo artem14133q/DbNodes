@@ -8,10 +8,7 @@ class DeleteArrowButton : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit DeleteArrowButton(
-                QString &,
-                QWidget *parent = nullptr
-            );
+    explicit DeleteArrowButton(QString &, QWidget *parent = nullptr);
 
 private:
     QString relationId;
