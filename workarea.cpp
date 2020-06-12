@@ -137,6 +137,9 @@ void WorkArea::startRelationMaker()
 
 void WorkArea::makeRelation(QString relationId, QPointer<NodeRow> pkNodeRow, QPointer<NodeRow> fkNodeRow)
 {
+    if (pkNodeRow->getTableId() == fkNodeRow->getTableId())
+        return;
+
     QVectorIterator<QPair<QString, QStringList>> relationIterator(this->relations);
     while (relationIterator.hasNext()) {
         QStringList relationList(relationIterator.next().second);
@@ -144,7 +147,7 @@ void WorkArea::makeRelation(QString relationId, QPointer<NodeRow> pkNodeRow, QPo
         if (relationList.first() == pkNodeRow->getRowId() && relationList.last() == fkNodeRow->getRowId())
             return;
         //If relation rows is children of one node
-        else if (relationList.first() == relationList.last())
+        if (relationList.first() == relationList.last())
             return;
     }
 

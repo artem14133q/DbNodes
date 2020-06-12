@@ -168,6 +168,13 @@ QString NodeRow::getTableName()
     return node->getTableName();
 }
 
+QString NodeRow::getTableId()
+{
+    Node* node = static_cast<Node*>(this->parentWidget());
+
+    return node->getTableId();
+}
+
 void NodeRow::paintEvent(QPaintEvent *)
 {
      QStyleOption opt;

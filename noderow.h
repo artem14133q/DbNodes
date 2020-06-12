@@ -18,6 +18,7 @@ public:
     static const int FK = 2;
 
     QString getTableName();
+    QString getTableId();
     QString getRowId();
     QPair<QPoint, int> getGlobalPos();
     int getRowType();

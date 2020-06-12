@@ -140,7 +140,7 @@ void Node::paintEvent(QPaintEvent *)
 void Node::addColoumn(const int nodeRowType, QPointer<NodeRow> row)
 {
     if (!row)
-        QPointer<NodeRow> row = new NodeRow(this, nodeRowType);
+        row = new NodeRow(this, nodeRowType);
 
     WorkArea* parentWorkArea = static_cast<WorkArea*>(this->parentWidget());
 
