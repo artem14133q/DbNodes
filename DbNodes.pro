@@ -20,6 +20,7 @@ SOURCES += \
     helper.cpp \
     main.cpp \
     mainwindow.cpp \
+    namenewproject.cpp \
     node.cpp \
     noderow.cpp \
     relationmaker.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     deletearrowbutton.h \
     helper.h \
     mainwindow.h \
+    namenewproject.h \
     node.h \
     noderow.h \
     relationmaker.h \

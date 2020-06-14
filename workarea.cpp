@@ -16,11 +16,12 @@
 #include "helper.h"
 #include "QDebug"
 
-WorkArea::WorkArea(QWidget *parent)
-    : QWidget(parent)
+WorkArea::WorkArea(QWidget *parent, QString projectName_)
+    : QWidget(parent), projectName(projectName_)
 {
     // Set fixed size for work area
     this->setFixedSize(4096, 4096);
+    parent->parentWidget()->setWindowTitle(projectName + " - DbNodes");
 }
 
 //bool WorkArea::event(QEvent *event)
@@ -246,6 +247,11 @@ QVector<QPointer<Node>> WorkArea::getAllNodes()
 {
     this->cleanNodeList();
     return this->nodeList;
+}
+
+QString WorkArea::getProjectName()
+{
+    return this->projectName;
 }
 
 QVector<QPair<QString, QStringList>> WorkArea::getAllrelations()

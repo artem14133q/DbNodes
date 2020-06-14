@@ -23,7 +23,7 @@ RelationMaker::RelationMaker(QWidget *parent,
     // Enabled this window
     this->setEnabled(true);
 
-    this->setStyleSheet(Helper::getStyleFromFile("relationMaker"));
+    this->setStyleSheet(Helper::getStyleFromFile("subWindow"));
 
     // Delete items in fkList that use
     QVectorIterator<QPointer<NodeRow>> fkListIterator(fkList);
@@ -73,7 +73,7 @@ void RelationMaker::initUI()
     QString comboBoxStyle = Helper::getStyleFromFile("relationMakerSelector");
 
     // Styles for PushButtons
-    QString pbStyle = Helper::getStyleFromFile("relationMakerButton");
+    QString pbStyle = Helper::getStyleFromFile("button");
 
     // Init for select PK NodeRow
     QComboBox* cbPkSelect = new QComboBox(this);

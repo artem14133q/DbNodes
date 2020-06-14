@@ -7,10 +7,10 @@
 #include "workarea.h"
 #include "qscrollarea.h"
 #include "helper.h"
-#include <QFileDialog>
-#include <qfile.h>
-#include <qtextstream.h>
-#include <iostream>
+#include "QFileDialog"
+#include "qfile.h"
+#include "qtextstream.h"
+#include "namenewproject.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -23,15 +23,18 @@ MainWindow::MainWindow(QWidget *parent)
     this->setMenuBar(defineMenuBar());
 }
 
-void MainWindow::createWorkArea()
+void MainWindow::createWorkArea(QString projectName)
 {
     // Create scroll area for work area
     QScrollArea* scrollArea = new QScrollArea(this);
 
     // Init new work area widget
-    this->workArea = new WorkArea(scrollArea);
+    this->workArea = new WorkArea(scrollArea, projectName);
     scrollArea->setWidget(workArea);
     this->setCentralWidget(scrollArea);
+
+    this->saveProject->setEnabled(true);
+    this->saveAsProject->setEnabled(true);
 }
 
 QMenuBar* MainWindow::defineMenuBar()
@@ -43,29 +46,35 @@ QMenuBar* MainWindow::defineMenuBar()
     QMenu* project = menuBar->addMenu("Project");
 
     // Create new project
-    QAction* createProject = project->addAction("Create new Project");
-    createProject->setIcon(QIcon(QString(":/imgs/new")));
-    createProject->setShortcut(QKeySequence("Ctrl+A"));
+    this->createProject = project->addAction("Create new Project");
+    this->createProject->setIcon(QIcon(":/imgs/new"));
+    this->createProject->setShortcut(QKeySequence("Ctrl+A"));
 
     // Open project from file
-    QAction* openProject = project->addAction("Open Project");
-    openProject->setIcon(QIcon(QString(":/imgs/open")));
-    openProject->setShortcut(QKeySequence("Ctrl+D"));
+    this->openProject = project->addAction("Open Project");
+    this->openProject->setIcon(QIcon(":/imgs/open"));
+    this->openProject->setShortcut(QKeySequence("Ctrl+D"));
 
     // Save current project in file
-    QAction* saveProject = project->addAction("Save Project");
-    saveProject->setIcon(QIcon(QString(":/imgs/save")));
-    saveProject->setShortcut(QKeySequence("Ctrl+S"));
+    this->saveProject = project->addAction("Save Project");
+    this->saveProject->setIcon(QIcon(":/imgs/save"));
+    this->saveProject->setDisabled(true);
+    this->saveProject->setShortcut(QKeySequence("Ctrl+S"));
 
     // Save current project in other file
-    QAction* saveAsProject = project->addAction("Save as ...");
-    saveAsProject->setIcon(QIcon(QString(":/imgs/save_as")));
-    saveAsProject->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    this->saveAsProject = project->addAction("Save as ...");
+    this->saveAsProject->setIcon(QIcon(":/imgs/save_as"));
+    this->saveAsProject->setDisabled(true);
+    this->saveAsProject->setShortcut(QKeySequence("Ctrl+Shift+S"));
+
+    // Close openned project
+    this->closeProject = project->addAction("Close project");
+//    this->closeProject->setIcon();
 
     project->addSeparator();
 
     // Define slots
-    connect(createProject, &QAction::triggered, this, &MainWindow::createWorkArea);
+    connect(createProject, &QAction::triggered, this, &MainWindow::createNewProject);
     connect(openProject, &QAction::triggered, this, &MainWindow::openSaveFile);
     connect(saveProject, &QAction::triggered, this, [this] () {
         this->generateSaveFile(MainWindow::SAVE_TYPE_REWRITE_FILE);
@@ -78,18 +87,22 @@ QMenuBar* MainWindow::defineMenuBar()
     return menuBar;
 }
 
+void MainWindow::createNewProject()
+{
+    new NameNewProject(this);
+}
+
 void MainWindow::generateSaveFile(const int saveType)
 {
     QVector<QPointer<Node>> nodes(this->workArea->getAllNodes());
     QVector<QPair<QString, QStringList>> relations(this->workArea->getAllrelations());
 
-    if (this->filePath == "" || saveType == MainWindow::SAVE_TYPE_NEW_FILE) {
+    if (this->filePath == "" || saveType == MainWindow::SAVE_TYPE_NEW_FILE)
         this->filePath = QFileDialog::getSaveFileName(
                     nullptr,
                     tr("Save File"),
                     "/home/" + qgetenv("USER") + "/new_file.dbn",
                     tr("DbNodes File (*.dbn)"));
-    }
 
     QFile file(this->filePath);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -98,6 +111,8 @@ void MainWindow::generateSaveFile(const int saveType)
     QTextStream out(&file);
 
     out << "#DBNODESFILE#\n";
+    out << "Options\n";
+    out << "$" << this->workArea->getProjectName() << "\n";
     out << "::Nodes" << "\n";
     QVectorIterator<QPointer<Node>> saveNodesIterator(nodes);
     while (saveNodesIterator.hasNext()) {
@@ -150,6 +165,9 @@ void MainWindow::openSaveFile()
                 "/home/" + qgetenv("USER") + "/file.dbn",
                 tr("DbNodes File (*.dbn)"));
 
+    if (filePath == "")
+        return;
+
     QString fileString("");
     QFile file(this->filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -161,20 +179,30 @@ void MainWindow::openSaveFile()
     }
 
     QRegExp filePreg("#DBNODESFILE#\n"
+                       "Options\n(\\$\\S+\n){0,}"
                        "::Nodes\n(\\$\\S+\n){0,}"
                        "::NodeRows\n(@\\S+\n(\\$\\S+\n){0,}){0,}"
                        "::Relations\n(@\\S+\n(\\$\\S+\n){0,}){0,}"
                        "#ENDDBNODESFILE#");
+
     if (filePreg.indexIn(fileString) == -1)
         return;
-
-    this->createWorkArea();
 
     QString fileData(filePreg.cap(0));
     QRegExp fileIndicatorPreg("#\\S+#");
     fileData = fileData.replace(fileIndicatorPreg, "");
     fileData = fileData.replace("\n", "");
     QStringList fileModulesData = fileData.split("::");
+
+    QString optionsModule = fileModulesData.at(0);
+    optionsModule = optionsModule.replace("Options", "");
+    QStringList options = optionsModule.split("$");
+    if (options.length() > 0) {
+        options.removeAt(0);
+
+        this->createWorkArea("[" + this->filePath + "] @ " +
+                             options.at(0));
+    }
 
     QString nodeModule = fileModulesData.at(1);
     nodeModule = nodeModule.replace("Nodes", "");
