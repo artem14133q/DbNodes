@@ -1,0 +1,14 @@
+//
+// Created by artem on 08.01.2021.
+//
+
+#ifndef DBNODES_CONFIG
+#define DBNODES_CONFIG
+
+#include "QCoreApplication"
+
+#define SETTINGS_FILE_PATH QCoreApplication::applicationDirPath() + "/settings"
+
+#define APP_DEBUG @APP_DEBUG@
+
+#endif //DBNODES_CONFIG

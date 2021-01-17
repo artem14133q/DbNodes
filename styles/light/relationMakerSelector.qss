@@ -1,0 +1,21 @@
+QComboBox {
+    border-radius: 3px;
+    padding-left: 5px;
+    color: #2ba2df;
+    font: bold;
+    border: 1px solid #efefef;
+    border-radius: 3px;
+}
+
+QComboBox::drop-down {
+    background-color: transparent;
+    padding-right: 6px;
+}
+
+QComboBox::on {
+    color: #2ba2df;
+}
+
+QComboBox::!on {
+    color: #efefef;
+}

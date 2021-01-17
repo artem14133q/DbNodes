@@ -1,0 +1,93 @@
+QWidget {
+    background-color: #2b2b2b;
+}
+
+QScrollBar:horizontal
+{
+    height: 15px;
+    margin: 3px 15px 3px 15px;
+    border: 1px transparent;
+    border-radius: 4px;
+    background-color : #2b2b2b;
+}
+
+QScrollBar::handle:horizontal
+{
+    background-color: #595b5d;
+    min-width: 5px;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line:horizontal
+{
+    background-color: transparent;
+}
+
+QScrollBar::sub-line:horizontal
+{
+    background-color: transparent;
+}
+
+QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal
+{
+    background: none;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+    background: none;
+}
+
+QScrollBar:vertical
+{
+    background-color: #2b2b2b;
+    width: 15px;
+    margin: 15px 3px 15px 3px;
+    border: 1px transparent;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical
+{
+    background-color: #595b5d;
+    min-height: 5px;
+    border-radius: 4px;
+}
+
+QScrollBar::sub-line:vertical
+{
+    background-color: transparent;
+}
+
+QScrollBar::add-line:vertical
+{
+    background-color: transparent;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+    background: none;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+    background: none;
+}
+
+QMenuBar {
+    background-color: #333333;
+    color: #efefef;
+}
+
+QMenu {
+    color: white;
+}
+
+QMenu::item:selected {
+    color: #2ba2df;
+    background-color: #0d293e;
+}
+
+QMenu::item:disabled {
+    color: #9c9e9f;
+}

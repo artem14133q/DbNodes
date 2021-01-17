@@ -1,1 +1,4 @@
-/DbNodes.pro.user
+/*.pro.*
+/Win
+/cmake-build-*
+.idea

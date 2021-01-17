@@ -1,0 +1,10 @@
+QLabel {
+    border: 0;
+    border-radius: 3px;
+    font-weight: bolt;
+    color: white;
+}
+
+QLabel::hover {
+    background-color: #f36026;
+}

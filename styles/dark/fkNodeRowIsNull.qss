@@ -1,0 +1,19 @@
+QCheckBox {
+     spacing: 0;
+     border: null;
+     color: #323334;
+}
+
+QCheckBox:indicator {
+     width: 0;
+     height: 12px;
+     background-color: transparent;
+}
+
+QCheckBox:checked {
+     color: #00ba00;
+}
+
+QCheckBox:unchecked {
+     color: #323334;
+}

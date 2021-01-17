@@ -1,0 +1,6 @@
+Create project - Ctrl+A
+Close project - Ctrl+W
+Open project - Ctrl+D
+Save project - Ctrl+S
+Save project to - Ctrl+Shift+S
+Close program - Ctrl+Q

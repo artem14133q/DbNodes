@@ -1,0 +1,7 @@
+QWidget {
+   margin: 0;
+   color: #00ba00;
+   border-radius: 0;
+   padding-bottom: 1px;
+   border-bottom: 1px solid #00ba00;
+}

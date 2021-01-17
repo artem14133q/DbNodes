@@ -1,0 +1,5 @@
+QWidget {
+    background-color: transparent;
+    color: #afb1b3;
+    font-size: 25px;
+}
