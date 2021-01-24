@@ -12,13 +12,14 @@
 
 #include "Node.h"
 #include "Noderow.h"
+#include "AbstractModal.h"
 
 #define NODE_POINTER QPointer<DbNodes::Widgets::Node>
 #define NODE_RAW_POINTER QPointer<DbNodes::Widgets::NodeRow>
 
 namespace DbNodes::Modals {
 
-    class RelationMaker : public QMainWindow
+    class RelationMaker : public Abstract::AbstractModal
     {
         Q_OBJECT
 
@@ -43,7 +44,7 @@ namespace DbNodes::Modals {
             QLineEdit *search{};
             QTextBrowser *warningText{};
 
-            void exit();
+            void exit() override;
             void initUI();
             void showWarningIfPkNotFound(const bool &enable, const int &errorType);
 
@@ -51,7 +52,7 @@ namespace DbNodes::Modals {
             void selectNode(const NODE_POINTER &node);
             void filterNode(const QString &filter = "");
             void deleteFilter();
-            void makeRelation();
+            void confirm() override;
 
         protected slots:
             void selectNodeByIndex(const int &index);

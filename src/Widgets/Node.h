@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include "QVBoxLayout"
+#include "QMouseEvent"
 #include "Noderow.h"
 #include "QPointer"
 #include "QLabel"
@@ -19,8 +20,8 @@ namespace DbNodes::Widgets {
         Q_OBJECT
 
         public:
-            explicit Node(QWidget *parent = nullptr);
             Node(QWidget *parent, QString id, QString name);
+            explicit Node(QWidget *parent = nullptr);
 
             QString getTableName();
             QString getTableId();
@@ -58,6 +59,7 @@ namespace DbNodes::Widgets {
 
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
+            void mousePressEvent(QMouseEvent *event) override;
             QList<NodeRow *> groupNodeRows();
 
             void addColumn(int nodeRowType = 0, QPointer<NodeRow> nodeRow = nullptr);

@@ -4,16 +4,14 @@
 
 namespace DbNodes::Widgets {
 
-    DeleteArrowButton::DeleteArrowButton(const QString &relationName, QWidget *parent)
-            : QPushButton(parent)
+    DeleteArrowButton::DeleteArrowButton(const QString &relationName, QWidget *parent): QPushButton(parent)
     {
         setFixedSize(16, 16);
         setText("X");
         relationId = relationName;
         setStyleSheet(Helper::getStyleFromFile("deleteArrowButton"));
 
-        connect(this, &QPushButton::clicked, this,
-                &::DbNodes::Widgets::DeleteArrowButton::deleteRelation);
+        connect(this, &QPushButton::clicked, this, &DeleteArrowButton::deleteRelation);
 
         show();
     }

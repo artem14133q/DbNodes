@@ -1,16 +1,18 @@
-#include "MainWindow.h"
-#include "qmenubar.h"
-#include "qdesktopwidget.h"
-#include "iostream"
-#include "Workarea.h"
-#include "../helper.h"
+#include "QMenuBar"
+#include "QDesktopWidget"
 #include "QFileDialog"
-#include "qfile.h"
-#include "qtextstream.h"
-#include "NameNewProject.h"
+#include "QFile"
+#include "QTextStream"
 #include "QApplication"
-#include "SettingsManager.h"
 #include "QDebug"
+#include "iostream"
+
+#include "NameNewProject.h"
+#include "SettingsManager.h"
+#include "MainWindow.h"
+#include "Workarea.h"
+
+#include "../helper.h"
 
 namespace DbNodes::Widgets {
 
@@ -21,7 +23,7 @@ namespace DbNodes::Widgets {
         setMinimumSize(800, 600);
         setObjectName("MainWindow");
         setStyleSheet(Helper::getStyleFromFile("main"));
-        setWindowIcon(QIcon(":/icons/128"));
+        setWindowIcon(QIcon(Helper::getIconPath("128", false)));
         // Insert menu bar into MainWindow
         setMenuBar(defineMenuBar());
 
@@ -31,6 +33,7 @@ namespace DbNodes::Widgets {
         scrollArea->hide();
         setCentralWidget(scrollArea);
 
+        setAttribute(Qt::WA_DeleteOnClose);
         showMaximized();
     }
 
@@ -59,12 +62,15 @@ namespace DbNodes::Widgets {
         if (closeProjectStatus == PROJECT_NOT_CLOSED) return;
 
         if (closeProjectStatus == PROJECT_CLOSE_AND_SAVE) {
-            generateSaveFile(SAVE_TYPE_NEW_FILE);
+            generateSaveFile(filePath.isEmpty() ? SAVE_TYPE_NEW_FILE : SAVE_TYPE_REWRITE_FILE);
         }
 
         scrollArea->hide();
         scrollArea->setWidget(nullptr);
+
         delete workArea;
+        workArea = nullptr;
+
         setWindowTitle("DbNodes");
         filePath = "";
 
@@ -122,10 +128,7 @@ namespace DbNodes::Widgets {
 
         // Define slots
         connect(closeProject, &QAction::triggered, this, [this] () {
-            using namespace DbNodes::Modals;
-
-            auto* window = openConfirmCloseProjectModal();
-            connect(window, &ConfirmCloseProject::pushConfirm, this, &MainWindow::closeCurrentProject);
+            closeCurrentProject(MainWindow::openConfirmCloseProjectModal());
         });
 
         connect(createProject, &QAction::triggered, this, &MainWindow::createNewProject);
@@ -147,7 +150,7 @@ namespace DbNodes::Widgets {
 
     void MainWindow::createNewProject()
     {
-        auto window = new DbNodes::Modals::NameNewProject(this);
+        auto window = new Modals::NameNewProject(this);
         window->move(x() + width() / 2 - window->width() / 2, y() + height() / 2 - window->height() / 2);
     }
 
@@ -161,6 +164,8 @@ namespace DbNodes::Widgets {
                     tr("Save File"),
                     "/home/" + qgetenv("USER") + "/new_file.dbn",
                     tr("DbNodes File (*.dbn)"));
+
+        if (filePath.isEmpty()) return;
 
         QFile file(filePath);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -337,32 +342,24 @@ namespace DbNodes::Widgets {
     void MainWindow::closeEvent(QCloseEvent *event)
     {
         if (workArea != nullptr) {
-            event->ignore();
-        } else {
-            event->accept();
-            return;
+            int closeType = MainWindow::openConfirmCloseProjectModal();
+            closeCurrentProject(closeType);
+
+            if (closeType != PROJECT_NOT_CLOSED) QApplication::exit();
         }
 
-        using namespace DbNodes::Modals;
-
-        auto * window = openConfirmCloseProjectModal();
-        window->activateWindow();
-        connect(window, &ConfirmCloseProject::pushConfirm, this, [this] (const int &status) {
-            MainWindow::closeCurrentProject(status);
-
-            if (status != PROJECT_NOT_CLOSED) QApplication::exit();
-        });
+        QMainWindow::closeEvent(event);
     }
 
-    DbNodes::Modals::ConfirmCloseProject* MainWindow::openConfirmCloseProjectModal()
+    int MainWindow::openConfirmCloseProjectModal()
     {
-        auto *window = new DbNodes::Modals::ConfirmCloseProject(this);
-        window->move(
-                x() + width() / 2 - window->width() / 2,
-                y() + height() / 2 - window->height() / 2
-        );
+        using namespace DbNodes::Modals;
 
-        return window;
+        ConfirmCloseProject confirmWindow(workArea->getProjectName());
+
+        confirmWindow.exec();
+
+        return confirmWindow.getProjectCloseType();
     }
 
     void MainWindow::paintEvent(QPaintEvent * event)
@@ -374,5 +371,4 @@ namespace DbNodes::Widgets {
 
         QMainWindow::paintEvent(event);
     }
-
 }

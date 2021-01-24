@@ -232,6 +232,10 @@ namespace DbNodes::Widgets {
     QVector<QPointer<Node>> WorkArea::getAllNodes()
     {
         cleanNodeList();
+
+        cleanNodeRowsList(pkList);
+        cleanNodeRowsList(fkList);
+
         return nodeList;
     }
 

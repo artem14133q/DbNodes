@@ -1,8 +1,6 @@
 set(LIBRARY_NAME Assets)
 
-set(RESOURCES
-        Styles.cpp
-        Styles.h)
+set(RESOURCES)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

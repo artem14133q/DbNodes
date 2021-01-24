@@ -24,7 +24,7 @@ namespace DbNodes::Widgets {
     {
         auto* vb = new QVBoxLayout(this);
 
-        auto content = Helper::getfileContent(":/content.startup").split("\n");
+        auto content = Helper::getfileContent(":/content/startup").split("\n");
 
         foreach (QString line, content) {
             vb->addWidget(new QLabel(line, this));

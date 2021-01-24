@@ -5,11 +5,11 @@
 #ifndef DBNODES_TABLERENAME_H
 #define DBNODES_TABLERENAME_H
 
-#include "QMainWindow"
+#include "AbstractModal.h"
 
 namespace DbNodes::Modals {
 
-    class TableRename: public QMainWindow
+    class TableRename: public Abstract::AbstractModal
     {
         Q_OBJECT
 
@@ -21,8 +21,8 @@ namespace DbNodes::Modals {
 
         public slots:
             void setTitleName(const QString &name);
-            void confirm();
-            void cancel();
+            void confirm() override;
+            void exit() override;
 
         private:
             QString nameTitle;

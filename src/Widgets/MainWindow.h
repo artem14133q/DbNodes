@@ -37,12 +37,13 @@ namespace DbNodes::Widgets {
 
             QScrollArea* scrollArea;
             StartupWidget* startupWidget;
-            WorkArea* workArea{};
             QString filePath = "";
 
+            WorkArea* workArea{};
+
             QMenuBar* defineMenuBar();
-            DbNodes::Modals::ConfirmCloseProject* openConfirmCloseProjectModal();
             void setTitle(const QString &name, const QString &path);
+            int openConfirmCloseProjectModal();
 
             void closeEvent(QCloseEvent * event) override;
             void paintEvent(QPaintEvent * event) override;

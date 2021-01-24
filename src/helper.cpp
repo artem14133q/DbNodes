@@ -5,6 +5,7 @@
 
 #include "helper.h"
 #include "SettingsManager.h"
+#include "config.h"
 
 QString Helper::getStyleFromFile(const QString &name) {
     auto nameList = name.split(" ");
@@ -13,7 +14,7 @@ QString Helper::getStyleFromFile(const QString &name) {
     QString content;
 
     foreach (QString fileName, nameList) {
-        content += getfileContent(QStringList({":/styles", style, name}).join("."));
+        content += getfileContent(QStringList({STYLE_FILES_PATH, style, name}).join("/") + ".qss");
     }
 
     return content;
@@ -54,13 +55,11 @@ QWidget *Helper::findParentWidgetRecursive(QWidget *widget, const QString &name)
     return parent;
 }
 
-QString Helper::getfileContent(const QString &dotName)
+QString Helper::getfileContent(const QString &path)
 {
     QString content;
 
-    auto nameArr = dotName.split(".");
-
-    QFile file(nameArr.join("/"));
+    QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return "";
 
@@ -69,12 +68,17 @@ QString Helper::getfileContent(const QString &dotName)
         content += line;
     }
 
+    file.close();
+
     return content;
 }
 
-QString Helper::getIconPath(const QString &iconName)
+QString Helper::getIconPath(const QString &iconName, const bool &styled)
 {
-    auto style = DbNodes::Settings::SettingsManager::getSetting("icons_style");
+    if (styled) {
+        auto style = DbNodes::Settings::SettingsManager::getSetting("icons_style");
+        return QStringList({ICONS_FILES_PATH, style, iconName}).join("/") + ".png";
+    }
 
-    return QStringList({":/imgs", style, iconName}).join("/");
+    return QStringList({ICONS_FILES_PATH, iconName}).join("/") + ".png";
 }

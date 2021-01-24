@@ -13,7 +13,7 @@ namespace DbNodes::Modals {
     RelationMaker::RelationMaker(
             DbNodes::Widgets::NodeRow *fkNodeRaw,
             const QVector<NODE_POINTER> &nodeVector
-    ) : QMainWindow(fkNodeRaw), fkNodeRawParent(fkNodeRaw), nodeVector(nodeVector)
+    ) : Abstract::AbstractModal(fkNodeRaw), fkNodeRawParent(fkNodeRaw), nodeVector(nodeVector)
     {
         setFixedSize(300, 400);
         // Frameless window
@@ -108,7 +108,7 @@ namespace DbNodes::Modals {
 
         connect(nodesSelect, SIGNAL(activated(int)), this, SLOT(selectNodeByIndex(const int &)));
         connect(nodeRowsOfNode, SIGNAL(activated(int)), this, SLOT(selectNodeRow(const int &)));
-        connect(pbCreate, &QPushButton::clicked, this, &RelationMaker::makeRelation);
+        connect(pbCreate, &QPushButton::clicked, this, &RelationMaker::confirm);
         connect(pbCancel, &QPushButton::clicked, this, &RelationMaker::exit);
         connect(search, &QLineEdit::textChanged, this, &RelationMaker::filterNode);
         connect(pbDeleteFilter, &QPushButton::clicked, this, &RelationMaker::deleteFilter);
@@ -116,9 +116,14 @@ namespace DbNodes::Modals {
 
     void RelationMaker::exit()
     {
+        nodeVector.clear();
+        nodeList.clear();
+        nodeRowsOfSelectedNode.clear();
+
         // Enabled MainWindow
         Helper::findParentWidgetRecursive(this, "MainWindow")->setEnabled(true);
-        this->~RelationMaker();
+
+        Abstract::AbstractModal::exit();
     }
 
     void RelationMaker::selectNode(const NODE_POINTER &node)
@@ -133,8 +138,10 @@ namespace DbNodes::Modals {
             }
         }
 
-        if (!nodeRowsOfSelectedNode.isEmpty())
+        if (!nodeRowsOfSelectedNode.isEmpty()) {
             currentPkNodeRowId = nodeRowsOfSelectedNode.value(nodeRowsOfSelectedNode.keys().first())->getRowId();
+            nodeRowsOfNode->setCurrentIndex(nodeRowsOfNode->findData(currentPkNodeRowId));
+        }
 
         showWarningIfPkNotFound(nodeRowsOfSelectedNode.isEmpty(), CANNOT_FIND_PK_NODE_ROWS);
     }
@@ -149,8 +156,10 @@ namespace DbNodes::Modals {
         currentPkNodeRowId = nodeRowsOfSelectedNode.value(nodeRowsOfNode->itemData(index).toString())->getRowId();
     }
 
-    void RelationMaker::makeRelation()
+    void RelationMaker::confirm()
     {
+        if (!pbCreate->isEnabled()) return;
+
         using namespace DbNodes::Widgets;
 
         auto *workArea = dynamic_cast<WorkArea*>(Helper::findParentWidgetRecursive(this, "WorkArea"));
@@ -159,18 +168,20 @@ namespace DbNodes::Modals {
         auto fkNodeRaw = workArea->findNodeRow(NodeRow::FK, currentFkNodeRowId);
 
         workArea->makeRelation("relation:" + Helper::getCurrentTimeMS(),pkNodeRaw,fkNodeRaw);
-        exit();
+
+        Abstract::AbstractModal::confirm();
     }
 
     void RelationMaker::showWarningIfPkNotFound(const bool &enable, const int &errorType)
     {
         using namespace DbNodes::Dictionaries;
 
-        if (enable)
+        if (enable) {
+            warningWidget->show();
             warningText->setText(RelationMakerErrors::getValue(errorType).toString());
-
-        if (enable) warningWidget->show();
-        else warningWidget->hide();
+        } else {
+            warningWidget->hide();
+        }
 
         pbCreate->setDisabled(enable);
     }

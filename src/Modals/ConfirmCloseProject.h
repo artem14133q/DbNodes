@@ -9,25 +9,24 @@
 #define PROJECT_CLOSE_AND_SAVE 2
 #define PROJECT_NOT_CLOSED 3
 
-#include "QMainWindow"
+#include "QMessageBox"
 
 namespace DbNodes::Modals {
 
-    class ConfirmCloseProject: public QMainWindow
+    class ConfirmCloseProject: public QMessageBox
     {
             Q_OBJECT
 
         public:
-            explicit ConfirmCloseProject(QWidget *parent = nullptr);
-
-        signals:
-            void pushConfirm(const int &closeProjectStatus);
+            explicit ConfirmCloseProject(const QString &projectName, QWidget *parent = nullptr);
+            int getProjectCloseType();
 
         private:
-            void initUi();
+            QPushButton *pbCloseWithoutSave{};
+            QPushButton *pbCloseAndSave{};
+            QPushButton *cancel{};
 
-        private slots:
-            void resolveProjectStatus(const int &status);
+            void initUi();
     };
 
 }

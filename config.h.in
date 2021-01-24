@@ -7,7 +7,13 @@
 
 #include "QCoreApplication"
 
-#define SETTINGS_FILE_PATH QCoreApplication::applicationDirPath() + "/settings"
+#define APP_PATH QCoreApplication::applicationDirPath()
+
+#define SETTINGS_FILE_PATH APP_PATH  + "/settings"
+#define STYLE_FILES_PATH APP_PATH + "/styles"
+#define ICONS_FILES_PATH APP_PATH + "/icons"
+
+#define APP_NAME "DbNodes"
 
 #define APP_DEBUG @APP_DEBUG@
 

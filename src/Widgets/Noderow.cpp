@@ -19,20 +19,18 @@
 
 namespace DbNodes::Widgets {
 
-    NodeRow::NodeRow(QVBoxLayout *vb, QWidget *parent, const int &rowType)
-            : DbNodes::Abstract::AbstractNode(parent), vb(vb), rowType(rowType)
-    {
-        rowId = "noderow:" + Helper::getCurrentTimeMS();
-        rowName = "coloumn";
-        rowIsNull = false;
-
-        if (rowType != NodeRow::FK) rowDbType = "integer";
-        else rowDbType = "none";
-
-        initUi();
-        enableMoveRestrictions(false);
-        show();
-    }
+    NodeRow::NodeRow(
+            QVBoxLayout *vb,
+            QWidget *parent,
+            const int &rowType)
+            : NodeRow(
+                    vb,
+                    parent,
+                    "noderow:" + Helper::getCurrentTimeMS(),
+                    "coloumn",
+                    rowType,
+                    rowType != NodeRow::FK ? "integer" : "none",
+                    false) {}
 
     NodeRow::NodeRow(
             QVBoxLayout *vb,
@@ -116,7 +114,7 @@ namespace DbNodes::Widgets {
         if (rowType == NodeRow::PK) {
             auto *key = new QLabel(this);
             key->setStyleSheet(Helper::getStyleFromFile("nodeRowKeyIcon"));
-            key->setPixmap(QPixmap(":/icons/key"));
+            key->setPixmap(QPixmap(Helper::getIconPath("key", false)));
             hl->addWidget(key);
         }
 
@@ -135,8 +133,8 @@ namespace DbNodes::Widgets {
 
             QIcon icon;
 
-            icon.addPixmap(QPixmap(":/icons/fkChain"), QIcon::Normal);
-            icon.addPixmap(QPixmap(":/icons/fkChainDisabled"), QIcon::Disabled);
+            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain", false)), QIcon::Normal);
+            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain_disabled", false)), QIcon::Disabled);
 
             fkButton = new QPushButton(this);
             fkButton->setFixedHeight(24);
@@ -184,7 +182,7 @@ namespace DbNodes::Widgets {
         }
 
         moveHandle = new QLabel(this);
-        moveHandle->setPixmap(QPixmap(":/icons/menu"));
+        moveHandle->setPixmap(QPixmap(Helper::getIconPath("menu", false)));
         moveHandle->setStyleSheet(Helper::getStyleFromFile("dropButton"));
 
         hl->addWidget(moveHandle);

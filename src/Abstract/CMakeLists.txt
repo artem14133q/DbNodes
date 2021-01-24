@@ -5,7 +5,7 @@ set(RESOURCES
         DrawableWidget.cpp
         AbstractNode.h
         AbstractNode.cpp
-        StructDictionary.h)
+        StructDictionary.h AbstractModal.cpp AbstractModal.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

@@ -17,21 +17,20 @@
 
 namespace DbNodes::Widgets {
 
-    Node::Node(QWidget *parent): DbNodes::Abstract::AbstractNode(parent)
-    {
-        tableId = "node:" + Helper::getCurrentTimeMS();
-        tableName = "table";
-
-        initUI();
-        show();
-    }
 
     Node::Node(QWidget *parent, QString id, QString name)
             : DbNodes::Abstract::AbstractNode(parent),
               tableName(std::move(name)), tableId(std::move(id))
     {
+        setFocusPolicy(Qt::StrongFocus);
+        setObjectName("Node");
         initUI();
         show();
+    }
+
+    Node::Node(QWidget *parent): Node(parent, "node:" + Helper::getCurrentTimeMS(), "table")
+    {
+        openRenameModal();
     }
 
     void Node::initUI()
@@ -212,6 +211,13 @@ namespace DbNodes::Widgets {
         }
 
         return sortedNodeRows;
+    }
+
+    void Node::mousePressEvent(QMouseEvent *event)
+    {
+        raise();
+
+        AbstractNode::mousePressEvent(event);
     }
 
 #if APP_DEBUG

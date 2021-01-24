@@ -9,16 +9,11 @@
 
 namespace DbNodes::Modals {
 
-    ConfirmCloseProject::ConfirmCloseProject(QWidget *parent): QMainWindow(parent)
+    ConfirmCloseProject::ConfirmCloseProject(const QString &projectName, QWidget *parent): QMessageBox(parent)
     {
-        setFixedSize(400, 100);
-        setWindowTitle("Are you sure you want to close project?");
-        setWindowFlag(Qt::FramelessWindowHint);
-        parentWidget()->setEnabled(false);
-        setEnabled(true);
+        setWindowTitle(projectName);
         setStyleSheet(Helper::getStyleFromFile("subWindow"));
         initUi();
-        show();
     }
 
     void ConfirmCloseProject::initUi()
@@ -28,40 +23,29 @@ namespace DbNodes::Modals {
         auto *title = new QLabel("Are you sure you want to close project?", this);
         title->setStyleSheet(Helper::getStyleFromFile("title"));
         title->setFixedWidth(280);
-        title->move(width() / 2 - title->width() / 2, 5);
+        title->move(50, 0);
 
-        auto *closeAndNotSave = new QPushButton("Close without saving", this);
-        closeAndNotSave->setStyleSheet(buttonStyle);
-        closeAndNotSave->setFixedWidth(150);
-        closeAndNotSave->move(15, 60);
+        pbCloseWithoutSave = addButton(tr("Close without saving"), QMessageBox::AcceptRole);
+        pbCloseWithoutSave->setStyleSheet(buttonStyle);
+        pbCloseWithoutSave->setFixedSize(150, 30);
 
-        auto *cancel = new QPushButton("Cancel", this);
+        cancel = addButton(tr("Cancel"), QMessageBox::AcceptRole);
         cancel->setStyleSheet(buttonStyle);
-        cancel->setFixedWidth(80);
-        cancel->move(175, 60);
+        cancel->setFixedSize(80, 30);
 
-        auto *closeAndSave = new QPushButton("Close and save", this);
-        closeAndSave->setStyleSheet(buttonStyle);
-        closeAndSave->setFixedWidth(120);
-        closeAndSave->move(265, 60);
-
-        connect(closeAndNotSave, &QPushButton::clicked, this, [this] () {
-            resolveProjectStatus(PROJECT_CLOSE_WITHOUT_SAVE);
-        });
-
-        connect(cancel, &QPushButton::clicked, this, [this] () {
-            resolveProjectStatus(PROJECT_NOT_CLOSED);
-        });
-
-        connect(closeAndSave, &QPushButton::clicked, this, [this] () {
-            resolveProjectStatus(PROJECT_CLOSE_AND_SAVE);
-        });
+        pbCloseAndSave = addButton(tr("Close and save"), QMessageBox::AcceptRole);
+        pbCloseAndSave->setStyleSheet(buttonStyle);
+        pbCloseAndSave->setFixedSize(120, 30);
     }
 
-    void ConfirmCloseProject::resolveProjectStatus(const int &status)
+    int ConfirmCloseProject::getProjectCloseType()
     {
-        parentWidget()->setEnabled(true);
-        emit pushConfirm(status);
-        this->~ConfirmCloseProject();
+        if (clickedButton() == pbCloseWithoutSave) {
+            return PROJECT_CLOSE_WITHOUT_SAVE;
+        } else if (clickedButton() == pbCloseAndSave) {
+            return PROJECT_CLOSE_AND_SAVE;
+        } else {
+            return PROJECT_NOT_CLOSED;
+        }
     }
 }
