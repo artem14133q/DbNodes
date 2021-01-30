@@ -7,6 +7,9 @@
 #include "QCloseEvent"
 #include "ConfirmCloseProject.h"
 #include "StartupWidget.h"
+#include "QSettings"
+
+#include "config.h"
 
 #define SAVE_TYPE_NEW_FILE 0
 #define SAVE_TYPE_REWRITE_FILE 1

@@ -4,6 +4,10 @@
 #include "QString"
 #include "QWidget"
 
+#include "MainSettings.h"
+
+using namespace DbNodes::Settings;
+
 class Helper
 {
     public:
@@ -13,6 +17,8 @@ class Helper
         static QObject *findParentObjectRecursive(QObject *object, const QString &name);
         static QWidget *findParentWidgetRecursive(QWidget *widget, const QString &name);
         static QString  getIconPath(const QString &iconName, const bool &styled = true);
+        static QVariant getSettingValue(const QString &name);
+        static void setSettingValue(const QString &name, const QVariant &value);
 };
 
 #endif // HELPER_H

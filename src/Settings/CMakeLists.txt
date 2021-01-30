@@ -1,12 +1,8 @@
 set(LIBRARY_NAME Settings)
 
 set(RESOURCES
-        Parser.cpp
-        Parser.h
-        SettingsManager.cpp
-        SettingsManager.h
-        Writer.cpp
-        Writer.h)
+        MainSettings.cpp
+        MainSettings.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

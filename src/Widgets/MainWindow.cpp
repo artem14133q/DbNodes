@@ -8,7 +8,6 @@
 #include "iostream"
 
 #include "NameNewProject.h"
-#include "SettingsManager.h"
 #include "MainWindow.h"
 #include "Workarea.h"
 #include "Finder.h"
@@ -17,8 +16,7 @@
 
 namespace DbNodes::Widgets {
 
-    MainWindow::MainWindow(QWidget *parent)
-            : QMainWindow(parent)
+    MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     {
         // Set minimum size
         setMinimumSize(800, 600);
@@ -35,7 +33,6 @@ namespace DbNodes::Widgets {
         scrollArea->hide();
         setCentralWidget(scrollArea);
 
-        setAttribute(Qt::WA_DeleteOnClose);
         showMaximized();
     }
 
@@ -343,10 +340,8 @@ namespace DbNodes::Widgets {
                     QString pkNodeRowId = nodeRowsItems.takeFirst();
                     QString fkNodeRowId = nodeRowsItems.takeLast();
 
-                    QPointer<NodeRow> pkNodeRow = workArea
-                            ->findNodeRow(WorkArea::GET_PK_NODE_ROWS, pkNodeRowId);
-                    QPointer<NodeRow> fkNodeRow = workArea
-                            ->findNodeRow(WorkArea::GET_FK_NODE_ROWS, fkNodeRowId);
+                    QPointer<NodeRow> pkNodeRow = workArea->findNodeRow(WorkArea::GET_PK_NODE_ROWS, pkNodeRowId);
+                    QPointer<NodeRow> fkNodeRow = workArea->findNodeRow(WorkArea::GET_FK_NODE_ROWS, fkNodeRowId);
 
                     workArea->makeRelation(relationId, pkNodeRow, fkNodeRow);
                 }
@@ -380,8 +375,10 @@ namespace DbNodes::Widgets {
     void MainWindow::paintEvent(QPaintEvent * event)
     {
         if (workArea == nullptr) {
-            startupWidget->move(width() / 2 - startupWidget->width() / 2,
-                                height() / 2 - startupWidget->height() / 2);
+            startupWidget->move(
+            width() / 2 - startupWidget->width() / 2,
+            height() / 2 - startupWidget->height() / 2
+            );
         }
 
         QMainWindow::paintEvent(event);
