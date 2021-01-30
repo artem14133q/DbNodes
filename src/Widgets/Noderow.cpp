@@ -19,34 +19,32 @@
 
 namespace DbNodes::Widgets {
 
-    NodeRow::NodeRow(
-            QVBoxLayout *vb,
-            QWidget *parent,
-            const int &rowType)
-            : NodeRow(
-                    vb,
-                    parent,
-                    "noderow:" + Helper::getCurrentTimeMS(),
-                    "coloumn",
-                    rowType,
-                    rowType != NodeRow::FK ? "integer" : "none",
-                    false) {}
+    NodeRow::NodeRow(QVBoxLayout *vb, QWidget *parent, const int &rowType)
+        : NodeRow(
+            vb,
+            parent,
+            "noderow:" + Helper::getCurrentTimeMS(),
+            "coloumn",
+            rowType,
+            rowType != NodeRow::FK ? "integer" : "none",
+            false
+        ) {}
 
     NodeRow::NodeRow(
-            QVBoxLayout *vb,
-            QWidget *parent,
-            const QString &rowId,
-            const QString &rowName,
-            const int &rowType,
-            const QString &rowDbType,
-            const bool &rowIsNull)
-            : DbNodes::Abstract::AbstractNode(parent),
-                vb(vb),
-                rowName(const_cast<QString &>(rowName)),
-                rowId(const_cast<QString &>(rowId)),
-                rowDbType(const_cast<QString &>(rowDbType)),
-                rowIsNull(rowIsNull),
-                rowType(rowType)
+        QVBoxLayout *vb,
+        QWidget *parent,
+        const QString &rowId,
+        const QString &rowName,
+        const int &rowType,
+        const QString &rowDbType,
+        const bool &rowIsNull
+    ): DbNodes::Abstract::AbstractNode(parent),
+        vb(vb),
+        rowName(const_cast<QString &>(rowName)),
+        rowId(const_cast<QString &>(rowId)),
+        rowDbType(const_cast<QString &>(rowDbType)),
+        rowIsNull(rowIsNull),
+        rowType(rowType)
     {
         initUi();
         enableMoveRestrictions(false);

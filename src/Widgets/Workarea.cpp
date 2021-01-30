@@ -1,13 +1,15 @@
 #include "QMenu"
 #include "QContextMenuEvent"
 #include "QPoint"
-#include "QVBoxLayout"
 #include "QVector"
 #include "QPainter"
 #include "QPen"
 #include "QColor"
 #include "QPainterPath"
 #include "QDebug"
+#include "QScrollArea"
+#include "QScrollBar"
+#include "QTimer"
 
 #include "Workarea.h"
 #include "SettingsManager.h"
@@ -229,7 +231,7 @@ namespace DbNodes::Widgets {
         nodeList.push_back(node);
     }
 
-    QVector<QPointer<Node>> WorkArea::getAllNodes()
+    QVector<NODE_POINTER> WorkArea::getAllNodes()
     {
         cleanNodeList();
 
@@ -247,6 +249,35 @@ namespace DbNodes::Widgets {
     QVector<QPair<QString, QStringList>> WorkArea::getAllRelations()
     {
         return relations;
+    }
+
+    void WorkArea::scrollToNode(const QString &nodeId)
+    {
+        NODE_POINTER node = findNode(nodeId);
+
+        auto *scrollWidget = static_cast<QScrollArea *>(parentWidget()->parentWidget());
+
+        auto *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
+
+        int y = (node->height() < mainWindow->height())
+                ? node->y() - mainWindow->height() / 2 + node->height() / 2
+                : node->y();
+
+        scrollWidget->verticalScrollBar()->setValue(y);
+        scrollWidget->horizontalScrollBar()->setValue(node->x() - mainWindow->width() / 2 + node->width() / 2);
+
+        QTimer::singleShot(0, node, SLOT (setFocus()));
+    }
+
+    NODE_POINTER WorkArea::findNode(const QString &nodeId)
+    {
+        foreach (NODE_POINTER node, getAllNodes().toList()) {
+            if (node->getTableId() == nodeId) {
+                return node;
+            }
+        }
+
+        return nullptr;
     }
 
 #if APP_DEBUG

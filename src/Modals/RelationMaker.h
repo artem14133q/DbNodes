@@ -14,9 +14,6 @@
 #include "Noderow.h"
 #include "AbstractModal.h"
 
-#define NODE_POINTER QPointer<DbNodes::Widgets::Node>
-#define NODE_RAW_POINTER QPointer<DbNodes::Widgets::NodeRow>
-
 namespace DbNodes::Modals {
 
     class RelationMaker : public Abstract::AbstractModal
@@ -24,13 +21,10 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit RelationMaker(
-                    DbNodes::Widgets::NodeRow *fkNodeRaw,
-                    const QVector<NODE_POINTER> &nodeVector
-                );
+            explicit RelationMaker(Widgets::NodeRow *fkNodeRaw, const QVector<NODE_POINTER> &nodeVector);
 
         private:
-            DbNodes::Widgets::NodeRow *fkNodeRawParent;
+            Widgets::NodeRow *fkNodeRawParent;
             QString currentPkNodeRowId, currentFkNodeRowId;
 
             QVector<NODE_POINTER> nodeVector;
@@ -44,7 +38,6 @@ namespace DbNodes::Modals {
             QLineEdit *search{};
             QTextBrowser *warningText{};
 
-            void exit() override;
             void initUI();
             void showWarningIfPkNotFound(const bool &enable, const int &errorType);
 
@@ -53,6 +46,7 @@ namespace DbNodes::Modals {
             void filterNode(const QString &filter = "");
             void deleteFilter();
             void confirm() override;
+            void exit() override;
 
         protected slots:
             void selectNodeByIndex(const int &index);

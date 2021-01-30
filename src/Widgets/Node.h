@@ -11,7 +11,7 @@
 
 #include "AbstractNode.h"
 
-#define NODE_ROW_VECTOR QVector<QPointer<NodeRow>>
+#define NODE_POINTER QPointer<DbNodes::Widgets::Node>
 
 namespace DbNodes::Widgets {
 
@@ -26,7 +26,7 @@ namespace DbNodes::Widgets {
             QString getTableName();
             QString getTableId();
 
-            NODE_ROW_VECTOR getAllNodeRows();
+            NODE_RAW_VECTOR getAllNodeRows();
 
             void addColumnFromFile(
                     const QString &id,

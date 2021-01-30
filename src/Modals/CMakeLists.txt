@@ -8,7 +8,9 @@ set(RESOURCES
         ConfirmCloseProject.cpp
         ConfirmCloseProject.h
         TableRename.cpp
-        TableRename.h)
+        TableRename.h
+        Finder.cpp
+        Finder.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 
