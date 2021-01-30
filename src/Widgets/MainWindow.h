@@ -35,6 +35,8 @@ namespace DbNodes::Widgets {
             QAction* closeProject{};
             QAction* exit{};
 
+            QAction* findNode{};
+
             QScrollArea* scrollArea;
             StartupWidget* startupWidget;
             QString filePath = "";

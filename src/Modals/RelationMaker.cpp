@@ -25,7 +25,7 @@ namespace DbNodes::Modals {
         // Enabled this window
         setEnabled(true);
 
-        setStyleSheet(Helper::getStyleFromFile("subWindow") + "QMainWindow{border: 2px solid #3e86a0;}");
+        setStyleSheet(Helper::getStyleFromFile("subWindow outline"));
 
         initUI();
 
@@ -44,7 +44,7 @@ namespace DbNodes::Modals {
         QString pbStyle = Helper::getStyleFromFile("button");
 
         auto *searchLabel = new QLabel(this);
-        searchLabel->setPixmap(QPixmap(":/icons/search"));
+        searchLabel->setPixmap(QPixmap(Helper::getIconPath("search", false)));
         searchLabel->move(10, 20);
 
         search = new QLineEdit(this);
@@ -86,7 +86,7 @@ namespace DbNodes::Modals {
         warningWidget->hide();
 
         auto *warningIcon = new QLabel(warningWidget);
-        warningIcon->setPixmap(QPixmap(":/icons/error"));
+        warningIcon->setPixmap(QPixmap(Helper::getIconPath("error", false)));
         warningIcon->move(10, (warningWidget->height() - warningIcon->height()) / 2);
 
         warningText = new QTextBrowser(warningWidget);
@@ -116,7 +116,6 @@ namespace DbNodes::Modals {
 
     void RelationMaker::exit()
     {
-        nodeVector.clear();
         nodeList.clear();
         nodeRowsOfSelectedNode.clear();
 
@@ -132,7 +131,7 @@ namespace DbNodes::Modals {
         nodeRowsOfNode->clear();
 
         foreach (NODE_RAW_POINTER nodeRow, node->getAllNodeRows().toList()) {
-            if (nodeRow->getRowType() == DbNodes::Widgets::NodeRow::PK) {
+            if (nodeRow->getRowType() == Widgets::NodeRow::PK) {
                 nodeRowsOfSelectedNode.insert(nodeRow->getRowId(), nodeRow);
                 nodeRowsOfNode->addItem(nodeRow->getRowName(), nodeRow->getRowId());
             }
@@ -193,15 +192,11 @@ namespace DbNodes::Modals {
         nodeList.clear();
         nodesSelect->clear();
 
-        nodeList.reserve(nodeVector.size());
-
         foreach (NODE_POINTER node, nodeVector.toList()) {
-            if (node->getTableId() != fkNodeRawParent->getTableId() && regFilter.indexIn(node->getTableName()) != -1)
+            if (node->getTableId() != fkNodeRawParent->getTableId() && regFilter.indexIn(node->getTableName()) != -1) {
                 nodeList.insert(node->getTableId(), node);
-        }
-
-        foreach (const QString &key, nodeList.keys()) {
-            nodesSelect->addItem(nodeList.value(key)->getTableName(), key);
+                nodesSelect->addItem(node->getTableName(), node->getTableId());
+            }
         }
 
         if (!nodeList.isEmpty()) {

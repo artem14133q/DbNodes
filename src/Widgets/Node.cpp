@@ -19,8 +19,7 @@ namespace DbNodes::Widgets {
 
 
     Node::Node(QWidget *parent, QString id, QString name)
-            : DbNodes::Abstract::AbstractNode(parent),
-              tableName(std::move(name)), tableId(std::move(id))
+        : DbNodes::Abstract::AbstractNode(parent), tableName(std::move(name)), tableId(std::move(id))
     {
         setFocusPolicy(Qt::StrongFocus);
         setObjectName("Node");
@@ -138,7 +137,7 @@ namespace DbNodes::Widgets {
 
     QVector<QPointer<NodeRow>> Node::getAllNodeRows()
     {
-        NODE_ROW_VECTOR allNodeRows;
+        NODE_RAW_VECTOR allNodeRows;
 
         foreach (NodeRow *w, groupNodeRows()) {
             allNodeRows.push_back(QPointer<NodeRow>(w));

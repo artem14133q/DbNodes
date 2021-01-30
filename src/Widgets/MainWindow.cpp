@@ -11,6 +11,7 @@
 #include "SettingsManager.h"
 #include "MainWindow.h"
 #include "Workarea.h"
+#include "Finder.h"
 
 #include "../helper.h"
 
@@ -30,6 +31,7 @@ namespace DbNodes::Widgets {
         startupWidget = new StartupWidget(this);
 
         scrollArea = new QScrollArea(this);
+        scrollArea->setObjectName("ScrollArea");
         scrollArea->hide();
         setCentralWidget(scrollArea);
 
@@ -55,6 +57,7 @@ namespace DbNodes::Widgets {
         saveProject->setEnabled(true);
         saveAsProject->setEnabled(true);
         closeProject->setEnabled(true);
+        findNode->setEnabled(true);
     }
 
     void MainWindow::closeCurrentProject(const int &closeProjectStatus)
@@ -79,6 +82,7 @@ namespace DbNodes::Widgets {
         saveProject->setEnabled(false);
         saveAsProject->setEnabled(false);
         closeProject->setEnabled(false);
+        findNode->setEnabled(false);
     }
 
     QMenuBar* MainWindow::defineMenuBar()
@@ -127,12 +131,13 @@ namespace DbNodes::Widgets {
         exit->setShortcut(QKeySequence("Ctrl+Q"));
 
         // Define slots
+        connect(createProject, &QAction::triggered, this, &MainWindow::createNewProject);
+        connect(openProject, &QAction::triggered, this, &MainWindow::openSaveFile);
+        connect(exit, &QAction::triggered, this, &MainWindow::close);
+
         connect(closeProject, &QAction::triggered, this, [this] () {
             closeCurrentProject(MainWindow::openConfirmCloseProjectModal());
         });
-
-        connect(createProject, &QAction::triggered, this, &MainWindow::createNewProject);
-        connect(openProject, &QAction::triggered, this, &MainWindow::openSaveFile);
 
         connect(saveProject, &QAction::triggered, this, [this] () {
             generateSaveFile(SAVE_TYPE_REWRITE_FILE);
@@ -142,7 +147,17 @@ namespace DbNodes::Widgets {
             generateSaveFile(SAVE_TYPE_NEW_FILE);
         });
 
-        connect(exit, &QAction::triggered, this, &MainWindow::close);
+        auto *tools = menuBar->addMenu("Tools");
+
+        findNode = tools->addAction("Find ...");
+        findNode->setShortcut(QKeySequence("Ctrl+F"));
+        findNode->setEnabled(false);
+
+        connect(findNode, &QAction::triggered, this, [this] () {
+            auto *window = new Modals::Finder(workArea->getAllNodes(), this);
+
+            connect(window, &Modals::Finder::selected, workArea, &WorkArea::scrollToNode);
+        });
 
         // return QMenuBar
         return menuBar;

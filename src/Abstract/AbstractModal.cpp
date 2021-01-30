@@ -14,7 +14,7 @@ namespace DbNodes::Abstract {
 
     void AbstractModal::exit()
     {
-        this->~AbstractModal();
+        deleteLater();
     }
 
     void AbstractModal::confirm()

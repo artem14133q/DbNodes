@@ -26,11 +26,13 @@ namespace DbNodes::Widgets {
             void deleteRelation(const QString &relationName);
             void setNodeRow(QPointer<NodeRow> &);
             void createNodeFromFile(const QString &id, const QString &name, const QPoint &pos);
+            void scrollToNode(const QString &nodeId);
+            NODE_POINTER findNode(const QString &nodeId);
 
             QString getProjectName();
-            QVector<QPointer<Node>> getAllNodes();
+            QVector<NODE_POINTER> getAllNodes();
             QVector<QPair<QString, QStringList>> getAllRelations();
-            QPointer<NodeRow> findNodeRow(int type, const QString &nodeRowId);
+            NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
 
         private:
             QVector<QPair<QString, QStringList>> relations;

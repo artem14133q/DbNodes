@@ -13,8 +13,8 @@ QString Helper::getStyleFromFile(const QString &name) {
 
     QString content;
 
-    foreach (QString fileName, nameList) {
-        content += getfileContent(QStringList({STYLE_FILES_PATH, style, name}).join("/") + ".qss");
+    foreach (const QString &fileName, nameList) {
+        content += getfileContent(QStringList({STYLE_FILES_PATH, style, fileName}).join("/") + ".qss");
     }
 
     return content;
