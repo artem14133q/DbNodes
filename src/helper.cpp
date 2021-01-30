@@ -4,12 +4,13 @@
 #include "QStringList"
 
 #include "helper.h"
-#include "SettingsManager.h"
 #include "config.h"
 
 QString Helper::getStyleFromFile(const QString &name) {
+    using namespace DbNodes::Settings;
+
     auto nameList = name.split(" ");
-    auto style = DbNodes::Settings::SettingsManager::getSetting("style");
+    auto style = getSettingValue("style.stylesheet_folder").toString();
 
     QString content;
 
@@ -76,9 +77,19 @@ QString Helper::getfileContent(const QString &path)
 QString Helper::getIconPath(const QString &iconName, const bool &styled)
 {
     if (styled) {
-        auto style = DbNodes::Settings::SettingsManager::getSetting("icons_style");
+        auto style = getSettingValue("style.icons_folder").toString();
         return QStringList({ICONS_FILES_PATH, style, iconName}).join("/") + ".png";
     }
 
     return QStringList({ICONS_FILES_PATH, iconName}).join("/") + ".png";
+}
+
+QVariant Helper::getSettingValue(const QString &name)
+{
+    return MainSettings::getInstance()->value(name.split(".").join("/")).toString();
+}
+
+void Helper::setSettingValue(const QString &name, const QVariant &value)
+{
+    MainSettings::getInstance()->setValue(name.split(".").join("/"), value);
 }

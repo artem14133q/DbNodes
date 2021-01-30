@@ -9,11 +9,9 @@
 
 #define APP_PATH QCoreApplication::applicationDirPath()
 
-#define SETTINGS_FILE_PATH APP_PATH  + "/settings"
+#define CONFIG_FILE_PATH APP_PATH + "/dbnodes.ini"
 #define STYLE_FILES_PATH APP_PATH + "/styles"
 #define ICONS_FILES_PATH APP_PATH + "/icons"
-
-#define APP_NAME "DbNodes"
 
 #define APP_DEBUG @APP_DEBUG@
 

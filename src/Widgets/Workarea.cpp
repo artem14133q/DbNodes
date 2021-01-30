@@ -12,7 +12,6 @@
 #include "QTimer"
 
 #include "Workarea.h"
-#include "SettingsManager.h"
 #include "Node.h"
 
 #include "../helper.h"
@@ -26,7 +25,7 @@ namespace DbNodes::Widgets {
         // Set fixed size for work area
         setFixedSize(20000, 10000);
 
-        isAntialiasing = DbNodes::Settings::SettingsManager::getSetting("antialiasing") == "true" ? true : false;
+        isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
     }
 
     void WorkArea::contextMenuEvent(QContextMenuEvent* event)
