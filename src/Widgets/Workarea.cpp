@@ -304,12 +304,12 @@ namespace DbNodes::Widgets {
         qDebug() << "============== DEBUG ALL RELATIONS =================";
     }
 
+#endif
+
     WorkArea::~WorkArea()
     {
         Helper::unBindSetting("rendering.antialiasing");
 
         QWidget::deleteLater();
     }
-
-#endif
 }
