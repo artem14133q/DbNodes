@@ -36,6 +36,7 @@ namespace DbNodes::Widgets {
             QAction* saveProject{};
             QAction* saveAsProject{};
             QAction* closeProject{};
+            QAction* settings{};
             QAction* exit{};
 
             QAction* findNode{};

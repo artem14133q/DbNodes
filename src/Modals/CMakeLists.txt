@@ -10,7 +10,7 @@ set(RESOURCES
         TableRename.cpp
         TableRename.h
         Finder.cpp
-        Finder.h)
+        Finder.h Settings.cpp Settings.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

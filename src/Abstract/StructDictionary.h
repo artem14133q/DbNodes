@@ -7,19 +7,19 @@
 
 #include "QVariant"
 
-#define DICT_LIST QHash<int, QVariant>
-
 namespace DbNodes::Abstract {
 
-    template<class T>
+    template<typename T1, class T2>
     struct Dictionary
     {
-        static DICT_LIST getDictionary()
+        #define DICT_MAP(key_type) QHash<key_type, QVariant>
+
+        static DICT_MAP(T1) getDictionary()
         {
-            return T::initDictionary();
+            return T2::initDictionary();
         }
 
-        static QVariant getValue(const int &key)
+        static QVariant getValue(const T1 &key)
         {
             return getDictionary().value(key);
         }

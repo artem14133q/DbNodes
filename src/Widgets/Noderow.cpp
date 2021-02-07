@@ -90,9 +90,12 @@ namespace DbNodes::Widgets {
     {
         QString styleName;
 
-        if (rowType == NodeRow::PK) styleName = "pkNodeRow";
-        else if (rowType == NodeRow::FK) styleName = "fkNodeRow";
-        else styleName = "nodeRow";
+        if (rowType == NodeRow::PK)
+            styleName = "pkNodeRow";
+        else if (rowType == NodeRow::FK)
+            styleName = "fkNodeRow";
+        else
+            styleName = "nodeRow";
 
         setStyleSheet(Helper::getStyleFromFile(styleName));
 

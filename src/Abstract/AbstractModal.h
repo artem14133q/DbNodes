@@ -17,6 +17,7 @@ namespace DbNodes::Abstract {
             virtual void exit();
             virtual void confirm();
             bool eventFilter(QObject *obj, QEvent *event) override;
+            void closeEvent(QCloseEvent *event) override;
     };
 
 }

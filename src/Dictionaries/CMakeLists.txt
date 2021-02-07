@@ -2,7 +2,9 @@ set(LIBRARY_NAME Dictionaries)
 
 set(RESOURCES
         DbTableTypesFkDictionary.h
-        DbTableTypesDictionary.h RelationMakerErrors.h)
+        DbTableTypesDictionary.h
+        RelationMakerErrors.h
+        StylesDictionary.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

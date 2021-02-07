@@ -31,10 +31,10 @@
 
 namespace DbNodes::Dictionaries {
 
-    struct DbTableTypesDictionary: public DbNodes::Abstract::Dictionary<DbTableTypesDictionary>
+    struct DbTableTypesDictionary: public Abstract::Dictionary<int, DbTableTypesDictionary>
     {
         public:
-            static DICT_LIST initDictionary() {
+            static DICT_MAP(int) initDictionary() {
                 return {
                     { FLOAT     ,   "float"     },
                     { DOUBLE    ,   "double"    },

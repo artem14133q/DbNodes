@@ -8,6 +8,7 @@
 #include "iostream"
 
 #include "NameNewProject.h"
+#include "Settings.h"
 #include "MainWindow.h"
 #include "Workarea.h"
 #include "Finder.h"
@@ -122,6 +123,11 @@ namespace DbNodes::Widgets {
 
         project->addSeparator();
 
+        settings = project->addAction("Settings");
+        settings->setShortcut(QKeySequence("Ctrl+M"));
+
+        project->addSeparator();
+
         // Open project from file
         exit = project->addAction("Exit");
 //        openProject->setIcon(QIcon(":/imgs/open"));
@@ -142,6 +148,15 @@ namespace DbNodes::Widgets {
 
         connect(saveAsProject, &QAction::triggered, this, [this] () {
             generateSaveFile(SAVE_TYPE_NEW_FILE);
+        });
+
+        connect(settings, &QAction::triggered, this, [this] () {
+            auto *window = new Modals::Settings(this);
+
+            window->move(
+                x() + width() / 2 - window->width() / 2,
+                y() + height() / 2 - window->height() / 2
+            );
         });
 
         auto *tools = menuBar->addMenu("Tools");
