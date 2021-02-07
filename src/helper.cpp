@@ -86,10 +86,21 @@ QString Helper::getIconPath(const QString &iconName, const bool &styled)
 
 QVariant Helper::getSettingValue(const QString &name)
 {
-    return MainSettings::getInstance()->value(name.split(".").join("/")).toString();
+    return MainSettings::get(name.split(".").join("/")).toString();
 }
 
 void Helper::setSettingValue(const QString &name, const QVariant &value)
 {
-    MainSettings::getInstance()->setValue(name.split(".").join("/"), value);
+    MainSettings::set(name.split(".").join("/"), value);
 }
+
+void Helper::subscribeSetting(const QString &key, const CONNECTOR_CALLBACK &callback)
+{
+    MainSettings::getInstance()->subscribe(key.split(".").join("/"), callback);
+}
+
+void Helper::unBindSetting(const QString &key)
+{
+    MainSettings::getInstance()->unBind(key.split(".").join("/"));
+}
+

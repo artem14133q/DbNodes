@@ -26,6 +26,11 @@ namespace DbNodes::Widgets {
         setFixedSize(20000, 10000);
 
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
+
+        Helper::subscribeSetting("rendering.antialiasing", [this] (const QVariant &value) {
+            this->isAntialiasing = value.toBool();
+            this->update();
+        });
     }
 
     void WorkArea::contextMenuEvent(QContextMenuEvent* event)
@@ -297,6 +302,13 @@ namespace DbNodes::Widgets {
                 << fkNodeRow->getTableName() + "::" + fkNodeRow->getRowName();
         }
         qDebug() << "============== DEBUG ALL RELATIONS =================";
+    }
+
+    WorkArea::~WorkArea()
+    {
+        Helper::unBindSetting("rendering.antialiasing");
+
+        QWidget::deleteLater();
     }
 
 #endif

@@ -12,10 +12,10 @@
 
 namespace DbNodes::Dictionaries {
 
-    struct RelationMakerErrors: public DbNodes::Abstract::Dictionary<RelationMakerErrors>
+    struct RelationMakerErrors: public Abstract::Dictionary<int, RelationMakerErrors>
     {
         public:
-            static DICT_LIST initDictionary() {
+            static DICT_MAP(int) initDictionary() {
                 return {
                     { CANNOT_FIND_PK_NODE_ROWS  ,   "Cannot find primary keys in current table" },
                     { CANNOT_FIND_NODES         ,   "Cannot find tables"                        },

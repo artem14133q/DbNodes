@@ -34,6 +34,8 @@ namespace DbNodes::Widgets {
             QVector<QPair<QString, QStringList>> getAllRelations();
             NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
 
+            ~WorkArea() override;
+
         private:
             QVector<QPair<QString, QStringList>> relations;
             QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
