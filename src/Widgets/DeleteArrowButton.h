@@ -3,6 +3,7 @@
 
 #include "QPushButton"
 #include "QWidget"
+#include "QPointer"
 
 namespace DbNodes::Widgets {
 
@@ -10,12 +11,13 @@ namespace DbNodes::Widgets {
     {
         Q_OBJECT
         public:
-            explicit DeleteArrowButton(const QString &relationName, QWidget *parent = nullptr);
+            explicit DeleteArrowButton(QWidget *parent = nullptr);
 
         private:
-            QString relationId;
-
             void deleteRelation();
+
+        public: signals:
+            void clicked();
     };
 
 

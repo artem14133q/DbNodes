@@ -23,6 +23,7 @@ set(PROJECT_DIRECTORIES
         ${SRC}/Modals
         ${SRC}/Abstract
         ${SRC}/Settings
+        ${SRC}/Relations
         ${SRC}/Dictionaries)
 
 # INCLUDE PROJECT LIBS
@@ -30,6 +31,7 @@ set(PROJECT_LIBS
         Modals
         Abstract
         Settings
+        Relations
         Dictionaries)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_DIRECTORIES})

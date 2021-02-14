@@ -7,8 +7,8 @@
 #include "QPushButton"
 
 #include "Node.h"
-#include "DeleteArrowButton.h"
 #include "config.h"
+#include "Relation.h"
 
 namespace DbNodes::Widgets {
 
@@ -22,25 +22,24 @@ namespace DbNodes::Widgets {
             static const int GET_FK_NODE_ROWS = 2;
             static const int GET_PK_NODE_ROWS = 1;
 
-            void makeRelation(const QString &relationId, QPointer<NodeRow> &pkNodeRaw, QPointer<NodeRow> &fkNodeRaw);
-            void deleteRelation(const QString &relationName);
-            void setNodeRow(QPointer<NodeRow> &);
+            void makeRelation(const QString &relationId, NODE_RAW_POINTER &pkNodeRaw, NODE_RAW_POINTER &fkNodeRaw);
+            void setNodeRaw(NODE_RAW_POINTER &nodeRaw);
             void createNodeFromFile(const QString &id, const QString &name, const QPoint &pos);
             void scrollToNode(const QString &nodeId);
             NODE_POINTER findNode(const QString &nodeId);
 
             QString getProjectName();
             QVector<NODE_POINTER> getAllNodes();
-            QVector<QPair<QString, QStringList>> getAllRelations();
             NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
+
+            const QList<RELATION_POINTER> &getAllRelations();
 
             ~WorkArea() override;
 
         private:
-            QVector<QPair<QString, QStringList>> relations;
-            QVector<QPair<QString, QPointer<DeleteArrowButton>>> closeBtnList;
-            QVector<QPointer<NodeRow>> pkList, fkList;
-            QVector<QPointer<Node>> nodeList;
+            QList<RELATION_POINTER> relations;
+            QVector<NODE_RAW_POINTER> pkList, fkList;
+            QVector<NODE_POINTER> nodeList;
             QString projectName;
 
             void contextMenuEvent(QContextMenuEvent *event) override;
@@ -48,7 +47,7 @@ namespace DbNodes::Widgets {
 
             void cleanNodeList();
             void createNode(const QPoint &pos);
-            static void cleanNodeRowsList(QVector<QPointer<NodeRow>> &list);
+            static void cleanNodeRowsList(QVector<NODE_RAW_POINTER> &list);
 
             bool isAntialiasing;
 

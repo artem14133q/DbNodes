@@ -43,8 +43,8 @@ find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 set(INCLUDE_DIRECTORIES
         src/Abstract
         src/Widgets
+        src/Relations
         src/Modals
-#        src/Assets
         src/Settings
         src/Dictionaries)
 

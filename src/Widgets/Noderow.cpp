@@ -216,15 +216,16 @@ namespace DbNodes::Widgets {
         return node->getTableId();
     }
 
-// Get pos in work area
-    QPair<QPoint, int> NodeRow::getGlobalPos()
+    // Get pos in work area
+    int* NodeRow::dataForPaint()
     {
-        Node* parentNode = dynamic_cast<Node*>(parentWidget());
+        int *buf = new int[3];
 
-        return QPair<QPoint, int>(
-                QPoint(parentNode->x(),parentNode->y() + y() + height()/2),
-                parentNode->width()
-            );
+        buf[0] = parentWidget()->x();
+        buf[1] = parentWidget()->y() + y() + height() / 2;
+        buf[2] = parentWidget()->width();
+
+        return buf;
     }
 
     int NodeRow::getRowType() const
