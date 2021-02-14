@@ -14,7 +14,7 @@ namespace DbNodes::Abstract {
 
     void AbstractModal::exit()
     {
-        this->~AbstractModal();
+        deleteLater();
     }
 
     void AbstractModal::confirm()
@@ -36,5 +36,11 @@ namespace DbNodes::Abstract {
         }
 
         return QObject::eventFilter(obj, event);
+    }
+
+    void AbstractModal::closeEvent(QCloseEvent *event)
+    {
+        event->ignore();
+        exit();
     }
 }

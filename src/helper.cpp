@@ -4,17 +4,18 @@
 #include "QStringList"
 
 #include "helper.h"
-#include "SettingsManager.h"
 #include "config.h"
 
 QString Helper::getStyleFromFile(const QString &name) {
+    using namespace DbNodes::Settings;
+
     auto nameList = name.split(" ");
-    auto style = DbNodes::Settings::SettingsManager::getSetting("style");
+    auto style = getSettingValue("style.stylesheet_folder").toString();
 
     QString content;
 
-    foreach (QString fileName, nameList) {
-        content += getfileContent(QStringList({STYLE_FILES_PATH, style, name}).join("/") + ".qss");
+    foreach (const QString &fileName, nameList) {
+        content += getfileContent(QStringList({STYLE_FILES_PATH, style, fileName}).join("/") + ".qss");
     }
 
     return content;
@@ -76,9 +77,30 @@ QString Helper::getfileContent(const QString &path)
 QString Helper::getIconPath(const QString &iconName, const bool &styled)
 {
     if (styled) {
-        auto style = DbNodes::Settings::SettingsManager::getSetting("icons_style");
+        auto style = getSettingValue("style.icons_folder").toString();
         return QStringList({ICONS_FILES_PATH, style, iconName}).join("/") + ".png";
     }
 
     return QStringList({ICONS_FILES_PATH, iconName}).join("/") + ".png";
 }
+
+QVariant Helper::getSettingValue(const QString &name)
+{
+    return MainSettings::get(name.split(".").join("/")).toString();
+}
+
+void Helper::setSettingValue(const QString &name, const QVariant &value)
+{
+    MainSettings::set(name.split(".").join("/"), value);
+}
+
+void Helper::subscribeSetting(const QString &key, const CONNECTOR_CALLBACK &callback)
+{
+    MainSettings::getInstance()->subscribe(key.split(".").join("/"), callback);
+}
+
+void Helper::unBindSetting(const QString &key)
+{
+    MainSettings::getInstance()->unBind(key.split(".").join("/"));
+}
+

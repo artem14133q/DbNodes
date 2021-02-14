@@ -19,34 +19,32 @@
 
 namespace DbNodes::Widgets {
 
-    NodeRow::NodeRow(
-            QVBoxLayout *vb,
-            QWidget *parent,
-            const int &rowType)
-            : NodeRow(
-                    vb,
-                    parent,
-                    "noderow:" + Helper::getCurrentTimeMS(),
-                    "coloumn",
-                    rowType,
-                    rowType != NodeRow::FK ? "integer" : "none",
-                    false) {}
+    NodeRow::NodeRow(QVBoxLayout *vb, QWidget *parent, const int &rowType)
+        : NodeRow(
+            vb,
+            parent,
+            "noderow:" + Helper::getCurrentTimeMS(),
+            "coloumn",
+            rowType,
+            rowType != NodeRow::FK ? "integer" : "none",
+            false
+        ) {}
 
     NodeRow::NodeRow(
-            QVBoxLayout *vb,
-            QWidget *parent,
-            const QString &rowId,
-            const QString &rowName,
-            const int &rowType,
-            const QString &rowDbType,
-            const bool &rowIsNull)
-            : DbNodes::Abstract::AbstractNode(parent),
-                vb(vb),
-                rowName(const_cast<QString &>(rowName)),
-                rowId(const_cast<QString &>(rowId)),
-                rowDbType(const_cast<QString &>(rowDbType)),
-                rowIsNull(rowIsNull),
-                rowType(rowType)
+        QVBoxLayout *vb,
+        QWidget *parent,
+        const QString &rowId,
+        const QString &rowName,
+        const int &rowType,
+        const QString &rowDbType,
+        const bool &rowIsNull
+    ): DbNodes::Abstract::AbstractNode(parent),
+        vb(vb),
+        rowName(const_cast<QString &>(rowName)),
+        rowId(const_cast<QString &>(rowId)),
+        rowDbType(const_cast<QString &>(rowDbType)),
+        rowIsNull(rowIsNull),
+        rowType(rowType)
     {
         initUi();
         enableMoveRestrictions(false);
@@ -92,9 +90,12 @@ namespace DbNodes::Widgets {
     {
         QString styleName;
 
-        if (rowType == NodeRow::PK) styleName = "pkNodeRow";
-        else if (rowType == NodeRow::FK) styleName = "fkNodeRow";
-        else styleName = "nodeRow";
+        if (rowType == NodeRow::PK)
+            styleName = "pkNodeRow";
+        else if (rowType == NodeRow::FK)
+            styleName = "fkNodeRow";
+        else
+            styleName = "nodeRow";
 
         setStyleSheet(Helper::getStyleFromFile(styleName));
 
@@ -215,15 +216,16 @@ namespace DbNodes::Widgets {
         return node->getTableId();
     }
 
-// Get pos in work area
-    QPair<QPoint, int> NodeRow::getGlobalPos()
+    // Get pos in work area
+    int* NodeRow::dataForPaint()
     {
-        Node* parentNode = dynamic_cast<Node*>(parentWidget());
+        int *buf = new int[3];
 
-        return QPair<QPoint, int>(
-                QPoint(parentNode->x(),parentNode->y() + y() + height()/2),
-                parentNode->width()
-            );
+        buf[0] = parentWidget()->x();
+        buf[1] = parentWidget()->y() + y() + height() / 2;
+        buf[2] = parentWidget()->width();
+
+        return buf;
     }
 
     int NodeRow::getRowType() const

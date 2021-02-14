@@ -11,9 +11,12 @@
 
 #include "AbstractNode.h"
 
+#define NODE_RAW_POINTER QPointer<Widgets::NodeRow>
+#define NODE_RAW_VECTOR QVector<NODE_RAW_POINTER>
+
 namespace DbNodes::Widgets {
 
-    class NodeRow : public DbNodes::Abstract::AbstractNode
+    class NodeRow : public Abstract::AbstractNode
     {
         Q_OBJECT
 
@@ -36,7 +39,8 @@ namespace DbNodes::Widgets {
             QString getTableName();
             QString getTableId();
             QString getRowId();
-            QPair<QPoint, int> getGlobalPos();
+
+            int* dataForPaint();
 
             [[nodiscard]] int getRowType() const;
             [[nodiscard]] bool getRowIsNull() const;
@@ -51,7 +55,6 @@ namespace DbNodes::Widgets {
 
         private:
             bool isMovable = false;
-            bool isHandlePressed = false;
 
             QVBoxLayout *vb;
 

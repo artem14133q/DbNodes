@@ -17,10 +17,8 @@
 
 namespace DbNodes::Widgets {
 
-
     Node::Node(QWidget *parent, QString id, QString name)
-            : DbNodes::Abstract::AbstractNode(parent),
-              tableName(std::move(name)), tableId(std::move(id))
+        : DbNodes::Abstract::AbstractNode(parent), tableName(std::move(name)), tableId(std::move(id))
     {
         setFocusPolicy(Qt::StrongFocus);
         setObjectName("Node");
@@ -110,17 +108,20 @@ namespace DbNodes::Widgets {
     }
 
     // Create row of types
-    void Node::addColumn(int nodeRowType, QPointer<NodeRow> row)
+    void Node::addColumn(int nodeRowType, NODE_RAW_POINTER row)
     {
         if (!row) row = new NodeRow(getLayoutType(nodeRowType), this, nodeRowType);
 
         auto *parentWorkArea = dynamic_cast<WorkArea*>(parentWidget());
 
-        if (nodeRowType == NodeRow::PK) pkLayout->addWidget(row);
-        else if (nodeRowType == NodeRow::FK) fkLayout->addWidget(row);
-        else rowsLayout->addWidget(row);
+        if (nodeRowType == NodeRow::PK)
+            pkLayout->addWidget(row);
+        else if (nodeRowType == NodeRow::FK)
+            fkLayout->addWidget(row);
+        else
+            rowsLayout->addWidget(row);
 
-        parentWorkArea->setNodeRow(row);
+        parentWorkArea->setNodeRaw(row);
 
         adjustSize();
     }
@@ -138,7 +139,7 @@ namespace DbNodes::Widgets {
 
     QVector<QPointer<NodeRow>> Node::getAllNodeRows()
     {
-        NODE_ROW_VECTOR allNodeRows;
+        NODE_RAW_VECTOR allNodeRows;
 
         foreach (NodeRow *w, groupNodeRows()) {
             allNodeRows.push_back(QPointer<NodeRow>(w));

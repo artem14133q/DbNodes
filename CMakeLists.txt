@@ -43,8 +43,8 @@ find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 set(INCLUDE_DIRECTORIES
         src/Abstract
         src/Widgets
+        src/Relations
         src/Modals
-#        src/Assets
         src/Settings
         src/Dictionaries)
 
@@ -78,9 +78,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
 # ====================================================================
 # DEFILE LIBS OF YOUR PROJECT
 # ====================================================================
-file(COPY settings DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY dbnodes.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 set(INCLUDE_PROJECT_LIBS
         Widgets)

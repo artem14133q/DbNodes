@@ -14,10 +14,10 @@
 
 namespace DbNodes::Dictionaries {
 
-    struct DbTableTypesFkDictionary: public DbNodes::Abstract::Dictionary<DbTableTypesFkDictionary>
+    struct DbTableTypesFkDictionary: public Abstract::Dictionary<int, DbTableTypesFkDictionary>
     {
         public:
-            static DICT_LIST initDictionary() {
+            static DICT_MAP(int) initDictionary() {
                 return {
                     { TYPE_INTEGER  ,   "integer"   },
                     { TYPE_TINYINT  ,   "tinyint"   },
