@@ -233,16 +233,10 @@ namespace DbNodes::Widgets {
         }
 
         out << "::Relations\n";
-        QVectorIterator<QPair<QString, QStringList>> saveRelationsIterator(workArea->getAllRelations());
-        while (saveRelationsIterator.hasNext()) {
-            QPair<QString, QStringList> saveRelationPair(saveRelationsIterator.next());
-            QString saveRelationId(saveRelationPair.first);
-            QStringList saveRelationList(saveRelationPair.second);
-            out << "@" << saveRelationId << "\n";
-            QStringListIterator saveRelationListIterator(saveRelationList);
-            while (saveRelationListIterator.hasNext()) {
-                out << "$" << saveRelationListIterator.next() << "\n";
-            }
+        foreach (const RELATION_POINTER &relation, workArea->getAllRelations()) {
+            out << "@" << relation->getRelationId() << "\n";
+            out << "$" << relation->getPkNodeRaw()->getRowId() << "\n";
+            out << "$" << relation->getFkNodeRaw()->getRowId() << "\n";
         }
         out << "#ENDDBNODESFILE#\n";
     }
