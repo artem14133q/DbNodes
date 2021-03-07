@@ -1,0 +1,9 @@
+QWidget{
+    border: 2px solid #2b2b2b;
+    color: black;
+    font-weight: bold;
+}
+
+QWidget#RelationLink{
+    border-radius: 12px;
+}

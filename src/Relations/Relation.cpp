@@ -2,9 +2,15 @@
 // Created by artem on 11.02.2021.
 //
 
-#include "QPen"
+#include "QDebug"
+#include "QTimer"
 
 #include "Relation.h"
+#include "RelationTypesDictionary.h"
+#include "RelationFactory.h"
+#include "RelationProvider.h"
+
+#include "../helper.h"
 
 #include <utility>
 
@@ -13,21 +19,16 @@ namespace DbNodes::Relations {
     Relation::Relation(
         QWidget *parent,
         QString relationId,
+        const int relationTypeId,
         NODE_RAW_POINTER &pkNodeRaw,
         NODE_RAW_POINTER &fkNodeRaw
     ):  QObject(parent),
+        parent(parent),
         relationId(std::move(relationId)),
         pkNodeRaw(pkNodeRaw),
         fkNodeRaw(fkNodeRaw)
     {
-        color = QColor();
-        color.setRgb(47, 167, 227);
-
-        deletePathButton = new Widgets::DeleteArrowButton(parent);
-
-        connect(deletePathButton, &Widgets::DeleteArrowButton::clicked, this, [this] () {
-            this->~Relation();
-        });
+        enableRelationType(relationTypeId);
     }
 
     NODE_RAW_POINTER Relation::getPkNodeRaw()
@@ -40,44 +41,6 @@ namespace DbNodes::Relations {
         return fkNodeRaw;
     }
 
-    void Relation::paintPathLine(QPainter &painter, QPainterPath &painterPath)
-    {
-        painter.setPen(QPen(color, 2, Qt::SolidLine, Qt::FlatCap));
-
-        int *pkBuf = pkNodeRaw->dataForPaint();
-        int *fkBuf = fkNodeRaw->dataForPaint();
-
-        if (pkBuf[0] < fkBuf[0]) {
-            pkBuf[0] += pkBuf[2];
-
-            deletePathButton->move(
-                fkBuf[0] - deletePathButton->width() - 2,
-                fkBuf[1] - deletePathButton->height() / 2
-            );
-
-            fkBuf[0] -= deletePathButton->width() + 2;
-        } else {
-            fkBuf[0] += fkBuf[2];
-
-            deletePathButton->move(
-                fkBuf[0] + 2,
-                fkBuf[1] - deletePathButton->height() / 2
-            );
-
-            fkBuf[0] += deletePathButton->width();
-        }
-
-        int cP12_x = pkBuf[0] + (fkBuf[0] - pkBuf[0]) / 2;
-
-        painterPath.moveTo(pkBuf[0], pkBuf[1]);
-        painterPath.cubicTo(cP12_x, pkBuf[1], cP12_x, fkBuf[1], fkBuf[0], fkBuf[1]);
-
-        delete pkBuf;
-        delete fkBuf;
-
-        painter.drawPath(painterPath);
-    }
-
     bool Relation::checkIsRelationValid()
     {
         return pkNodeRaw && fkNodeRaw;
@@ -85,8 +48,9 @@ namespace DbNodes::Relations {
 
     Relation::~Relation()
     {
-        delete deletePathButton;
-        dynamic_cast<QWidget *>(parent())->update();
+        delete relationView;
+
+        parent->update();
 
         if (fkNodeRaw) {
             fkNodeRaw->disableFkRelationButton(false);
@@ -98,5 +62,49 @@ namespace DbNodes::Relations {
     const QString &Relation::getRelationId()
     {
         return relationId;
+    }
+
+    int Relation::getRelationTypeId() const
+    {
+        return relationType;
+    }
+
+    void Relation::updateRelation(QPainter &painter, QPainterPath &path)
+    {
+        relationView->updateRelation(painter, path);
+    }
+
+    void Relation::deleteRelation()
+    {
+        delete this;
+    }
+
+    void Relation::enableRelationType(const int &relationTypeId)
+    {
+        relationType = relationTypeId;
+
+        delete relationView;
+
+        parent->update();
+
+        RelationFactory relationFactory;
+
+        relationView = relationFactory.resolveFactory(
+            relationTypeId,
+            [this] (RelationProvider * provider) {
+                provider->setParent(parent);
+                provider->setRelation(this);
+            }
+        );
+    }
+
+    void Relation::goToRelationTableSignal()
+    {
+        emit goToRelatedTable(pkNodeRaw->getTableId());
+    }
+
+    void Relation::raise()
+    {
+        relationView->raise();
     }
 }

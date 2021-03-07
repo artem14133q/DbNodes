@@ -94,7 +94,7 @@ void Helper::setSettingValue(const QString &name, const QVariant &value)
     MainSettings::set(name.split(".").join("/"), value);
 }
 
-void Helper::subscribeSetting(const QString &key, const CONNECTOR_CALLBACK &callback)
+void Helper::subscribeSettingUpdate(const QString &key, const CONNECTOR_CALLBACK &callback)
 {
     MainSettings::getInstance()->subscribe(key.split(".").join("/"), callback);
 }

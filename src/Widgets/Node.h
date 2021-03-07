@@ -10,6 +10,7 @@
 #include "config.h"
 
 #include "AbstractNode.h"
+#include "Relation.h"
 
 #define NODE_POINTER QPointer<DbNodes::Widgets::Node>
 
@@ -29,16 +30,20 @@ namespace DbNodes::Widgets {
             NODE_RAW_VECTOR getAllNodeRows();
 
             void addColumnFromFile(
-                    const QString &id,
-                    const QString &name,
-                    const int &type,
-                    const QString &dbType,
-                    const bool &isNull = false
-                );
+                const QString &id,
+                const QString &name,
+                const int &type,
+                const QString &dbType,
+                const bool &isNull = false
+            );
 
             QVBoxLayout *getLayoutType(const int &nodeRowType);
 
+            void addRelation(const RELATION_POINTER &relation);
+
         private:
+            QList<RELATION_POINTER> relations;
+
             QVBoxLayout* rowsLayout{};
             QVBoxLayout* pkLayout{};
             QVBoxLayout* fkLayout{};
