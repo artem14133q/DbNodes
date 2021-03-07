@@ -10,12 +10,13 @@
 #define PROJECT_NOT_CLOSED 3
 
 #include "QMessageBox"
+#include "QCloseEvent"
 
 namespace DbNodes::Modals {
 
     class ConfirmCloseProject: public QMessageBox
     {
-            Q_OBJECT
+        Q_OBJECT
 
         public:
             explicit ConfirmCloseProject(const QString &projectName, QWidget *parent = nullptr);
@@ -27,6 +28,8 @@ namespace DbNodes::Modals {
             QPushButton *cancel{};
 
             void initUi();
+
+            void closeEvent(QCloseEvent *closeEvent) override;
     };
 
 }

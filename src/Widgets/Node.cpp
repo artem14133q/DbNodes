@@ -11,6 +11,7 @@
 #include "TableRename.h"
 #include "Noderow.h"
 #include "Workarea.h"
+#include "RelationTypesDictionary.h"
 
 #include <utility>
 #include "../helper.h"
@@ -127,11 +128,11 @@ namespace DbNodes::Widgets {
     }
 
     void Node::addColumnFromFile(
-            const QString &id,
-            const QString &name,
-            const int &type,
-            const QString &dbType,
-            const bool &isNull
+        const QString &id,
+        const QString &name,
+        const int &type,
+        const QString &dbType,
+        const bool &isNull
     ) {
         QPointer<NodeRow> nodeRow = new NodeRow(getLayoutType(type), this, id, name, type, dbType, isNull);
         addColumn(type, nodeRow);
@@ -187,9 +188,12 @@ namespace DbNodes::Widgets {
 
     QVBoxLayout *Node::getLayoutType(const int &nodeRowType)
     {
-        if (nodeRowType == NodeRow::PK) return pkLayout;
-        else if (nodeRowType == NodeRow::FK) return fkLayout;
-        else return rowsLayout;
+        if (nodeRowType == NodeRow::PK)
+            return pkLayout;
+        else if (nodeRowType == NodeRow::FK)
+            return fkLayout;
+        else
+            return rowsLayout;
     }
 
     QList<NodeRow *> Node::groupNodeRows()
@@ -217,6 +221,17 @@ namespace DbNodes::Widgets {
     void Node::mousePressEvent(QMouseEvent *event)
     {
         raise();
+
+        foreach (const RELATION_POINTER &relation, relations) {
+            if (relation == nullptr) {
+                relations.removeAll(relation);
+                continue;
+            };
+
+            if (relation->getRelationTypeId() == RELATION_TYPE_LINK) {
+                relation->raise();
+            }
+        }
 
         AbstractNode::mousePressEvent(event);
     }
@@ -249,6 +264,11 @@ namespace DbNodes::Widgets {
         if      (rowType == NodeRow::PK)    return "PK";
         else if (rowType == NodeRow::FK)    return "FK";
         else                                return "RW";
+    }
+
+    void Node::addRelation(const RELATION_POINTER &relation)
+    {
+        relations.push_back(relation);
     }
 
 #endif

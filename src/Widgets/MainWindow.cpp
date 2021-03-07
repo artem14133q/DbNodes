@@ -361,13 +361,13 @@ namespace DbNodes::Widgets {
     void MainWindow::closeEvent(QCloseEvent *event)
     {
         if (workArea != nullptr) {
+            event->ignore();
+
             int closeType = MainWindow::openConfirmCloseProjectModal();
             closeCurrentProject(closeType);
 
             if (closeType != PROJECT_NOT_CLOSED) QApplication::exit();
         }
-
-        QMainWindow::closeEvent(event);
     }
 
     int MainWindow::openConfirmCloseProjectModal()

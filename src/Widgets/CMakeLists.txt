@@ -1,8 +1,6 @@
 set(LIBRARY_NAME Widgets)
 
 set(RESOURCES
-        DeleteArrowButton.h
-        DeleteArrowButton.cpp
         MainWindow.cpp
         MainWindow.h
         Node.cpp

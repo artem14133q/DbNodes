@@ -1,0 +1,7 @@
+QLabel{
+    border-right: 0;
+    padding-bottom: 2px;
+    background-color: white;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}

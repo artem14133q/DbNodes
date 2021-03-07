@@ -19,7 +19,7 @@ class Helper
         static QString  getIconPath(const QString &iconName, const bool &styled = true);
         static QVariant getSettingValue(const QString &name);
         static void setSettingValue(const QString &name, const QVariant &value);
-        static void subscribeSetting(const QString &key, const CONNECTOR_CALLBACK &callback);
+        static void subscribeSettingUpdate(const QString &key, const CONNECTOR_CALLBACK &callback);
         static void unBindSetting(const QString &key);
 };
 

@@ -48,4 +48,10 @@ namespace DbNodes::Modals {
             return PROJECT_NOT_CLOSED;
         }
     }
+
+    void ConfirmCloseProject::closeEvent(QCloseEvent *closeEvent)
+    {
+        closeEvent->ignore();
+        accept();
+    }
 }

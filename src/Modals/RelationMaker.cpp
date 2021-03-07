@@ -130,7 +130,7 @@ namespace DbNodes::Modals {
         nodeRowsOfSelectedNode.clear();
         nodeRowsOfNode->clear();
 
-        foreach (NODE_RAW_POINTER nodeRow, node->getAllNodeRows().toList()) {
+        foreach (const NODE_RAW_POINTER nodeRow, node->getAllNodeRows().toList()) {
             if (nodeRow->getRowType() == Widgets::NodeRow::PK) {
                 nodeRowsOfSelectedNode.insert(nodeRow->getRowId(), nodeRow);
                 nodeRowsOfNode->addItem(nodeRow->getRowName(), nodeRow->getRowId());
@@ -168,7 +168,7 @@ namespace DbNodes::Modals {
 
         workArea->makeRelation("relation:" + Helper::getCurrentTimeMS(),pkNodeRaw,fkNodeRaw);
 
-        Abstract::AbstractModal::confirm();
+        AbstractModal::confirm();
     }
 
     void RelationMaker::showWarningIfPkNotFound(const bool &enable, const int &errorType)
@@ -192,7 +192,7 @@ namespace DbNodes::Modals {
         nodeList.clear();
         nodesSelect->clear();
 
-        foreach (NODE_POINTER node, nodeVector.toList()) {
+        foreach (const NODE_POINTER node, nodeVector.toList()) {
             if (node->getTableId() != fkNodeRawParent->getTableId() && regFilter.indexIn(node->getTableName()) != -1) {
                 nodeList.insert(node->getTableId(), node);
                 nodesSelect->addItem(node->getTableName(), node->getTableId());
@@ -200,7 +200,10 @@ namespace DbNodes::Modals {
         }
 
         if (!nodeList.isEmpty()) {
-            selectNode(nodeList.values().first());
+            auto node = nodeList.values().first();
+
+            selectNode(node);
+            nodesSelect->setCurrentIndex(nodesSelect->findData(node->getTableId()));
         } else {
             showWarningIfPkNotFound(true, CANNOT_FIND_NODES);
 

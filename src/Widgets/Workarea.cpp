@@ -12,6 +12,7 @@
 
 #include "Workarea.h"
 #include "Node.h"
+#include "RelationTypesDictionary.h"
 
 #include "../helper.h"
 
@@ -26,7 +27,7 @@ namespace DbNodes::Widgets {
 
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
 
-        Helper::subscribeSetting("rendering.antialiasing", [this] (const QVariant &value) {
+        Helper::subscribeSettingUpdate("rendering.antialiasing", [this] (const QVariant &value) {
             this->isAntialiasing = value.toBool();
             this->update();
         });
@@ -83,7 +84,7 @@ namespace DbNodes::Widgets {
                 continue;
             }
 
-            relation->paintPathLine(painter, bezierPath);
+            relation->updateRelation(painter, bezierPath);
         }
     }
 
@@ -101,9 +102,15 @@ namespace DbNodes::Widgets {
 
         fkNodeRaw->disableFkRelationButton(true);
 
-        RELATION_POINTER relation(new Relations::Relation(this, relationId, pkNodeRaw, fkNodeRaw));
+        RELATION_POINTER relation(
+            new Relations::Relation(this, relationId, RELATION_TYPE_LINK, pkNodeRaw, fkNodeRaw)
+        );
+
+        connect(relation, &Relations::Relation::goToRelatedTable, this, &WorkArea::scrollToNode);
 
         relations.append(relation);
+
+        dynamic_cast<Node *>(fkNodeRaw->parentWidget())->addRelation(relation);
     }
 
     NODE_RAW_POINTER WorkArea::findNodeRow(int type, const QString &nodeRowId)
@@ -194,6 +201,7 @@ namespace DbNodes::Widgets {
         scrollWidget->horizontalScrollBar()->setValue(node->x() - mainWindow->width() / 2 + node->width() / 2);
 
         QTimer::singleShot(0, node, SLOT (setFocus()));
+        node->raise();
     }
 
     NODE_POINTER WorkArea::findNode(const QString &nodeId)
