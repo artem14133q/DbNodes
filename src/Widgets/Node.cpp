@@ -236,6 +236,11 @@ namespace DbNodes::Widgets {
         AbstractNode::mousePressEvent(event);
     }
 
+    void Node::addRelation(const RELATION_POINTER &relation)
+    {
+        relations.push_back(relation);
+    }
+
 #if APP_DEBUG
 
     void Node::debugNodeRows()
@@ -264,11 +269,6 @@ namespace DbNodes::Widgets {
         if      (rowType == NodeRow::PK)    return "PK";
         else if (rowType == NodeRow::FK)    return "FK";
         else                                return "RW";
-    }
-
-    void Node::addRelation(const RELATION_POINTER &relation)
-    {
-        relations.push_back(relation);
     }
 
 #endif
