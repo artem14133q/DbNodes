@@ -27,8 +27,8 @@ namespace DbNodes::Modals {
             QHash<QString, QVariant> settingsMap;
             QHash<QString, QVariant> newSettingsMap;
 
-            QPushButton *pbApply;
-            QPushButton *pbOk;
+            QPushButton *pbApply{};
+            QPushButton *pbOk{};
 
             QWidget *centralWidget{};
             QVBoxLayout *centralLayout{};

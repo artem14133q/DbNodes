@@ -3,16 +3,15 @@
 
 #include "QMainWindow"
 #include "QScrollArea"
-#include "Workarea.h"
+#include "QSettings"
 #include "QCloseEvent"
+
+#include "Workarea.h"
 #include "ConfirmCloseProject.h"
 #include "StartupWidget.h"
-#include "QSettings"
+#include "SaveManager.h"
 
 #include "config.h"
-
-#define SAVE_TYPE_NEW_FILE 0
-#define SAVE_TYPE_REWRITE_FILE 1
 
 namespace DbNodes::Widgets {
 
@@ -22,7 +21,7 @@ namespace DbNodes::Widgets {
 
         public:
             explicit MainWindow(QWidget *parent = nullptr);
-            void createWorkArea(const QString &projectName);
+            void createProject(const QString &name);
 
         public slots:
             void closeCurrentProject(const int &closeProjectStatus);
@@ -31,21 +30,22 @@ namespace DbNodes::Widgets {
             void createNewProject();
 
         private:
-            QAction* createProject{};
-            QAction* openProject{};
-            QAction* saveProject{};
-            QAction* saveAsProject{};
-            QAction* closeProject{};
-            QAction* settings{};
-            QAction* exit{};
+            QAction* createProjectAction{};
+            QAction* openProjectAction{};
+            QAction* saveProjectAction{};
+            QAction* saveAsProjectAction{};
+            QAction* closeProjectAction{};
+            QAction* openSettingsAction{};
+            QAction* exitAction{};
 
-            QAction* findNode{};
+            QAction* findNodeAction{};
 
             QScrollArea* scrollArea;
             StartupWidget* startupWidget;
             QString filePath = "";
 
             WorkArea* workArea{};
+            Saving::SaveManager *saveManager;
 
             QMenuBar* defineMenuBar();
             void setTitle(const QString &name, const QString &path);
@@ -53,6 +53,9 @@ namespace DbNodes::Widgets {
 
             void closeEvent(QCloseEvent * event) override;
             void paintEvent(QPaintEvent * event) override;
+
+            void enableWorkArea(const bool &enable);
+            void createWorkArea(const QString &projectName = nullptr);
     };
 
 }

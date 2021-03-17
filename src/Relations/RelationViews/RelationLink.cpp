@@ -26,7 +26,7 @@ namespace DbNodes::Relations {
         setFixedHeight(26);
         setStyleSheet(Helper::getStyleFromFile("relationLink"));
         initUI();
-        setSidePositionsName(relationPosition);
+        setSidePositionsName(getNextRelationType(relationPosition));
         adjustSize();
     }
 
@@ -72,7 +72,7 @@ namespace DbNodes::Relations {
 
     void RelationLink::setSidePositionsName(const int &position)
     {
-        sidePositionName = QString("Move to %1 side")
+        sidePositionName = QString("Move to the %1 side")
                 .arg(Dictionaries::RelationLinkPositionsDictionary::getValue(position).toString());
     }
 
@@ -100,25 +100,42 @@ namespace DbNodes::Relations {
 
     void RelationLink::switchPosition()
     {
-        // TODO: Refactoring
-
-        switch (relationPosition) {
-            case RELATION_LINK_POSITION_LEFT:
-                relationPosition = RELATION_LINK_POSITION_RIGHT;
-                setSidePositionsName(RELATION_LINK_POSITION_RIGHT);
-                break;
-
-            case RELATION_LINK_POSITION_RIGHT:
-                relationPosition = RELATION_LINK_POSITION_LEFT;
-                setSidePositionsName(RELATION_LINK_POSITION_LEFT);
-                break;
-            default:
-                break;
-        }
+        setSidePositionsName(relationPosition);
+        relationPosition = getNextRelationType(relationPosition);
     }
 
     int RelationLink::getCurrentTypeId()
     {
         return RELATION_TYPE_LINK;
+    }
+
+    bool RelationLink::hasRelationPositionType()
+    {
+        return true;
+    }
+
+    int RelationLink::relationPositionType()
+    {
+        return relationPosition;
+    }
+
+    void RelationLink::setRelationPositionType(const int &type)
+    {
+        relationPosition = type;
+        setSidePositionsName(getNextRelationType(relationPosition));
+    }
+
+    int RelationLink::getNextRelationType(const int &currentRelationType)
+    {
+        switch (currentRelationType) {
+            case RELATION_LINK_POSITION_LEFT:
+                return RELATION_LINK_POSITION_RIGHT;
+
+            case RELATION_LINK_POSITION_RIGHT:
+                return RELATION_LINK_POSITION_LEFT;
+
+            default:
+                return 0;
+        }
     }
 }

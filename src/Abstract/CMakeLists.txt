@@ -9,7 +9,9 @@ set(RESOURCES
         AbstractModal.cpp
         AbstractModal.h
         AbstractRelationView.cpp
-        AbstractRelationView.h)
+        AbstractRelationView.h
+        JsonObject.cpp
+        JsonObject.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

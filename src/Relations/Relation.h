@@ -25,7 +25,7 @@ namespace DbNodes::Relations {
             explicit Relation(
                 QWidget *parent,
                 QString  relationId,
-                const int relationTypeId,
+                int relationTypeId,
                 NODE_RAW_POINTER &pkNodeRaw,
                 NODE_RAW_POINTER &fkNodeRaw
             );
@@ -41,6 +41,9 @@ namespace DbNodes::Relations {
 
             void updateRelation(QPainter &painter, QPainterPath &path);
             void raise();
+
+            int getRelationPositionType();
+            void setRelationPositionType(const int &type);
 
             ~Relation() override;
 

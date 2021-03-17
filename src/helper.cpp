@@ -104,3 +104,11 @@ void Helper::unBindSetting(const QString &key)
     MainSettings::getInstance()->unBind(key.split(".").join("/"));
 }
 
+void Helper::moveToCenter(QWidget *mapToWidget, QWidget *currentWidget)
+{
+    currentWidget->move(
+        mapToWidget->x() + mapToWidget->width() / 2 - currentWidget->width() / 2,
+        mapToWidget->y() + mapToWidget->height() / 2 - currentWidget->height() / 2
+    );
+}
+

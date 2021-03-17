@@ -12,11 +12,11 @@
 #include "AbstractNode.h"
 #include "Relation.h"
 
-#define NODE_POINTER QPointer<DbNodes::Widgets::Node>
+#define NODE_POINTER QPointer<Widgets::Node>
 
 namespace DbNodes::Widgets {
 
-    class Node : public DbNodes::Abstract::AbstractNode
+    class Node : public Abstract::AbstractNode
     {
         Q_OBJECT
 

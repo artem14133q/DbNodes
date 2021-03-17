@@ -17,18 +17,25 @@ namespace DbNodes::Widgets {
         Q_OBJECT
 
         public:
-            explicit WorkArea(QWidget *parent, const QString &projectName);
+            explicit WorkArea(QWidget *parent);
 
             static const int GET_FK_NODE_ROWS = 2;
             static const int GET_PK_NODE_ROWS = 1;
 
-            void makeRelation(const QString &relationId, NODE_RAW_POINTER &pkNodeRaw, NODE_RAW_POINTER &fkNodeRaw);
+            RELATION_POINTER makeRelation(
+                const QString &relationId,
+                const int &relationType,
+                NODE_RAW_POINTER &pkNodeRaw,
+                NODE_RAW_POINTER &fkNodeRaw
+            );
+
             void setNodeRaw(NODE_RAW_POINTER &nodeRaw);
-            void createNodeFromFile(const QString &id, const QString &name, const QPoint &pos);
+            NODE_POINTER createNodeFromFile(const QString &id, const QString &name, const QPoint &pos);
             void scrollToNode(const QString &nodeId);
             NODE_POINTER findNode(const QString &nodeId);
 
             QString getProjectName();
+            void setProjectName(const QString &name);
             QVector<NODE_POINTER> getAllNodes();
             NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
 

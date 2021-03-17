@@ -6,7 +6,6 @@
 #include "QTimer"
 
 #include "Relation.h"
-#include "RelationTypesDictionary.h"
 #include "RelationFactory.h"
 #include "RelationProvider.h"
 
@@ -106,5 +105,21 @@ namespace DbNodes::Relations {
     void Relation::raise()
     {
         relationView->raise();
+    }
+
+    int Relation::getRelationPositionType()
+    {
+        if (relationView->hasRelationPositionType()) {
+            return relationView->relationPositionType();
+        }
+
+        return 0;
+    }
+
+    void Relation::setRelationPositionType(const int &type)
+    {
+        if (relationView->hasRelationPositionType()) {
+            relationView->setRelationPositionType(type);
+        }
     }
 }

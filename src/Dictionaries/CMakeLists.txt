@@ -6,7 +6,9 @@ set(RESOURCES
         RelationMakerErrors.h
         StylesDictionary.h
         RelationLinkPositionsDictionary.h
-        RelationTypesDictionary.h)
+        RelationTypesDictionary.h
+        OpenFileExceptionsDictionary.h
+        SaveFileTypesDictionary.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

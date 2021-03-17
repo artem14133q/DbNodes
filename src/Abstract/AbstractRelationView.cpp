@@ -44,4 +44,16 @@ namespace DbNodes::Abstract {
     void AbstractRelationView::updateRelation(QPainter &painter, QPainterPath &path) {}
 
     int AbstractRelationView::getCurrentTypeId() { return 0; }
+
+    bool AbstractRelationView::hasRelationPositionType()
+    {
+        return false;
+    }
+
+    int AbstractRelationView::relationPositionType()
+    {
+        return 0;
+    }
+
+    void AbstractRelationView::setRelationPositionType(const int &type) {}
 }

@@ -173,11 +173,11 @@ namespace DbNodes::Widgets {
 
         auto* tableRenameModal = new TableRename(tableName, this);
 
-        auto parentGeometry = parentWidget()->parentWidget()->geometry();
+        QWidget *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
 
         tableRenameModal->move(
-        parentGeometry.x() + parentGeometry.width() / 2 - tableRenameModal->width() / 2,
-        parentGeometry.y() + parentGeometry.height() / 2 - tableRenameModal->height() / 2
+            mainWindow->x() + mainWindow->width() / 2 - tableRenameModal->width() / 2,
+            mainWindow->y() + mainWindow->height() / 2 - tableRenameModal->height() / 2
         );
 
         connect(tableRenameModal, &TableRename::pushConfirm, this, [this] (const QString &name) {
