@@ -17,8 +17,8 @@ namespace DbNodes::Dictionaries {
         public:
             static DICT_MAP(int) initDictionary() {
                 return {
-                        { RELATION_TYPE_PATH  ,   "Relation path" },
-                        { RELATION_TYPE_LINK  ,   "Relation link" },
+                    { RELATION_TYPE_PATH  ,   "Relation path" },
+                    { RELATION_TYPE_LINK  ,   "Relation link" },
                 };
             };
     };

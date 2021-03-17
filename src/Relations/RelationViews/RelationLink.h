@@ -34,6 +34,12 @@ namespace DbNodes::Relations {
 
             void switchPosition();
 
+            bool hasRelationPositionType() override;
+            int relationPositionType() override;
+            void setRelationPositionType(const int &type) override;
+
+            static int getNextRelationType(const int &currentRelationType);
+
         private:
             QString sidePositionName;
             QAction *switchSideAction{};

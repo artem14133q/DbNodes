@@ -22,7 +22,8 @@ set(PROJECT_DIRECTORIES
         ${SRC}/Abstract
         ${SRC}/Settings
         ${SRC}/Relations
-        ${SRC}/Dictionaries)
+        ${SRC}/Dictionaries
+        ${SRC}/Saving)
 
 # INCLUDE PROJECT LIBS
 set(PROJECT_LIBS
@@ -30,7 +31,8 @@ set(PROJECT_LIBS
         Abstract
         Settings
         Relations
-        Dictionaries)
+        Dictionaries
+        Saving)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_DIRECTORIES})
 target_link_libraries(${LIBRARY_NAME} ${REQUIRED_LIBS_QUALIFIED} ${PROJECT_LIBS})

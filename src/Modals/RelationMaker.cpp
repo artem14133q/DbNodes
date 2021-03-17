@@ -5,6 +5,7 @@
 
 #include "RelationMaker.h"
 #include "RelationMakerErrors.h"
+#include "RelationTypesDictionary.h"
 #include "Workarea.h"
 #include "../helper.h"
 
@@ -86,11 +87,11 @@ namespace DbNodes::Modals {
         warningWidget->hide();
 
         auto *warningIcon = new QLabel(warningWidget);
-        warningIcon->setPixmap(QPixmap(Helper::getIconPath("error", false)));
+        warningIcon->setPixmap(QPixmap(Helper::getIconPath("warning", false)));
         warningIcon->move(10, (warningWidget->height() - warningIcon->height()) / 2);
 
         warningText = new QTextBrowser(warningWidget);
-        warningText->setStyleSheet("QTextBrowser{color: #cb2a3c; font: bold; font-size: 18px;}");
+        warningText->setStyleSheet("QTextBrowser{color: #ffbc33; font: bold; font-size: 18px;}");
         warningText->setFixedSize(warningWidget->width() - warningIcon->width() - 10, 60);
         warningText->move(warningIcon->width(),(warningWidget->height() - warningIcon->height()) / 2 + 10);
 
@@ -166,7 +167,12 @@ namespace DbNodes::Modals {
         auto pkNodeRaw = workArea->findNodeRow(NodeRow::PK, currentPkNodeRowId);
         auto fkNodeRaw = workArea->findNodeRow(NodeRow::FK, currentFkNodeRowId);
 
-        workArea->makeRelation("relation:" + Helper::getCurrentTimeMS(),pkNodeRaw,fkNodeRaw);
+        workArea->makeRelation(
+            "relation:" + Helper::getCurrentTimeMS(),
+            RELATION_TYPE_PATH,
+            pkNodeRaw,
+            fkNodeRaw
+        );
 
         AbstractModal::confirm();
     }

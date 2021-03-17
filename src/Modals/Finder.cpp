@@ -1,6 +1,7 @@
 //
 // Created by artem on 27.01.2021.
 //
+
 #include "QPushButton"
 #include "QLineEdit"
 
@@ -22,7 +23,7 @@ namespace DbNodes::Modals {
 
         move(
             parentWidget()->x() + parentWidget()->width() / 2 - width() / 2,
-            parentWidget()->x() + parentWidget()->height() / 2 - height() / 2
+            parentWidget()->y() + parentWidget()->height() / 2 - height() / 2
         );
 
         initUI();

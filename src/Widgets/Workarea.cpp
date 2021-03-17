@@ -18,18 +18,17 @@
 
 namespace DbNodes::Widgets {
 
-    WorkArea::WorkArea(QWidget *parent, const QString &pProjectName): QWidget(parent)
+    WorkArea::WorkArea(QWidget *parent): QWidget(parent)
     {
         setObjectName("WorkArea");
-        projectName = pProjectName;
         // Set fixed size for work area
         setFixedSize(20000, 10000);
 
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
 
         Helper::subscribeSettingUpdate("rendering.antialiasing", [this] (const QVariant &value) {
-            this->isAntialiasing = value.toBool();
-            this->update();
+            isAntialiasing = value.toBool();
+            update();
         });
     }
 
@@ -88,22 +87,26 @@ namespace DbNodes::Widgets {
         }
     }
 
-    void WorkArea::makeRelation(const QString &relationId, NODE_RAW_POINTER &pkNodeRaw, NODE_RAW_POINTER &fkNodeRaw)
-    {
-        if (pkNodeRaw->getTableId() == fkNodeRaw->getTableId()) return;
+    RELATION_POINTER WorkArea::makeRelation(
+        const QString &relationId,
+        const int &relationType,
+        NODE_RAW_POINTER &pkNodeRaw,
+        NODE_RAW_POINTER &fkNodeRaw
+    ) {
+        if (pkNodeRaw->getTableId() == fkNodeRaw->getTableId()) return nullptr;
 
         foreach (const RELATION_POINTER &relation, relations) {
             if (relation->getPkNodeRaw()->getRowId() == pkNodeRaw->getRowId()
                 && relation->getFkNodeRaw()->getRowId() == fkNodeRaw->getRowId())
-                return;
+                return nullptr;
 
-            if (relation->getPkNodeRaw() == relation->getFkNodeRaw()) return;
+            if (relation->getPkNodeRaw() == relation->getFkNodeRaw()) return nullptr;
         }
 
         fkNodeRaw->disableFkRelationButton(true);
 
         RELATION_POINTER relation(
-            new Relations::Relation(this, relationId, RELATION_TYPE_LINK, pkNodeRaw, fkNodeRaw)
+            new Relations::Relation(this, relationId, relationType, pkNodeRaw, fkNodeRaw)
         );
 
         connect(relation, &Relations::Relation::goToRelatedTable, this, &WorkArea::scrollToNode);
@@ -111,6 +114,8 @@ namespace DbNodes::Widgets {
         relations.append(relation);
 
         dynamic_cast<Node *>(fkNodeRaw->parentWidget())->addRelation(relation);
+
+        return relation;
     }
 
     NODE_RAW_POINTER WorkArea::findNodeRow(int type, const QString &nodeRowId)
@@ -163,11 +168,13 @@ namespace DbNodes::Widgets {
         node->move(pos);
     }
 
-    void WorkArea::createNodeFromFile(const QString &id, const QString &name, const QPoint &pos)
+    NODE_POINTER WorkArea::createNodeFromFile(const QString &id, const QString &name, const QPoint &pos)
     {
         NODE_POINTER node = new Node(this, id, name);
         node->move(pos);
         nodeList.push_back(node);
+
+        return node;
     }
 
     QVector<NODE_POINTER> WorkArea::getAllNodes()
@@ -220,7 +227,7 @@ namespace DbNodes::Widgets {
     void WorkArea::debugRelation()
     {
         qDebug() << "============== DEBUG ALL RELATIONS =================";
-        for (int i = 0; relations.size() < i; ++i) {
+        for (int i = 0; i < relations.size(); ++i) {
             auto pkNodeRow(relations[i]->getPkNodeRaw());
             auto fkNodeRow(relations[i]->getFkNodeRaw());
 
@@ -245,5 +252,10 @@ namespace DbNodes::Widgets {
     const QList<RELATION_POINTER> &WorkArea::getAllRelations()
     {
         return relations;
+    }
+
+    void WorkArea::setProjectName(const QString &name)
+    {
+        projectName = name;
     }
 }

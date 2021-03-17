@@ -21,6 +21,7 @@ class Helper
         static void setSettingValue(const QString &name, const QVariant &value);
         static void subscribeSettingUpdate(const QString &key, const CONNECTOR_CALLBACK &callback);
         static void unBindSetting(const QString &key);
+        static void moveToCenter(QWidget *mapToWidget, QWidget *currentWidget);
 };
 
 #endif // HELPER_H

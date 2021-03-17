@@ -9,7 +9,6 @@
 #include "QComboBox"
 #include "QScrollArea"
 #include "QDir"
-#include "QDebug"
 
 #include "Settings.h"
 #include "StylesDictionary.h"
@@ -146,13 +145,13 @@ namespace DbNodes::Modals {
         auto *checkBox = new QCheckBox(centralWidget);
         checkBox->setStyleSheet(Helper::getStyleFromFile("settingsCheckBox"));
 
-        connect(checkBox, &QCheckBox::stateChanged, this, [this, settingKey] (const int &state) {
-            changeSettingMap(settingKey, state ? "true" : "false");
-        });
-
         auto state = Helper::getSettingValue(settingKey).toBool();
 
         if (state) checkBox->setCheckState(Qt::Checked);
+
+        connect(checkBox, &QCheckBox::stateChanged, this, [this, settingKey] (const int &state) {
+            changeSettingMap(settingKey, state ? true : false);
+        });
 
         settingsMap.insert(settingKey, state);
 

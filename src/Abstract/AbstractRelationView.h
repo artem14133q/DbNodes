@@ -29,6 +29,10 @@ namespace DbNodes::Abstract {
             virtual void updateRelation(QPainter &painter, QPainterPath &path);
             virtual int getCurrentTypeId();
 
+            virtual bool hasRelationPositionType();
+            virtual int relationPositionType();
+            virtual void setRelationPositionType(const int &type);
+
         protected:
             NODE_RAW_POINTER fkNodeRaw;
             NODE_RAW_POINTER pkNodeRaw;

@@ -10,7 +10,7 @@ set(RESOURCES
         TableRename.cpp
         TableRename.h
         Finder.cpp
-        Finder.h Settings.cpp Settings.h)
+        Finder.h Settings.cpp Settings.h ExceptionModal.cpp ExceptionModal.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

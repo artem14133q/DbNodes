@@ -1,6 +1,6 @@
-Create project - Ctrl+A
-Close project - Ctrl+W
-Open project - Ctrl+D
-Save project - Ctrl+S
-Save project to - Ctrl+Shift+S
-Close program - Ctrl+Q
+<html><span>Create project - </span><span style='color:#2ea5e2;'>Ctrl+A</span></html>
+<html><span>Close project - </span><span style='color:#2ea5e2;'>Ctrl+W</span></html>
+<html><span>Open project - </span><span style='color:#2ea5e2;'>Ctrl+D</span></html>
+<html><span>Save project - </span><span style='color:#2ea5e2;'>Ctrl+S</span></html>
+<html><span>Save project to - </span><span style='color:#2ea5e2;'>Ctrl+Shift+S</span></html>
+<html><span>Close program - </span><span style='color:#2ea5e2;'>Ctrl+Q</span></html>

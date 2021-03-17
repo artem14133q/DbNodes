@@ -59,7 +59,7 @@ namespace DbNodes::Modals {
         }
 
         auto *mainWindow = dynamic_cast<DbNodes::Widgets::MainWindow*>(parentWidget());
-        mainWindow->createWorkArea(projectName);
+        mainWindow->createProject(projectName);
 
         Abstract::AbstractModal::confirm();
     }

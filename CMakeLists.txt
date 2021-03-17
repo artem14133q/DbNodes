@@ -46,7 +46,8 @@ set(INCLUDE_DIRECTORIES
         src/Relations
         src/Modals
         src/Settings
-        src/Dictionaries)
+        src/Dictionaries
+        src/Saving)
 
 foreach(LIB_PATH IN LISTS INCLUDE_DIRECTORIES)
     add_subdirectory(${LIB_PATH})
