@@ -102,6 +102,8 @@ namespace DbNodes::Relations {
     {
         setSidePositionsName(relationPosition);
         relationPosition = getNextRelationType(relationPosition);
+
+        parentWidget()->update();
     }
 
     int RelationLink::getCurrentTypeId()
