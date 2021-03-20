@@ -301,8 +301,6 @@ namespace DbNodes::Widgets {
     Node::~Node()
     {
         delete selectable;
-
-        Abstract::AbstractNode::~AbstractNode();
     }
 }
 
