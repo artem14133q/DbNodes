@@ -9,6 +9,8 @@
 #include "QScrollArea"
 #include "QScrollBar"
 #include "QTimer"
+#include "QStyle"
+#include "QApplication"
 
 #include "Workarea.h"
 #include "Node.h"
@@ -23,6 +25,8 @@ namespace DbNodes::Widgets {
         setObjectName("WorkArea");
         // Set fixed size for work area
         setFixedSize(20000, 10000);
+
+        selectionRepository = new Utils::MultipleSelection::Repository(this);
 
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
 
@@ -85,6 +89,9 @@ namespace DbNodes::Widgets {
 
             relation->updateRelation(painter, bezierPath);
         }
+
+
+        selectionRepository->drawSelectionRect(painter);
     }
 
     RELATION_POINTER WorkArea::makeRelation(
@@ -144,15 +151,6 @@ namespace DbNodes::Widgets {
         }
     }
 
-    void WorkArea::cleanNodeList()
-    {
-        QVectorIterator<NODE_POINTER> nodeListIterator(nodeList);
-        while (nodeListIterator.hasNext()) {
-            auto node(nodeListIterator.next());
-            if (!node) nodeList.removeOne(node);
-        }
-    }
-
     void WorkArea::setNodeRaw(NODE_RAW_POINTER &nodeRaw)
     {
         if (nodeRaw->getRowType() == NodeRow::PK)
@@ -161,25 +159,27 @@ namespace DbNodes::Widgets {
             fkList.push_back(nodeRaw);
     }
 
-    void WorkArea::createNode(const QPoint &pos)
+    NODE_POINTER WorkArea::createNode(const QPoint &pos, const QString &id, const QString &name)
     {
-        Node* node = new Node(this);
-        nodeList.push_back(NODE_POINTER(node));
-        node->move(pos);
-    }
+        NODE_POINTER node;
 
-    NODE_POINTER WorkArea::createNodeFromFile(const QString &id, const QString &name, const QPoint &pos)
-    {
-        NODE_POINTER node = new Node(this, id, name);
-        node->move(pos);
+        if (id == nullptr || name == nullptr) {
+            node = new Node(this);
+        } else {
+            node = new Node(this, id, name);
+        }
+
         nodeList.push_back(node);
+        node->move(pos);
+
+        selectionRepository->initDefaultsConnections(node);
 
         return node;
     }
 
-    QVector<NODE_POINTER> WorkArea::getAllNodes()
+    QList<NODE_POINTER> WorkArea::getAllNodes()
     {
-        cleanNodeList();
+        Helper::removeDeletedItems<Node>(nodeList);
 
         cleanNodeRowsList(pkList);
         cleanNodeRowsList(fkList);
@@ -196,16 +196,15 @@ namespace DbNodes::Widgets {
     {
         NODE_POINTER node = findNode(nodeId);
 
-        auto *scrollWidget = static_cast<QScrollArea *>(parentWidget()->parentWidget());
-
         auto *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
 
         int y = (node->height() < mainWindow->height())
                 ? node->y() - mainWindow->height() / 2 + node->height() / 2
                 : node->y();
 
-        scrollWidget->verticalScrollBar()->setValue(y);
-        scrollWidget->horizontalScrollBar()->setValue(node->x() - mainWindow->width() / 2 + node->width() / 2);
+        int x = node->x() - mainWindow->width() / 2 + node->width() / 2;
+
+        scrollToPosition(QPoint(x, y));
 
         QTimer::singleShot(0, node, SLOT (setFocus()));
         node->raise();
@@ -213,7 +212,7 @@ namespace DbNodes::Widgets {
 
     NODE_POINTER WorkArea::findNode(const QString &nodeId)
     {
-        foreach (NODE_POINTER node, getAllNodes().toList()) {
+        foreach (NODE_POINTER node, getAllNodes()) {
             if (node->getTableId() == nodeId) {
                 return node;
             }
@@ -257,5 +256,32 @@ namespace DbNodes::Widgets {
     void WorkArea::setProjectName(const QString &name)
     {
         projectName = name;
+    }
+
+    void WorkArea::mousePressEvent(QMouseEvent *event)
+    {
+        if (event->button() == Qt::LeftButton) {
+            selectionRepository->start(event->pos());
+        }
+    }
+
+    void WorkArea::mouseMoveEvent(QMouseEvent *event)
+    {
+        selectionRepository->move(event->pos(), getAllNodes());
+    }
+
+    void WorkArea::mouseReleaseEvent(QMouseEvent *event)
+    {
+        if (event->button() == Qt::LeftButton) {
+            selectionRepository->stop();
+        }
+    }
+
+    void WorkArea::scrollToPosition(const QPoint &pos)
+    {
+        auto *scrollWidget = static_cast<QScrollArea *>(parentWidget()->parentWidget());
+
+        scrollWidget->verticalScrollBar()->setValue(pos.y());
+        scrollWidget->horizontalScrollBar()->setValue(pos.x());
     }
 }

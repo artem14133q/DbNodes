@@ -6,3 +6,7 @@ QWidget {
 QWidget#Node:focus {
     border: 2px solid cyan;
 }
+
+QWidget#Node[selected="true"] {
+    border: 2px solid #f36127;
+}

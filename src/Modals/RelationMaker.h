@@ -21,13 +21,13 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit RelationMaker(Widgets::NodeRow *fkNodeRaw, const QVector<NODE_POINTER> &nodeVector);
+            explicit RelationMaker(Widgets::NodeRow *fkNodeRaw, const QList<NODE_POINTER> &nodeVector);
 
         private:
             Widgets::NodeRow *fkNodeRawParent;
             QString currentPkNodeRowId, currentFkNodeRowId;
 
-            QVector<NODE_POINTER> nodeVector;
+            QList<NODE_POINTER> nodeVector;
 
             QHash<QString, NODE_POINTER> nodeList;
             QHash<QString, NODE_RAW_POINTER> nodeRowsOfSelectedNode;

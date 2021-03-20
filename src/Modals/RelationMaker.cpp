@@ -13,7 +13,7 @@ namespace DbNodes::Modals {
 
     RelationMaker::RelationMaker(
             DbNodes::Widgets::NodeRow *fkNodeRaw,
-            const QVector<NODE_POINTER> &nodeVector
+            const QList<NODE_POINTER> &nodeVector
     ) : Abstract::AbstractModal(fkNodeRaw), fkNodeRawParent(fkNodeRaw), nodeVector(nodeVector)
     {
         setFixedSize(300, 400);
@@ -198,7 +198,7 @@ namespace DbNodes::Modals {
         nodeList.clear();
         nodesSelect->clear();
 
-        foreach (const NODE_POINTER node, nodeVector.toList()) {
+        foreach (const NODE_POINTER node, nodeVector) {
             if (node->getTableId() != fkNodeRawParent->getTableId() && regFilter.indexIn(node->getTableName()) != -1) {
                 nodeList.insert(node->getTableId(), node);
                 nodesSelect->addItem(node->getTableName(), node->getTableId());

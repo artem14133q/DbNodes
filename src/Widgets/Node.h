@@ -11,6 +11,7 @@
 
 #include "AbstractNode.h"
 #include "Relation.h"
+#include "MultipleSelection/Selectable.h"
 
 #define NODE_POINTER QPointer<Widgets::Node>
 
@@ -41,7 +42,11 @@ namespace DbNodes::Widgets {
 
             void addRelation(const RELATION_POINTER &relation);
 
+            Utils::MultipleSelection::Selectable *getSelectable();
+
         private:
+            Utils::MultipleSelection::Selectable *selectable;
+
             QList<RELATION_POINTER> relations;
 
             QVBoxLayout* rowsLayout{};
@@ -65,6 +70,9 @@ namespace DbNodes::Widgets {
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
             void mousePressEvent(QMouseEvent *event) override;
+            void mouseMoveEvent(QMouseEvent *event) override;
+            void mouseReleaseEvent(QMouseEvent *event) override;
+
             QList<NodeRow *> groupNodeRows();
 
             void addColumn(int nodeRowType = 0, QPointer<NodeRow> nodeRow = nullptr);
