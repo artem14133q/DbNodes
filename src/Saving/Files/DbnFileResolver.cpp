@@ -37,7 +37,7 @@ namespace DbNodes::Saving {
 
         QList<TableObject> tableObjectsList;
 
-        foreach (const NODE_POINTER &table, tables.toList()) {
+        foreach (const NODE_POINTER &table, tables) {
             TableObject tableObject;
 
             tableObject.setId(table->getTableId());
@@ -117,10 +117,10 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadTables()
     {
         foreach (const TableObject &tableObject, object->getTables()) {
-            NODE_POINTER table = workArea->createNodeFromFile(
+            NODE_POINTER table = workArea->createNode(
+                QPoint(tableObject.getX(), tableObject.getY()),
                 tableObject.getId(),
-                tableObject.getName(),
-                QPoint(tableObject.getX(), tableObject.getY())
+                tableObject.getName()
             );
 
             loadColumns(tableObject, table);

@@ -6,6 +6,7 @@
 #include "QPair"
 #include "QPointer"
 #include "QDebug"
+#include "QApplication"
 
 #include "Node.h"
 #include "TableRename.h"
@@ -21,6 +22,8 @@ namespace DbNodes::Widgets {
     Node::Node(QWidget *parent, QString id, QString name)
         : DbNodes::Abstract::AbstractNode(parent), tableName(std::move(name)), tableId(std::move(id))
     {
+        selectable = new Utils::MultipleSelection::Selectable(this);
+
         setFocusPolicy(Qt::StrongFocus);
         setObjectName("Node");
         initUI();
@@ -221,6 +224,7 @@ namespace DbNodes::Widgets {
     void Node::mousePressEvent(QMouseEvent *event)
     {
         raise();
+        selectable->setClicked(true);
 
         foreach (const RELATION_POINTER &relation, relations) {
             if (relation == nullptr) {
@@ -272,5 +276,26 @@ namespace DbNodes::Widgets {
     }
 
 #endif
+
+    void Node::mouseMoveEvent(QMouseEvent *event)
+    {
+        QPoint delta(event->globalPos() - oldPos);
+
+        selectable->move(delta);
+
+        Abstract::AbstractNode::mouseMoveEvent(event);
+    }
+
+    void Node::mouseReleaseEvent(QMouseEvent *event)
+    {
+        selectable->disable();
+
+        QWidget::mouseReleaseEvent(event);
+    }
+
+    Utils::MultipleSelection::Selectable *Node::getSelectable()
+    {
+        return selectable;
+    }
 }
 

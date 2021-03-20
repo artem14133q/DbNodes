@@ -5,10 +5,12 @@
 #include "QWidgetList"
 #include "QPointer"
 #include "QPushButton"
+#include "QMouseEvent"
 
 #include "Node.h"
 #include "config.h"
 #include "Relation.h"
+#include "MultipleSelection/Repository.h"
 
 namespace DbNodes::Widgets {
 
@@ -30,30 +32,40 @@ namespace DbNodes::Widgets {
             );
 
             void setNodeRaw(NODE_RAW_POINTER &nodeRaw);
-            NODE_POINTER createNodeFromFile(const QString &id, const QString &name, const QPoint &pos);
             void scrollToNode(const QString &nodeId);
+            void scrollToPosition(const QPoint &pos);
             NODE_POINTER findNode(const QString &nodeId);
 
             QString getProjectName();
             void setProjectName(const QString &name);
-            QVector<NODE_POINTER> getAllNodes();
+            QList<NODE_POINTER> getAllNodes();
             NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
+
+            NODE_POINTER createNode(
+                    const QPoint &pos,
+                    const QString &id = nullptr,
+                    const QString &name = nullptr
+            );
 
             const QList<RELATION_POINTER> &getAllRelations();
 
             ~WorkArea() override;
 
         private:
+            Utils::MultipleSelection::Repository *selectionRepository;
+
             QList<RELATION_POINTER> relations;
             QVector<NODE_RAW_POINTER> pkList, fkList;
-            QVector<NODE_POINTER> nodeList;
+            QList<NODE_POINTER> nodeList;
             QString projectName;
 
             void contextMenuEvent(QContextMenuEvent *event) override;
             void paintEvent(QPaintEvent *event) override;
 
-            void cleanNodeList();
-            void createNode(const QPoint &pos);
+            void mousePressEvent(QMouseEvent *event) override;
+            void mouseMoveEvent(QMouseEvent *event) override;
+            void mouseReleaseEvent(QMouseEvent *event) override;
+
             static void cleanNodeRowsList(QVector<NODE_RAW_POINTER> &list);
 
             bool isAntialiasing;
