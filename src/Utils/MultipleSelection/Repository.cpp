@@ -139,4 +139,11 @@ namespace DbNodes::Utils::MultipleSelection {
             removeNodeFromSelectionList(node);
         });
     }
+
+    Repository::~Repository()
+    {
+        selectedNodes.clear();
+
+        QObject::deleteLater();
+    }
 }

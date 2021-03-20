@@ -243,6 +243,8 @@ namespace DbNodes::Widgets {
 
     WorkArea::~WorkArea()
     {
+        delete selectionRepository;
+
         Helper::unBindSetting("rendering.antialiasing");
 
         QWidget::deleteLater();

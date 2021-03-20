@@ -60,6 +60,8 @@ namespace DbNodes::Widgets {
 
             void initUI();
 
+            ~Node() override;
+
             #if APP_DEBUG
 
             static QString debugLayoutType(const int &rowType);

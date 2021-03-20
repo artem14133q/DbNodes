@@ -39,6 +39,8 @@ namespace DbNodes::Utils::MultipleSelection {
             void start(const QPoint &mousePos);
             void move(const QPoint &mousePos, const QList<NODE_POINTER> &nodes);
             void stop();
+
+            ~Repository() override;
     };
 
 }

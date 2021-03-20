@@ -297,5 +297,12 @@ namespace DbNodes::Widgets {
     {
         return selectable;
     }
+
+    Node::~Node()
+    {
+        delete selectable;
+
+        Abstract::AbstractNode::~AbstractNode();
+    }
 }
 
