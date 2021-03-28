@@ -9,8 +9,13 @@ set(RESOURCES
         Files/DbnFileStruct/ProjectParametersObject.h
         Files/DbnFileStruct/TableObject.h
         Files/DbnFileStruct/RelationObject.h
+        Files/ProjectsListStruct/RootObject.h
+        Files/ProjectsListStruct/ProjectDataObject.h
         Files/DbnFileResolver.cpp
-        Files/DbnFileResolver.h)
+        Files/DbnFileResolver.h
+        Files/ProjectListFileResolver.cpp
+        Files/ProjectListFileResolver.h
+        )
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

@@ -1,0 +1,14 @@
+QToolButton, QPushButton {
+    background-color: transparent;
+    border: 0;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+QToolButton:hover, QPushButton:hover {
+    background-color: #afb1b3;
+}
+
+QToolButton::menu-indicator {
+    image: none;
+}

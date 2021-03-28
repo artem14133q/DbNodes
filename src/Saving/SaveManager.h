@@ -12,26 +12,28 @@ namespace DbNodes::Saving {
 
     class SaveManager: public QObject
     {
-            QHash<QString, QByteArray> files;
+        private:
+            QByteArray readFile(const QString &path);
+            QByteArray generateException(const int &exceptionType, const QString &path = nullptr);
+
+            QString lastOpenedPath = "";
 
         public:
             explicit SaveManager(QWidget *parent = nullptr);
             Q_DISABLE_COPY(SaveManager)
 
-            void closeSaveFile(const QString &path);
+            QPair<QString, QByteArray> openFile();
 
-            QString openFile(int &exception);
+            static QString createNewFile(const QString &path = nullptr);
 
-            static QString createNewFile();
-
-            QByteArray getFileContent(const QString &path = nullptr);
+            QPair<QString, QByteArray> getFileContent(const QString &path = nullptr);
             void setFileContent(const QString &path, const QByteArray &content);
 
-            void saveFile(const QString &path);
+            static void createDirsInPath(const QString &path);
+
+            static bool fileExists(const QString &path);
 
             QString getLastOpenFilePath();
-
-            ~SaveManager() override;
     };
 
 }

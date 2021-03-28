@@ -1,0 +1,20 @@
+QWidget#Project {
+    background-color: transparent;
+    border: 1px solid black;
+    border-radius: 5px;
+    color: black;
+}
+
+QWidget#Project[disabled="true"] {
+    background-color: #cccccc;
+    border: 1px solid darkgray;
+}
+
+QWidget#Project:hover[disabled="false"] {
+    border: 2px solid #2ba2df;
+}
+
+QLabel {
+    background-color: transparent;
+    color: black;
+}

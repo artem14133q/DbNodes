@@ -61,7 +61,9 @@ namespace DbNodes::Utils::MultipleSelection {
     void Repository::start(const QPoint &mousePos)
     {
         mousePressed = true;
+
         mouseStartPos = mousePos;
+        mouseCurrentPos = mousePos;
 
         bool ctrlPressed = QApplication::keyboardModifiers() & Qt::ControlModifier;
         bool altPressed = QApplication::keyboardModifiers() & Qt::AltModifier;

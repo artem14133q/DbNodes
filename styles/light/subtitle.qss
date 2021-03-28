@@ -1,0 +1,6 @@
+QLabel {
+    color: #3c3f41;
+    font-size: 16px;
+    border: 0;
+    background-color: transparent;
+}

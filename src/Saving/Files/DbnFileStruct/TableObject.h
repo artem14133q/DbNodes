@@ -8,7 +8,7 @@
 #include "JsonObject.h"
 #include "ColumnObject.h"
 
-namespace DbNodes::Saving {
+namespace DbNodes::Saving::DbnFileStruct {
 
     class TableObject: public Abstract::JsonObject
     {

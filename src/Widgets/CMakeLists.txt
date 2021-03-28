@@ -9,8 +9,14 @@ set(RESOURCES
         Noderow.h
         Workarea.cpp
         Workarea.h
-        StartupWidget.cpp
-        StartupWidget.h)
+        StartupWidget/MainWidget.cpp
+        StartupWidget/MainWidget.h
+        StartupWidget/Menu.cpp
+        StartupWidget/Menu.h
+        StartupWidget/Project.cpp
+        StartupWidget/Project.h
+        StartupWidget/Hints.cpp
+        StartupWidget/Hints.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

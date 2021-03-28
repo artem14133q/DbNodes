@@ -7,7 +7,7 @@
 
 #include "JsonObject.h"
 
-namespace DbNodes::Saving {
+namespace DbNodes::Saving::DbnFileStruct {
 
     class RelationObject: public Abstract::JsonObject
     {

@@ -2,6 +2,7 @@
 #include "QDateTime"
 #include "QDebug"
 #include "QStringList"
+#include "QDir"
 
 #include "helper.h"
 #include "config.h"
@@ -111,4 +112,14 @@ void Helper::moveToCenter(QWidget *mapToWidget, QWidget *currentWidget)
         mapToWidget->y() + mapToWidget->height() / 2 - currentWidget->height() / 2
     );
 }
+
+QString Helper::replaceHomePathInFullPath(const QString &path, const QString &replace)
+{
+    return QString(path).replace(QDir::home().path(), replace);
+}
+
+//QString Helper::getIconFullPath(const QString &iconName, const bool &styled)
+//{
+//    auto path = getIconPath(iconName, styled);
+//}
 

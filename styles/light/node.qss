@@ -1,8 +1,16 @@
 QWidget {
-    background-color: #404142;
+    background-color: white;
     border-radius: 5px;
 }
 
+QWidget#Node {
+    border: 1px solid #bbbdbe;
+}
+
 QWidget#Node:focus {
-    border: 2px solid cyan;
+    border: 2px solid black;
+}
+
+QWidget#Node[selected="true"] {
+    border: 2px solid #f35c23;
 }

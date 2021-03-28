@@ -11,9 +11,9 @@ QCheckBox::indicator {
 }
 
 QCheckBox:checked {
-     color: #00ff00;
+     color: #499c54;
 }
 
 QCheckBox:unchecked {
-     color: #323334;
+     color: #dadcdd;
 }

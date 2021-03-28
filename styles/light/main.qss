@@ -8,7 +8,7 @@ QScrollBar:horizontal
     margin: 3px 15px 3px 15px;
     border: 1px transparent;
     border-radius: 4px;
-    background-color : #2A2929;
+    background-color : transparent;
 }
 
 QScrollBar::handle:horizontal
@@ -40,7 +40,7 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
 
 QScrollBar:vertical
 {
-    background-color: #2A2929;
+    background-color: transparent;
     width: 15px;
     margin: 15px 3px 15px 3px;
     border: 1px transparent;
