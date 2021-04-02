@@ -259,9 +259,10 @@ namespace DbNodes::Widgets {
     {
         auto lastFilePath = projectListFileResolver->getLastOpenedPath();
 
-        if (lastFilePath != "" || Saving::SaveManager::fileExists(lastFilePath)) {
+        if (lastFilePath != "" && Saving::SaveManager::fileExists(lastFilePath)) {
             openSaveFile(lastFilePath);
         } else {
+            projectListFileResolver->setLastOpenedPath("");
             setCentralWidget(createStartupWidget());
         }
     }
