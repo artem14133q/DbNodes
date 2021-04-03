@@ -12,7 +12,7 @@ QCheckBox:indicator {
 }
 
 QCheckBox:indicator:checked {
-    image: url(icons/check.png);
+    image: url(%1);
 }
 
 QCheckBox:indicator:unchecked {

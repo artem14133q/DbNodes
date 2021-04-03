@@ -22,7 +22,7 @@ namespace DbNodes::Saving {
 
     void DbnFileResolver::fillProjectParameters()
     {
-        ProjectParametersObject parameters;
+        DbnFileStruct::ProjectParametersObject parameters;
 
         parameters.setName(workArea->getProjectName());
         parameters.setWorkAreaWidth(workArea->width());
@@ -35,10 +35,10 @@ namespace DbNodes::Saving {
     {
         auto tables = workArea->getAllNodes();
 
-        QList<TableObject> tableObjectsList;
+        QList<DbnFileStruct::TableObject> tableObjectsList;
 
         foreach (const NODE_POINTER &table, tables) {
-            TableObject tableObject;
+            DbnFileStruct::TableObject tableObject;
 
             tableObject.setId(table->getTableId());
             tableObject.setName(table->getTableName());
@@ -53,14 +53,14 @@ namespace DbNodes::Saving {
         object->setTables(tableObjectsList);
     }
 
-    void DbnFileResolver::fillColumns(TableObject &tableObject, const NODE_POINTER &table)
+    void DbnFileResolver::fillColumns(DbnFileStruct::TableObject &tableObject, const NODE_POINTER &table)
     {
         auto columns = table->getAllNodeRows();
 
-        QList<ColumnObject> columnObjectList;
+        QList<DbnFileStruct::ColumnObject> columnObjectList;
 
         foreach (const NODE_RAW_POINTER &column, columns.toList()) {
-            ColumnObject columnObject;
+            DbnFileStruct::ColumnObject columnObject;
 
             columnObject.setId(column->getRowId());
             columnObject.setName(column->getRowName());
@@ -78,10 +78,10 @@ namespace DbNodes::Saving {
     {
         auto relations = workArea->getAllRelations();
 
-        QList<RelationObject> relationObjectsList;
+        QList<DbnFileStruct::RelationObject> relationObjectsList;
 
         foreach (const RELATION_POINTER &relation, relations) {
-            RelationObject relationObject;
+            DbnFileStruct::RelationObject relationObject;
 
             relationObject.setId(relation->getRelationId());
             relationObject.setFkNodeRawId(relation->getFkNodeRaw()->getRowId());
@@ -116,7 +116,7 @@ namespace DbNodes::Saving {
 
     void DbnFileResolver::loadTables()
     {
-        foreach (const TableObject &tableObject, object->getTables()) {
+        foreach (const DbnFileStruct::TableObject &tableObject, object->getTables()) {
             NODE_POINTER table = workArea->createNode(
                 QPoint(tableObject.getX(), tableObject.getY()),
                 tableObject.getId(),
@@ -127,9 +127,9 @@ namespace DbNodes::Saving {
         }
     }
 
-    void DbnFileResolver::loadColumns(const TableObject &tableObject, NODE_POINTER &table)
+    void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, NODE_POINTER &table)
     {
-        foreach (const ColumnObject &columnObject, tableObject.getColumns()) {
+        foreach (const DbnFileStruct::ColumnObject &columnObject, tableObject.getColumns()) {
             table->addColumnFromFile(
                 columnObject.getId(),
                 columnObject.getName(),
@@ -142,7 +142,7 @@ namespace DbNodes::Saving {
 
     void DbnFileResolver::loadRelations()
     {
-        foreach (const RelationObject &relationObject, object->getRelations()) {
+        foreach (const DbnFileStruct::RelationObject &relationObject, object->getRelations()) {
             NODE_RAW_POINTER pkNodeRow = workArea->findNodeRow(
                 Widgets::WorkArea::GET_PK_NODE_ROWS, relationObject.getPkNodeRawId()
             );

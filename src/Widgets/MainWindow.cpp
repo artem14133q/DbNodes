@@ -1,10 +1,7 @@
 #include "QMenuBar"
 #include "QDesktopWidget"
 #include "QFileDialog"
-#include "QFile"
-#include "QTextStream"
 #include "QApplication"
-#include "QDebug"
 #include "iostream"
 
 #include "NameNewProject.h"
@@ -13,7 +10,6 @@
 #include "Workarea.h"
 #include "Finder.h"
 #include "SaveFileTypesDictionary.h"
-#include "Files/DbnFileResolver.h"
 
 #include "../helper.h"
 
@@ -29,14 +25,10 @@ namespace DbNodes::Widgets {
         // Insert menu bar into MainWindow
         setMenuBar(defineMenuBar());
 
-        startupWidget = new StartupWidget(this);
-
         saveManager = new Saving::SaveManager(this);
+        projectListFileResolver = new Saving::ProjectListFileResolver(saveManager, PROJECTS_LIST_FILE_PATH);
 
-        scrollArea = new QScrollArea(this);
-        scrollArea->setObjectName("ScrollArea");
-        scrollArea->hide();
-        setCentralWidget(scrollArea);
+        openLastOpenedFileIfExists();
 
         showMaximized();
     }
@@ -48,15 +40,20 @@ namespace DbNodes::Widgets {
 
     void MainWindow::createWorkArea(const QString &projectName)
     {
+        scrollArea = new QScrollArea(this);
+        scrollArea->setObjectName("ScrollArea");
+        scrollArea->hide();
+
         // Init new work area widget
         workArea = new WorkArea(scrollArea);
+        scrollArea->setWidget(workArea);
 
         if (projectName != nullptr) {
             workArea->setProjectName(projectName);
         }
     }
 
-    void MainWindow::closeCurrentProject(const int &closeProjectStatus)
+    void MainWindow::closeCurrentProject(const int &closeProjectStatus, const bool &closeApp)
     {
         if (closeProjectStatus == PROJECT_NOT_CLOSED) return;
 
@@ -65,6 +62,10 @@ namespace DbNodes::Widgets {
         }
 
         enableWorkArea(false);
+
+        if (!closeApp) {
+            setCentralWidget(createStartupWidget());
+        }
 
         setWindowTitle("DbNodes");
         filePath.clear();
@@ -122,8 +123,12 @@ namespace DbNodes::Widgets {
 
         // Define slots
         connect(createProjectAction, &QAction::triggered, this, &MainWindow::createNewProject);
-        connect(openProjectAction, &QAction::triggered, this, &MainWindow::openSaveFile);
         connect(exitAction, &QAction::triggered, this, &MainWindow::close);
+
+        connect(openProjectAction, &QAction::triggered, this, [this] {
+            MainWindow::openSaveFile();
+            projectListFileResolver->setLastOpenedPath(filePath);
+        });
 
         connect(closeProjectAction, &QAction::triggered, this, [this] () {
             closeCurrentProject(MainWindow::openConfirmCloseProjectModal());
@@ -138,12 +143,7 @@ namespace DbNodes::Widgets {
         });
 
         connect(openSettingsAction, &QAction::triggered, this, [this] () {
-            auto *window = new Modals::Settings(this);
-
-            window->move(
-                x() + width() / 2 - window->width() / 2,
-                y() + height() / 2 - window->height() / 2
-            );
+            new Modals::Settings(this);
         });
 
         auto *tools = menuBar->addMenu("Tools");
@@ -174,7 +174,7 @@ namespace DbNodes::Widgets {
             event->ignore();
 
             int closeType = MainWindow::openConfirmCloseProjectModal();
-            closeCurrentProject(closeType);
+            closeCurrentProject(closeType, true);
 
             if (closeType != PROJECT_NOT_CLOSED) QApplication::exit();
         }
@@ -182,66 +182,64 @@ namespace DbNodes::Widgets {
 
     int MainWindow::openConfirmCloseProjectModal()
     {
-        using namespace DbNodes::Modals;
-
-        ConfirmCloseProject confirmWindow(workArea->getProjectName());
+        Modals::ConfirmCloseProject confirmWindow(workArea->getProjectName(), this);
 
         confirmWindow.exec();
 
         return confirmWindow.getProjectCloseType();
     }
 
-    void MainWindow::paintEvent(QPaintEvent * event)
-    {
-        if (workArea == nullptr) {
-            startupWidget->move(
-            width() / 2 - startupWidget->width() / 2,
-            height() / 2 - startupWidget->height() / 2
-            );
-        }
-
-        QMainWindow::paintEvent(event);
-    }
-
     void MainWindow::generateSaveFile(const int &saveType)
     {
         if (filePath.isEmpty() || saveType == SAVE_TYPE_NEW_FILE) {
             filePath = Saving::SaveManager::createNewFile();
+
+            projectListFileResolver->appendNewProject(workArea->getProjectName(), filePath);
+            projectListFileResolver->setLastOpenedPath(filePath);
         }
+
+        projectListFileResolver->updateProjectName(filePath, workArea->getProjectName());
 
         Saving::DbnFileResolver(saveManager, workArea).save(filePath);
     }
 
-    void MainWindow::openSaveFile()
+    void MainWindow::openSaveFile(const QString &path)
     {
         createWorkArea();
 
         Saving::DbnFileResolver saveFile(saveManager, workArea);
 
-        if (!saveFile.load()) {
+        if (!saveFile.load(path)) {
             delete workArea;
             workArea = nullptr;
+
+            if (centralWidget()->objectName() != "StartupWidget") {
+                setCentralWidget(createStartupWidget());
+            }
+
             return;
         }
 
         enableWorkArea(true);
 
-        filePath = saveManager->getLastOpenFilePath();
-        setTitle(saveFile.getProjectName(), filePath);
+        filePath = (path == nullptr) ? saveFile.getCurrentFilePath() : path;
+        auto projectTitle = saveFile.getProjectName();
+
+        setTitle(projectTitle, filePath);
+
+        projectListFileResolver->appendNewProject(projectTitle, filePath);
+        projectListFileResolver->setLastOpenedPath(filePath);
     }
 
     void MainWindow::enableWorkArea(const bool &enable)
     {
         if (enable) {
-            scrollArea->setWidget(workArea);
+            setCentralWidget(scrollArea);
             scrollArea->show();
-            startupWidget->hide();
         } else {
-            scrollArea->hide();
-            startupWidget->show();
-            delete workArea;
+            delete scrollArea;
+            scrollArea = nullptr;
             workArea = nullptr;
-            scrollArea->setWidget(nullptr);
         }
 
         saveProjectAction->setEnabled(enable);
@@ -255,5 +253,29 @@ namespace DbNodes::Widgets {
         createWorkArea(name);
         enableWorkArea(true);
         setTitle(name, "~");
+    }
+
+    void MainWindow::openLastOpenedFileIfExists()
+    {
+        auto lastFilePath = projectListFileResolver->getLastOpenedPath();
+
+        if (lastFilePath != "" && Saving::SaveManager::fileExists(lastFilePath)) {
+            openSaveFile(lastFilePath);
+        } else {
+            projectListFileResolver->setLastOpenedPath("");
+            setCentralWidget(createStartupWidget());
+        }
+    }
+
+    StartupWidget::MainWidget *MainWindow::createStartupWidget()
+    {
+        auto *widget = new StartupWidget::MainWidget(
+            projectListFileResolver,
+            this
+        );
+
+        connect(widget, &StartupWidget::MainWidget::openProjectSignal, this, &MainWindow::openSaveFile);
+
+        return widget;
     }
 }

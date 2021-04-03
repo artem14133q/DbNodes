@@ -2,15 +2,16 @@
 // Created by artem on 26.12.2020.
 //
 
-#include "StartupWidget.h"
 #include "QVBoxLayout"
 #include "QLabel"
 #include "QStringList"
-#include "../helper.h"
 
-namespace DbNodes::Widgets {
+#include "Hints.h"
+#include "../../helper.h"
 
-    StartupWidget::StartupWidget(QWidget *parent): DbNodes::Abstract::DrawableWidget(parent)
+namespace DbNodes::Widgets::StartupWidget {
+
+    Hints::Hints(QWidget *parent): DbNodes::Abstract::DrawableWidget(parent)
     {
         setStyleSheet(Helper::getStyleFromFile("startupWidget"));
 
@@ -20,7 +21,7 @@ namespace DbNodes::Widgets {
         show();
     }
 
-    void StartupWidget::initUi()
+    void Hints::initUi()
     {
         auto* vb = new QVBoxLayout(this);
 

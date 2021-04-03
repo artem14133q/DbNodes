@@ -12,19 +12,19 @@
 
 namespace DbNodes::Saving {
 
-    class DbnFileResolver: public FileResolver<ProjectObject>
+    class DbnFileResolver: public FileResolver<DbnFileStruct::ProjectObject>
     {
         private:
             Widgets::WorkArea *workArea;
 
             void fillProjectParameters();
             void fillTables();
-            void fillColumns(TableObject &tableObject, const NODE_POINTER &table);
+            void fillColumns(DbnFileStruct::TableObject &tableObject, const NODE_POINTER &table);
             void fillRelations();
 
             void loadProjectParameters();
             void loadTables();
-            void loadColumns(const TableObject &tableObject, NODE_POINTER &table);
+            void loadColumns(const DbnFileStruct::TableObject &tableObject, NODE_POINTER &table);
             void loadRelations();
 
         public:

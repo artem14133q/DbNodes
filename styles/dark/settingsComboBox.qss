@@ -15,5 +15,5 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-    image: url(icons/down_arrow.png);
+    image: url(%1);
 }

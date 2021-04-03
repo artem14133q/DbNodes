@@ -8,8 +8,12 @@
 
 #include "Workarea.h"
 #include "ConfirmCloseProject.h"
-#include "StartupWidget.h"
 #include "SaveManager.h"
+
+#include "Files/DbnFileResolver.h"
+#include "Files/ProjectListFileResolver.h"
+
+#include "StartupWidget/MainWidget.h"
 
 #include "config.h"
 
@@ -24,12 +28,19 @@ namespace DbNodes::Widgets {
             void createProject(const QString &name);
 
         public slots:
-            void closeCurrentProject(const int &closeProjectStatus);
+            void closeCurrentProject(const int &closeProjectStatus, const bool &closeApp = false);
             void generateSaveFile(const int &saveType);
-            void openSaveFile();
             void createNewProject();
+            void openSaveFile(const QString &path = nullptr);
 
         private:
+            QString filePath = "";
+
+            // For central widget
+            QScrollArea* scrollArea = nullptr;
+            WorkArea* workArea = nullptr;
+
+            // Action for main menu
             QAction* createProjectAction{};
             QAction* openProjectAction{};
             QAction* saveProjectAction{};
@@ -37,25 +48,25 @@ namespace DbNodes::Widgets {
             QAction* closeProjectAction{};
             QAction* openSettingsAction{};
             QAction* exitAction{};
-
             QAction* findNodeAction{};
 
-            QScrollArea* scrollArea;
-            StartupWidget* startupWidget;
-            QString filePath = "";
-
-            WorkArea* workArea{};
+            // Files
+            Saving::ProjectListFileResolver *projectListFileResolver;
             Saving::SaveManager *saveManager;
 
             QMenuBar* defineMenuBar();
+
             void setTitle(const QString &name, const QString &path);
             int openConfirmCloseProjectModal();
 
             void closeEvent(QCloseEvent * event) override;
-            void paintEvent(QPaintEvent * event) override;
 
             void enableWorkArea(const bool &enable);
             void createWorkArea(const QString &projectName = nullptr);
+
+            void openLastOpenedFileIfExists();
+
+            StartupWidget::MainWidget *createStartupWidget();
     };
 
 }

@@ -1,0 +1,7 @@
+QLabel {
+    color: black;
+}
+
+QLabel[colorScheme="warning"] {
+    color: #df4a16;
+}

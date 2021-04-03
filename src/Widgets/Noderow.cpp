@@ -115,7 +115,7 @@ namespace DbNodes::Widgets {
         if (rowType == NodeRow::PK) {
             auto *key = new QLabel(this);
             key->setStyleSheet(Helper::getStyleFromFile("nodeRowKeyIcon"));
-            key->setPixmap(QPixmap(Helper::getIconPath("key", false)));
+            key->setPixmap(QPixmap(Helper::getIconPath("key")));
             hl->addWidget(key);
         }
 
@@ -134,8 +134,8 @@ namespace DbNodes::Widgets {
 
             QIcon icon;
 
-            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain", false)), QIcon::Normal);
-            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain_disabled", false)), QIcon::Disabled);
+            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain")), QIcon::Normal);
+            icon.addPixmap(QPixmap(Helper::getIconPath("fk_chain_disabled")), QIcon::Disabled);
 
             fkButton = new QPushButton(this);
             fkButton->setFixedHeight(24);
@@ -148,7 +148,7 @@ namespace DbNodes::Widgets {
         }
         // Width for PK
         else if (rowType == NodeRow::PK) {
-            leName->setFixedWidth(160);
+            leName->setFixedWidth(163);
             leRowTitle = "pkNodeRowTitle";
         }
 
@@ -172,7 +172,7 @@ namespace DbNodes::Widgets {
         if (rowType != NodeRow::PK) {
             auto *isNull = new QCheckBox("NULL", this);
             isNull->setChecked(rowIsNull);
-            isNull->setFixedWidth(35);
+            isNull->setFixedWidth(40);
 
             QString nodeRowIsNullStyle = "nodeRowIsNull";
             if (rowType == NodeRow::FK) nodeRowIsNullStyle = "fkNodeRowIsNull";
@@ -183,7 +183,7 @@ namespace DbNodes::Widgets {
         }
 
         moveHandle = new QLabel(this);
-        moveHandle->setPixmap(QPixmap(Helper::getIconPath("menu", false)));
+        moveHandle->setPixmap(QPixmap(Helper::getIconPath("dots")));
         moveHandle->setStyleSheet(Helper::getStyleFromFile("dropButton"));
 
         hl->addWidget(moveHandle);

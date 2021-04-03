@@ -14,6 +14,8 @@ namespace DbNodes::Modals {
         setWindowTitle(projectName);
         setStyleSheet(Helper::getStyleFromFile("subWindow"));
         initUi();
+
+        Helper::moveToCenter(parentWidget(), this);
     }
 
     void ConfirmCloseProject::initUi()

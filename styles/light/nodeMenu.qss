@@ -1,8 +1,9 @@
 QMenu {
-    background-color: #333333;
-    color: #efefef;
+    background-color: white;
+    border: 1px solid black;
+    color: black;
 }
 
 QMenu::item:selected {
-    color: #2ba2df;
+    background-color: #afb1b3;
 }

@@ -12,6 +12,7 @@
 #define CONFIG_FILE_PATH APP_PATH + "/dbnodes.ini"
 #define STYLE_FILES_PATH APP_PATH + "/styles"
 #define ICONS_FILES_PATH APP_PATH + "/icons"
+#define PROJECTS_LIST_FILE_PATH APP_PATH + "/options/projects.json"
 
 #define APP_DEBUG @APP_DEBUG@
 

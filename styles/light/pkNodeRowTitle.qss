@@ -1,11 +1,11 @@
 QLineEdit {
     margin: 0;
     border: none;
-    color: #00ffff;
+    color: #00a5a5;
 }
 
 QToolTip {
     background: #f2f2f2;
     padding: 1px;
-    border: 1px solid #00ffff;
+    border: 1px solid #00a5a5;
 }

@@ -22,6 +22,8 @@ class Helper
         static void subscribeSettingUpdate(const QString &key, const CONNECTOR_CALLBACK &callback);
         static void unBindSetting(const QString &key);
         static void moveToCenter(QWidget *mapToWidget, QWidget *currentWidget);
+        static QString replaceHomePathInFullPath(const QString &path, const QString &replace = "~");
+//        static QString getIconFullPath(const QString &iconName, const bool &styled = true);
 
         template<class T>
         static void removeDeletedItems(QList<QPointer<T>> &list)

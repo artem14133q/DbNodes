@@ -24,7 +24,8 @@ namespace DbNodes::Modals {
         setWindowTitle("Settings");
 
         // Disabled MainWindow then relation maker open
-        Helper::findParentWidgetRecursive(this, "MainWindow")->setDisabled(true);
+        QWidget *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
+        mainWindow->setDisabled(true);
 
         // Enabled this window
         setEnabled(true);
@@ -34,6 +35,8 @@ namespace DbNodes::Modals {
         initUI();
 
         newSettingsMap = settingsMap;
+
+        Helper::moveToCenter(mainWindow, this);
 
         show();
     }
@@ -143,14 +146,18 @@ namespace DbNodes::Modals {
         auto *hl = new QHBoxLayout();
 
         auto *checkBox = new QCheckBox(centralWidget);
-        checkBox->setStyleSheet(Helper::getStyleFromFile("settingsCheckBox"));
+
+        checkBox->setStyleSheet(
+            Helper::getStyleFromFile("settingsCheckBox")
+                .arg(Helper::getIconPath("check", false))
+        );
 
         auto state = Helper::getSettingValue(settingKey).toBool();
 
         if (state) checkBox->setCheckState(Qt::Checked);
 
         connect(checkBox, &QCheckBox::stateChanged, this, [this, settingKey] (const int &state) {
-            changeSettingMap(settingKey, state ? true : false);
+            changeSettingMap(settingKey, state);
         });
 
         settingsMap.insert(settingKey, state);
@@ -203,7 +210,12 @@ namespace DbNodes::Modals {
         hl->addWidget(getTitle(name));
 
         auto *comboBox = new QComboBox(centralWidget);
-        comboBox->setStyleSheet(Helper::getStyleFromFile("settingsComboBox"));
+
+        comboBox->setStyleSheet(
+            Helper::getStyleFromFile("settingsComboBox")
+                .arg(Helper::getIconPath("down_arrow", false))
+        );
+
         comboBox->setFixedWidth(200);
 
         foreach (const QString &key, values.keys()) {
@@ -214,9 +226,11 @@ namespace DbNodes::Modals {
 
         comboBox->setCurrentIndex(comboBox->findData(value));
 
-        connect(comboBox, &QComboBox::currentTextChanged, this, [this, settingKey, comboBox] (const QString &) {
-            changeSettingMap(settingKey, comboBox->currentData());
-        });
+        connect(comboBox, &QComboBox::currentTextChanged, this,
+        [this, settingKey, comboBox] (const QString &) {
+                changeSettingMap(settingKey, comboBox->currentData());
+            }
+        );
 
         settingsMap.insert(settingKey, value);
 

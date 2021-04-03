@@ -6,6 +6,7 @@
 #define DBNODES_FILERESOLVER_H
 
 #include "QObject"
+#include "QDebug"
 
 #include "SaveManager.h"
 
@@ -14,11 +15,11 @@ namespace DbNodes::Saving {
     template<typename T>
     class FileResolver: public QObject
     {
-        private:
-            SaveManager *saveManager;
-
         protected:
             T *object = nullptr;
+            SaveManager *saveManager;
+
+            QString currentFilePath = "";
 
         public:
             Q_DISABLE_COPY(FileResolver)
@@ -40,19 +41,36 @@ namespace DbNodes::Saving {
                 saveManager->setFileContent(path, toJson());
             }
 
-            bool load(const QString &path = nullptr)
+            virtual bool load(const QString &path = nullptr)
             {
-                auto fileBytes = saveManager->getFileContent(path);
+                auto pair = saveManager->getFileContent(path);
 
-                if (fileBytes.isEmpty()) {
+                if (pair.second.isEmpty()) {
                     return false;
                 }
 
-                object->setBaseObject(QJsonDocument().fromJson(fileBytes).object());
+                object->setBaseObject(QJsonDocument().fromJson(pair.second).object());
 
                 fromJson();
 
+                currentFilePath = (path == nullptr) ? pair.first : path;
+
                 return true;
+            }
+
+            virtual bool createFileIfNotExists(const QString &path)
+            {
+                if (!SaveManager::fileExists(path)) {
+                    SaveManager::createNewFile(path);
+                    return true;
+                }
+
+                return false;
+            }
+
+            [[nodiscard]] QString getCurrentFilePath() const
+            {
+                return currentFilePath;
             }
 
             ~FileResolver() override
