@@ -21,13 +21,20 @@ namespace DbNodes::Widgets::StartupWidget {
         auto *hl = new QHBoxLayout();
 
         auto *startupWidget = new Hints(this);
-        auto *startupMenu = new Menu(projectsManager, this);
 
-        connect(startupMenu, &Menu::openProjectSignal, this, [this] (const QString &path) {
-            emit openProjectSignal(path);
-        });
+        if (!projectsManager->getProjectsMap().empty()) {
+            auto *startupMenu = new Menu(projectsManager, this);
 
-        hl->addWidget(startupMenu);
+            connect(startupMenu, &Menu::openProjectSignal, this, [this] (const QString &path) {
+                emit openProjectSignal(path);
+            });
+
+            connect(startupMenu, &Menu::updateMenuSignal, this, [this] {
+                emit updateMenuSignal();
+            });
+
+            hl->addWidget(startupMenu);
+        }
 
         auto *startupLayout = new QVBoxLayout();
 

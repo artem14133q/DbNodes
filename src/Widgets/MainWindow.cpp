@@ -22,11 +22,11 @@ namespace DbNodes::Widgets {
         setObjectName("MainWindow");
         setStyleSheet(Helper::getStyleFromFile("main"));
         setWindowIcon(QIcon(Helper::getIconPath("128", false)));
-        // Insert menu bar into MainWindow
-        setMenuBar(defineMenuBar());
 
         saveManager = new Saving::SaveManager(this);
         projectListFileResolver = new Saving::ProjectListFileResolver(saveManager, PROJECTS_LIST_FILE_PATH);
+
+        setMenuBar(defineMenuBar());
 
         openLastOpenedFileIfExists();
 
@@ -69,6 +69,8 @@ namespace DbNodes::Widgets {
 
         setWindowTitle("DbNodes");
         filePath.clear();
+
+        recentProjectsMenu->updateMenu();
     }
 
     QMenuBar* MainWindow::defineMenuBar()
@@ -89,9 +91,14 @@ namespace DbNodes::Widgets {
 //        openProject->setIcon(QIcon(":/imgs/open"));
         openProjectAction->setShortcut(QKeySequence("Ctrl+D"));
 
+        recentProjectsMenu = new Menus::RecentMenu(projectListFileResolver, project);
+        connect(recentProjectsMenu, &Menus::RecentMenu::openRecentProject, this, &MainWindow::openSaveFile);
+
+        project->addMenu(recentProjectsMenu);
+
         // Close opened project
         closeProjectAction = project->addAction("Close Project");
-//        closeProject->setIcon(QIcon(":/imgs/close"));
+//        closeProjectAction->setIcon(QIcon(":/imgs/close"));
         closeProjectAction->setDisabled(true);
         closeProjectAction->setShortcut(QKeySequence("Ctrl+W"));
 
@@ -99,13 +106,13 @@ namespace DbNodes::Widgets {
 
         // Save current project in file
         saveProjectAction = project->addAction("Save Project");
-//        saveProject->setIcon(QIcon(":/imgs/save"));
+//        saveProjectAction->setIcon(QIcon(":/imgs/save"));
         saveProjectAction->setDisabled(true);
         saveProjectAction->setShortcut(QKeySequence("Ctrl+S"));
 
         // Save current project in other file
         saveAsProjectAction = project->addAction("Save as ...");
-//        saveAsProject->setIcon(QIcon(":/imgs/save_as"));
+//        saveAsProjectAction->setIcon(QIcon(":/imgs/save_as"));
         saveAsProjectAction->setDisabled(true);
         saveAsProjectAction->setShortcut(QKeySequence("Ctrl+Shift+S"));
 
@@ -116,9 +123,9 @@ namespace DbNodes::Widgets {
 
         project->addSeparator();
 
-        // Open project from file
+        // Close app
         exitAction = project->addAction("Exit");
-//        openProject->setIcon(QIcon(":/imgs/open"));
+//        exitAction->setIcon(QIcon(":/imgs/open"));
         exitAction->setShortcut(QKeySequence("Ctrl+Q"));
 
         // Define slots
@@ -165,7 +172,7 @@ namespace DbNodes::Widgets {
     void MainWindow::createNewProject()
     {
         auto window = new Modals::NameNewProject(this);
-        window->move(x() + width() / 2 - window->width() / 2, y() + height() / 2 - window->height() / 2);
+        Helper::moveToCenter(this, window);
     }
 
     void MainWindow::closeEvent(QCloseEvent *event)
@@ -205,11 +212,21 @@ namespace DbNodes::Widgets {
 
     void MainWindow::openSaveFile(const QString &path)
     {
+        if (workArea != nullptr) {
+            int closeType = openConfirmCloseProjectModal();
+
+            if (closeType == PROJECT_NOT_CLOSED) return;
+
+            closeCurrentProject(closeType);
+        }
+
         createWorkArea();
 
         Saving::DbnFileResolver saveFile(saveManager, workArea);
 
         if (!saveFile.load(path)) {
+            if (workArea != nullptr) return;
+
             delete workArea;
             workArea = nullptr;
 
@@ -229,6 +246,8 @@ namespace DbNodes::Widgets {
 
         projectListFileResolver->appendNewProject(projectTitle, filePath);
         projectListFileResolver->setLastOpenedPath(filePath);
+
+        recentProjectsMenu->updateMenu();
     }
 
     void MainWindow::enableWorkArea(const bool &enable)
@@ -265,6 +284,8 @@ namespace DbNodes::Widgets {
             projectListFileResolver->setLastOpenedPath("");
             setCentralWidget(createStartupWidget());
         }
+
+        recentProjectsMenu->updateMenu();
     }
 
     StartupWidget::MainWidget *MainWindow::createStartupWidget()
@@ -275,6 +296,7 @@ namespace DbNodes::Widgets {
         );
 
         connect(widget, &StartupWidget::MainWidget::openProjectSignal, this, &MainWindow::openSaveFile);
+        connect(widget, &StartupWidget::MainWidget::updateMenuSignal, recentProjectsMenu, &Menus::RecentMenu::updateMenu);
 
         return widget;
     }

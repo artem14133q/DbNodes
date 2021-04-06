@@ -90,6 +90,8 @@ namespace DbNodes::Widgets::StartupWidget {
         projects.remove(path);
         projectsManager->removeProject(path);
         update();
+
+        emit updateMenuSignal();
     }
 
     void Menu::fillProjectsViewContainer()
@@ -102,6 +104,8 @@ namespace DbNodes::Widgets::StartupWidget {
             projects.insert(path, projectWidget);
             projectsViewContainer->addWidget(projectWidget);
         }
+
+        emit updateMenuSignal();
     }
 
     void Menu::deleteProjects()

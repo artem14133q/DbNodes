@@ -16,7 +16,9 @@ set(RESOURCES
         StartupWidget/Project.cpp
         StartupWidget/Project.h
         StartupWidget/Hints.cpp
-        StartupWidget/Hints.h)
+        StartupWidget/Hints.h
+        Menus/RecentMenu.cpp
+        Menus/RecentMenu.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

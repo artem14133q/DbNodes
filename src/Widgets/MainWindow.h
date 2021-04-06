@@ -15,6 +15,8 @@
 
 #include "StartupWidget/MainWidget.h"
 
+#include "Menus/RecentMenu.h"
+
 #include "config.h"
 
 namespace DbNodes::Widgets {
@@ -49,6 +51,8 @@ namespace DbNodes::Widgets {
             QAction* openSettingsAction{};
             QAction* exitAction{};
             QAction* findNodeAction{};
+
+            Menus::RecentMenu *recentProjectsMenu{};
 
             // Files
             Saving::ProjectListFileResolver *projectListFileResolver;

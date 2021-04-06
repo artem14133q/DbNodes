@@ -21,7 +21,7 @@ namespace DbNodes::Widgets::StartupWidget {
             Saving::ProjectListFileResolver *projectsManager;
             QHash<QString, Project *> projects;
 
-            QVBoxLayout *projectsViewContainer;
+            QVBoxLayout *projectsViewContainer{};
 
             void initUI();
 
@@ -38,6 +38,7 @@ namespace DbNodes::Widgets::StartupWidget {
 
         public: signals:
             void openProjectSignal(const QString &path);
+            void updateMenuSignal();
     };
 
 }
