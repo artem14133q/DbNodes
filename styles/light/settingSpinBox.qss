@@ -1,0 +1,19 @@
+QSpinBox {
+    background-color: transparent;
+    border: 1px solid #595b5d;
+    border-radius: 0;
+    color: white;
+}
+
+QSpinBox::up-button {
+    border-left: 1px solid #595b5d;
+    image: url(%1);
+    margin: 0;
+}
+
+QSpinBox::down-button {
+    border-left: 1px solid #595b5d;
+    border-top: 1px solid #595b5d;
+    image: url(%2);
+    margin: 0;
+}

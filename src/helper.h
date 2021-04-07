@@ -24,6 +24,12 @@ class Helper
         static void moveToCenter(QWidget *mapToWidget, QWidget *currentWidget);
         static QString replaceHomePathInFullPath(const QString &path, const QString &replace = "~");
 //        static QString getIconFullPath(const QString &iconName, const bool &styled = true);
+        static void standardWidgetsHeight(
+            const int &height,
+            QWidget *parent,
+            const QStringList &names = {},
+            const bool &exclude = false
+        );
 
         template<class T>
         static void removeDeletedItems(QList<QPointer<T>> &list)

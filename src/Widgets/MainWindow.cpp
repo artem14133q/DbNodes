@@ -4,12 +4,14 @@
 #include "QApplication"
 #include "iostream"
 
-#include "NameNewProject.h"
+#include "NewProject.h"
 #include "Settings.h"
 #include "MainWindow.h"
 #include "Workarea.h"
 #include "Finder.h"
+
 #include "SaveFileTypesDictionary.h"
+#include "DefaultProjectSettingsDictionary.h"
 
 #include "../helper.h"
 
@@ -171,7 +173,27 @@ namespace DbNodes::Widgets {
 
     void MainWindow::createNewProject()
     {
-        auto window = new Modals::NameNewProject(this);
+        auto window = new Modals::NewProject(this);
+
+        connect(window, &Modals::NewProject::createProjectSignal, this,
+            [this] (const VARIANTS_MAP &settings) {
+                if (!closeProjectIfExists()) return;
+
+                createWorkArea(settings.value(NAME_KEY).toString());
+
+                workArea->setFixedSize(
+                    settings.value(WIDTH_KEY).toInt(),
+                    settings.value(HEIGHT_KEY).toInt()
+                );
+
+                enableWorkArea(true);
+
+                setTitle(workArea->getProjectName(), "#");
+
+                filePath = "";
+            }
+        );
+
         Helper::moveToCenter(this, window);
     }
 
@@ -207,18 +229,14 @@ namespace DbNodes::Widgets {
 
         projectListFileResolver->updateProjectName(filePath, workArea->getProjectName());
 
+        setTitle(workArea->getProjectName(), filePath);
+
         Saving::DbnFileResolver(saveManager, workArea).save(filePath);
     }
 
     void MainWindow::openSaveFile(const QString &path)
     {
-        if (workArea != nullptr) {
-            int closeType = openConfirmCloseProjectModal();
-
-            if (closeType == PROJECT_NOT_CLOSED) return;
-
-            closeCurrentProject(closeType);
-        }
+        if (!closeProjectIfExists()) return;
 
         createWorkArea();
 
@@ -271,7 +289,7 @@ namespace DbNodes::Widgets {
     {
         createWorkArea(name);
         enableWorkArea(true);
-        setTitle(name, "~");
+        setTitle(name, "#");
     }
 
     void MainWindow::openLastOpenedFileIfExists()
@@ -299,5 +317,18 @@ namespace DbNodes::Widgets {
         connect(widget, &StartupWidget::MainWidget::updateMenuSignal, recentProjectsMenu, &Menus::RecentMenu::updateMenu);
 
         return widget;
+    }
+
+    bool MainWindow::closeProjectIfExists()
+    {
+        if (workArea != nullptr) {
+            int closeType = openConfirmCloseProjectModal();
+
+            if (closeType == PROJECT_NOT_CLOSED) return false;
+
+            closeCurrentProject(closeType);
+        }
+
+        return true;
     }
 }

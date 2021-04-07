@@ -9,48 +9,28 @@
 #include "QPushButton"
 #include "QLabel"
 
-#include "AbstractModal.h"
+#include "AbstractSettingModal.h"
+#include "DrawableWidget.h"
 
 #define VARIANTS_MAP QHash<QString, QVariant>
 
 namespace DbNodes::Modals {
 
-    class Settings : public Abstract::AbstractModal
+    class Settings : public Abstract::AbstractSettingModal
     {
         public:
             explicit Settings(QWidget *parent = nullptr);
-            void exit() override;
 
         private:
-            bool canSave = false;
-
-            QHash<QString, QVariant> settingsMap;
-            QHash<QString, QVariant> newSettingsMap;
-
             QPushButton *pbApply{};
             QPushButton *pbOk{};
 
-            QWidget *centralWidget{};
-            QVBoxLayout *centralLayout{};
+            void initSettingsUi() override;
 
-            QLabel *getTitle(const QString &name);
-
-            void confirm() override;
-
-            void initUI();
-
-            void createTextSetting(const QString &name, const QString &settingKey);
-
-            void createComboBoxSetting(const QString &name, const QString &settingKey, const VARIANTS_MAP &values);
-
-            void createCheckboxSetting(const QString &name, const QString &settingKey);
-
-            void createSettingGroup(const QString &name);
+            void accept(const bool &close) override;
 
         protected:
-            void accept(const bool &close = false);
-            void changeSettingMap(const QString &name, const QVariant &value);
-            void enableButtons(const bool &enable);
+            void enableConfirm(const bool &enable) override;
     };
 
 }

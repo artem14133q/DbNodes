@@ -1,8 +1,8 @@
 set(LIBRARY_NAME Modals)
 
 set(RESOURCES
-        NameNewProject.cpp
-        NameNewProject.h
+        NewProject.cpp
+        NewProject.h
         RelationMaker.cpp
         RelationMaker.h
         ConfirmCloseProject.cpp
@@ -10,7 +10,11 @@ set(RESOURCES
         TableRename.cpp
         TableRename.h
         Finder.cpp
-        Finder.h Settings.cpp Settings.h ExceptionModal.cpp ExceptionModal.h)
+        Finder.h
+        Settings.cpp
+        Settings.h
+        ExceptionModal.cpp
+        ExceptionModal.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

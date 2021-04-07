@@ -1,5 +1,7 @@
-QLineEdit
+QLineEdit[warning="true"]
 {
     border-bottom: 1px solid #e9524a;
     border-radius: 0;
+    color: #e9524a;
+    font-weight: bold;
 }
