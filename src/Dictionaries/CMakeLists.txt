@@ -8,7 +8,7 @@ set(RESOURCES
         RelationLinkPositionsDictionary.h
         RelationTypesDictionary.h
         OpenFileExceptionsDictionary.h
-        SaveFileTypesDictionary.h)
+        SaveFileTypesDictionary.h DefaultProjectSettingsDictionary.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

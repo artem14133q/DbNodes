@@ -118,6 +118,23 @@ QString Helper::replaceHomePathInFullPath(const QString &path, const QString &re
     return QString(path).replace(QDir::home().path(), replace);
 }
 
+void Helper::standardWidgetsHeight(const int &height, QWidget *parent, const QStringList &names, const bool &exclude)
+{
+    foreach (QWidget *widget, parent->findChildren<QWidget *>()) {
+        if (!names.isEmpty()) {
+            if (names.contains(widget->objectName())) {
+                if (exclude) continue;
+            } else {
+                if (!exclude) continue;
+            }
+        }
+
+        widget->setFixedHeight(30);
+    }
+
+    parent->adjustSize();
+}
+
 //QString Helper::getIconFullPath(const QString &iconName, const bool &styled)
 //{
 //    auto path = getIconPath(iconName, styled);

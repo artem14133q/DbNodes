@@ -29,7 +29,15 @@ namespace DbNodes::Abstract {
 
             switch (keyEvent->key()) {
                 case Qt::Key_Return:
-                    confirm(); return true;
+
+                    if (acceptOnEnter) {
+                        accept(true);
+                    } else {
+                        confirm();
+                    }
+
+                    return true;
+
                 case Qt::Key_Escape:
                     exit(); return true;
             }
@@ -42,5 +50,15 @@ namespace DbNodes::Abstract {
     {
         event->ignore();
         exit();
+    }
+
+    void AbstractModal::setAcceptOnEnter(const bool &enable)
+    {
+        acceptOnEnter = enable;
+    }
+
+    void AbstractModal::accept(const bool &close)
+    {
+        if (close) confirm();
     }
 }

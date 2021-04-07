@@ -31,6 +31,7 @@ namespace DbNodes::Widgets {
 
         public slots:
             void closeCurrentProject(const int &closeProjectStatus, const bool &closeApp = false);
+            bool closeProjectIfExists();
             void generateSaveFile(const int &saveType);
             void createNewProject();
             void openSaveFile(const QString &path = nullptr);
