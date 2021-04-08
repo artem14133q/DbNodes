@@ -8,34 +8,35 @@
 #include "QDebug"
 #include "QApplication"
 
-#include "Node.h"
+#include "TableNode.h"
 #include "TableRename.h"
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "Workarea.h"
 #include "RelationTypesDictionary.h"
 
 #include <utility>
 #include "../helper.h"
 
-namespace DbNodes::Widgets {
+namespace DbNodes::Nodes {
 
-    Node::Node(QWidget *parent, QString id, QString name)
+    TableNode::TableNode(QWidget *parent, QString id, QString name)
         : DbNodes::Abstract::AbstractNode(parent), tableName(std::move(name)), tableId(std::move(id))
     {
         selectable = new Utils::MultipleSelection::Selectable(this);
 
         setFocusPolicy(Qt::StrongFocus);
-        setObjectName("Node");
+        setObjectName("TableNode");
         initUI();
         show();
     }
 
-    Node::Node(QWidget *parent): Node(parent, "node:" + Helper::getCurrentTimeMS(), "table")
+    TableNode::TableNode(QWidget *parent)
+        : TableNode(parent, "table:" + Helper::getCurrentTimeMS(), "table")
     {
         openRenameModal();
     }
 
-    void Node::initUI()
+    void TableNode::initUI()
     {
         setStyleSheet(Helper::getStyleFromFile("node"));
 
@@ -59,21 +60,21 @@ namespace DbNodes::Widgets {
         fkLayout = new QVBoxLayout(vl->widget());
 
         // Layout for default rows
-        rowsLayout = new QVBoxLayout(vl->widget());
-        rowsLayout->setSpacing(3);
+        columnsLayout = new QVBoxLayout(vl->widget());
+        columnsLayout->setSpacing(3);
 
         vl->addLayout(pkLayout);
         vl->addSpacing(5);
         vl->addLayout(fkLayout);
         vl->addSpacing(5);
-        vl->addLayout(rowsLayout);
+        vl->addLayout(columnsLayout);
 
         vl->addStretch();
 
         setLayout(vl);
     }
 
-    void Node::contextMenuEvent(QContextMenuEvent *event)
+    void TableNode::contextMenuEvent(QContextMenuEvent *event)
     {
         auto *contextMenu = new QMenu();
         contextMenu->setStyleSheet(Helper::getStyleFromFile("nodeMenu"));
@@ -90,18 +91,18 @@ namespace DbNodes::Widgets {
 
 
         //Define Slots
-        connect(deleteTable, &QAction::triggered, this, [this] {this->~Node();});
+        connect(deleteTable, &QAction::triggered, this, [this] {this->~TableNode();});
         connect(addColumn, &QAction::triggered, this, [this] {this->addColumn();});
-        connect(rename, &QAction::triggered, this, &Node::openRenameModal);
-        connect(addPkColumn, &QAction::triggered, this, [this] {this->addColumn(NodeRow::PK);});
-        connect(addFkColumn, &QAction::triggered, this, [this] {this->addColumn(NodeRow::FK);});
+        connect(rename, &QAction::triggered, this, &TableNode::openRenameModal);
+        connect(addPkColumn, &QAction::triggered, this, [this] {this->addColumn(Table::Column::PK);});
+        connect(addFkColumn, &QAction::triggered, this, [this] {this->addColumn(Table::Column::FK);});
 
 
         #if APP_DEBUG
 
-        QAction* debugAction = contextMenu->addAction("[DEBUG] - NODE ROW DATA");
+        QAction* debugAction = contextMenu->addAction("[DEBUG] - COLUMN DATA");
 
-        connect(debugAction, &QAction::triggered, this, &Node::debugNodeRows);
+        connect(debugAction, &QAction::triggered, this, &TableNode::debugTables);
 
         #endif
 
@@ -111,66 +112,66 @@ namespace DbNodes::Widgets {
         contextMenu->exec(menuPos);
     }
 
-    // Create row of types
-    void Node::addColumn(int nodeRowType, NODE_RAW_POINTER row)
+    // Create column of types
+    void TableNode::addColumn(int columnType, COLUMN_POINTER column)
     {
-        if (!row) row = new NodeRow(getLayoutType(nodeRowType), this, nodeRowType);
+        if (!column) column = new Table::Column(getLayoutType(columnType), this, columnType);
 
-        auto *parentWorkArea = dynamic_cast<WorkArea*>(parentWidget());
+        auto *parentWorkArea = dynamic_cast<Widgets::WorkArea*>(parentWidget());
 
-        if (nodeRowType == NodeRow::PK)
-            pkLayout->addWidget(row);
-        else if (nodeRowType == NodeRow::FK)
-            fkLayout->addWidget(row);
+        if (columnType == Table::Column::PK)
+            pkLayout->addWidget(column);
+        else if (columnType == Table::Column::FK)
+            fkLayout->addWidget(column);
         else
-            rowsLayout->addWidget(row);
+            columnsLayout->addWidget(column);
 
-        parentWorkArea->setNodeRaw(row);
+        parentWorkArea->setColumn(column);
 
         adjustSize();
     }
 
-    void Node::addColumnFromFile(
+    void TableNode::addColumnFromFile(
         const QString &id,
         const QString &name,
         const int &type,
         const QString &dbType,
         const bool &isNull
     ) {
-        QPointer<NodeRow> nodeRow = new NodeRow(getLayoutType(type), this, id, name, type, dbType, isNull);
+        QPointer<Table::Column> nodeRow = new Table::Column(getLayoutType(type), this, id, name, type, dbType, isNull);
         addColumn(type, nodeRow);
     }
 
-    QVector<QPointer<NodeRow>> Node::getAllNodeRows()
+    QVector<QPointer<Table::Column>> TableNode::getAllColumns()
     {
-        NODE_RAW_VECTOR allNodeRows;
+        COLUMN_VECTOR allNodeRows;
 
-        foreach (NodeRow *w, groupNodeRows()) {
-            allNodeRows.push_back(QPointer<NodeRow>(w));
+        foreach (Table::Column *w, groupColumns()) {
+            allNodeRows.push_back(QPointer<Table::Column>(w));
         }
 
         return allNodeRows;
     }
 
     // Named node slot
-    void Node::setTableName(const QString &newTableName)
+    void TableNode::setTableName(const QString &newTableName)
     {
         tableName = newTableName;
     }
 
     // Get table name
-    QString Node::getTableName()
+    QString TableNode::getTableName()
     {
         return tableName;
     }
 
     // Get table id
-    QString Node::getTableId()
+    QString TableNode::getTableId()
     {
         return tableId;
     }
 
-    void Node::openRenameModal()
+    void TableNode::openRenameModal()
     {
         using namespace DbNodes::Modals;
 
@@ -189,28 +190,28 @@ namespace DbNodes::Widgets {
         });
     }
 
-    QVBoxLayout *Node::getLayoutType(const int &nodeRowType)
+    QVBoxLayout *TableNode::getLayoutType(const int &columnType)
     {
-        if (nodeRowType == NodeRow::PK)
+        if (columnType == Table::Column::PK)
             return pkLayout;
-        else if (nodeRowType == NodeRow::FK)
+        else if (columnType == Table::Column::FK)
             return fkLayout;
         else
-            return rowsLayout;
+            return columnsLayout;
     }
 
-    QList<NodeRow *> Node::groupNodeRows()
+    QList<Table::Column *> TableNode::groupColumns()
     {
-        auto nodeRows = findChildren<NodeRow *>();
+        auto nodeRows = findChildren<Table::Column *>();
 
-        QList<NodeRow *> sortedNodeRows;
-        QList<int> layouts({NodeRow::PK, NodeRow::FK, 0});
+        QList<Table::Column *> sortedNodeRows;
+        QList<int> layouts({Table::Column::PK, Table::Column::FK, 0});
 
         foreach (const int &lt, layouts) {
-            QHash<int, NodeRow *> lN;
+            QHash<int, Table::Column *> lN;
 
-            foreach (NodeRow *w, nodeRows) {
-                if (w->getRowType() == lt) lN.insert(getLayoutType(lt)->indexOf(w), w);
+            foreach (Table::Column *w, nodeRows) {
+                if (w->getColumnType() == lt) lN.insert(getLayoutType(lt)->indexOf(w), w);
             }
 
             for (int i = 0; !lN.empty(); ++i) {
@@ -221,7 +222,7 @@ namespace DbNodes::Widgets {
         return sortedNodeRows;
     }
 
-    void Node::mousePressEvent(QMouseEvent *event)
+    void TableNode::mousePressEvent(QMouseEvent *event)
     {
         raise();
         selectable->setClicked(true);
@@ -240,44 +241,44 @@ namespace DbNodes::Widgets {
         AbstractNode::mousePressEvent(event);
     }
 
-    void Node::addRelation(const RELATION_POINTER &relation)
+    void TableNode::addRelation(const RELATION_POINTER &relation)
     {
         relations.push_back(relation);
     }
 
 #if APP_DEBUG
 
-    void Node::debugNodeRows()
+    void TableNode::debugTables()
     {
         qDebug() << "===== DEBUG NODE ROWS DATA ======";
 
-        foreach (NodeRow *w, groupNodeRows()) {
-            int index = getLayoutType(w->getRowType())->indexOf(w);
+        foreach (Table::Column *w, groupColumns()) {
+            int index = getLayoutType(w->getColumnType())->indexOf(w);
 
             qDebug() << index
                 << (index < 10 ? " " : "")
                 << "[ "
-                << w->getRowId()
+                << w->getColumnId()
                 << " | "
-                << debugLayoutType(w->getRowType())
+                << debugLayoutType(w->getColumnType())
                 << " | "
-                << w->getRowName()
+                << w->getColumnName()
                 << " ]";
         }
 
         qDebug() << "===== DEBUG NODE ROWS DATA ======";
     }
 
-    QString Node::debugLayoutType(const int &rowType)
+    QString TableNode::debugLayoutType(const int &columnType)
     {
-        if      (rowType == NodeRow::PK)    return "PK";
-        else if (rowType == NodeRow::FK)    return "FK";
-        else                                return "RW";
+        if      (columnType == Table::Column::PK)      return "PK";
+        else if (columnType == Table::Column::FK)      return "FK";
+        else                                        return "RW";
     }
 
 #endif
 
-    void Node::mouseMoveEvent(QMouseEvent *event)
+    void TableNode::mouseMoveEvent(QMouseEvent *event)
     {
         QPoint delta(event->globalPos() - oldPos);
 
@@ -286,19 +287,19 @@ namespace DbNodes::Widgets {
         Abstract::AbstractNode::mouseMoveEvent(event);
     }
 
-    void Node::mouseReleaseEvent(QMouseEvent *event)
+    void TableNode::mouseReleaseEvent(QMouseEvent *event)
     {
         selectable->disable();
 
         QWidget::mouseReleaseEvent(event);
     }
 
-    Utils::MultipleSelection::Selectable *Node::getSelectable()
+    Utils::MultipleSelection::Selectable *TableNode::getSelectable()
     {
         return selectable;
     }
 
-    Node::~Node()
+    TableNode::~TableNode()
     {
         delete selectable;
     }

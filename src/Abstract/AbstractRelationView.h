@@ -11,7 +11,7 @@
 #include "QPainterPath"
 
 #include "DrawableWidget.h"
-#include "Noderow.h"
+#include "Table/Column.h"
 
 namespace DbNodes::Abstract {
 
@@ -22,8 +22,8 @@ namespace DbNodes::Abstract {
         public:
             explicit AbstractRelationView(
                 QWidget *parent,
-                const NODE_RAW_POINTER &pkNodeRaw,
-                const NODE_RAW_POINTER &fkNodeRaw
+                const COLUMN_POINTER &pkColumn,
+                const COLUMN_POINTER &fkColumn
             );
 
             virtual void updateRelation(QPainter &painter, QPainterPath &path);
@@ -34,8 +34,8 @@ namespace DbNodes::Abstract {
             virtual void setRelationPositionType(const int &type);
 
         protected:
-            NODE_RAW_POINTER fkNodeRaw;
-            NODE_RAW_POINTER pkNodeRaw;
+            COLUMN_POINTER fkColumn;
+            COLUMN_POINTER pkColumn;
 
             QMenu * createContextMenu();
 

@@ -16,33 +16,33 @@
 namespace DbNodes::Relations {
 
     Relation::Relation(
-        QWidget *parent,
-        QString relationId,
-        const int relationTypeId,
-        NODE_RAW_POINTER &pkNodeRaw,
-        NODE_RAW_POINTER &fkNodeRaw
-    ):  QObject(parent),
-        parent(parent),
-        relationId(std::move(relationId)),
-        pkNodeRaw(pkNodeRaw),
-        fkNodeRaw(fkNodeRaw)
+            QWidget *parent,
+            QString relationId,
+            const int relationTypeId,
+            COLUMN_POINTER &pkColumn,
+            COLUMN_POINTER &fkColumn
+    ): QObject(parent),
+       parent(parent),
+       relationId(std::move(relationId)),
+       pkColumn(pkColumn),
+       fkColumn(fkColumn)
     {
         enableRelationType(relationTypeId);
     }
 
-    NODE_RAW_POINTER Relation::getPkNodeRaw()
+    COLUMN_POINTER Relation::getPkColumn()
     {
-        return pkNodeRaw;
+        return pkColumn;
     }
 
-    NODE_RAW_POINTER Relation::getFkNodeRaw()
+    COLUMN_POINTER Relation::getFkColumn()
     {
-        return fkNodeRaw;
+        return fkColumn;
     }
 
     bool Relation::checkIsRelationValid()
     {
-        return pkNodeRaw && fkNodeRaw;
+        return pkColumn && fkColumn;
     }
 
     Relation::~Relation()
@@ -51,8 +51,8 @@ namespace DbNodes::Relations {
 
         parent->update();
 
-        if (fkNodeRaw) {
-            fkNodeRaw->disableFkRelationButton(false);
+        if (fkColumn) {
+            fkColumn->disableFkRelationButton(false);
         }
 
         deleteLater();
@@ -99,7 +99,7 @@ namespace DbNodes::Relations {
 
     void Relation::goToRelationTableSignal()
     {
-        emit goToRelatedTable(pkNodeRaw->getTableId());
+        emit goToRelatedTable(pkColumn->getTableId());
     }
 
     void Relation::raise()

@@ -7,8 +7,8 @@
 
 #include "StructDictionary.h"
 
-#define         CANNOT_FIND_PK_NODE_ROWS        0
-#define         CANNOT_FIND_NODES               1
+#define         CANNOT_FIND_PK_COLUMNS        0
+#define         CANNOT_FIND_TABLES            1
 
 namespace DbNodes::Dictionaries {
 
@@ -17,8 +17,8 @@ namespace DbNodes::Dictionaries {
         public:
             static DICT_MAP(int) initDictionary() {
                 return {
-                    { CANNOT_FIND_PK_NODE_ROWS  ,   "Cannot find primary keys in current table" },
-                    { CANNOT_FIND_NODES         ,   "Cannot find tables"                        },
+                    { CANNOT_FIND_PK_COLUMNS  ,   "Cannot find primary keys in current table" },
+                    { CANNOT_FIND_TABLES      ,   "Cannot find tables"                        },
                 };
             };
     };

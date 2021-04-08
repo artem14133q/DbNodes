@@ -3,10 +3,10 @@ QWidget {
     border-radius: 5px;
 }
 
-QWidget#Node:focus {
+QWidget#TableNode:focus {
     border: 2px solid cyan;
 }
 
-QWidget#Node[selected="true"] {
+QWidget#TableNode[selected="true"] {
     border: 2px solid #f36127;
 }

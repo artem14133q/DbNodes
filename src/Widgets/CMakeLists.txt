@@ -3,10 +3,6 @@ set(LIBRARY_NAME Widgets)
 set(RESOURCES
         MainWindow.cpp
         MainWindow.h
-        Node.cpp
-        Node.h
-        Noderow.cpp
-        Noderow.h
         Workarea.cpp
         Workarea.h
         StartupWidget/MainWidget.cpp
@@ -32,7 +28,8 @@ set(PROJECT_DIRECTORIES
         ${SRC}/Relations
         ${SRC}/Dictionaries
         ${SRC}/Saving
-        ${SRC}/Utils)
+        ${SRC}/Utils
+        ${SRC}/Nodes)
 
 # INCLUDE PROJECT LIBS
 set(PROJECT_LIBS
@@ -42,7 +39,8 @@ set(PROJECT_LIBS
         Relations
         Dictionaries
         Saving
-        Utils)
+        Utils
+        Nodes)
 
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_DIRECTORIES})
 target_link_libraries(${LIBRARY_NAME} ${REQUIRED_LIBS_QUALIFIED} ${PROJECT_LIBS})

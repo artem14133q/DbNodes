@@ -9,7 +9,7 @@
 
 #include "AbstractRelationView.h"
 #include "Relation.h"
-#include "Noderow.h"
+#include "Table/Column.h"
 
 namespace DbNodes::Relations {
 

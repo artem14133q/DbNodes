@@ -10,7 +10,7 @@
 
 namespace DbNodes::Modals {
 
-    Finder::Finder(const QList<NODE_POINTER> &nodeVector, QWidget *parent)
+    Finder::Finder(const QList<TABLE_POINTER> &nodeVector, QWidget *parent)
         : Abstract::AbstractModal(parent), nodeVector(nodeVector)
     {
         setFixedSize(400, 600);
@@ -48,7 +48,7 @@ namespace DbNodes::Modals {
         listWidget->setSpacing(3);
         listWidget->setFocusPolicy(Qt::NoFocus);
         listWidget->setContentsMargins(0, 0, 0, 0);
-        listWidget->setStyleSheet(Helper::getStyleFromFile("nodeList"));
+        listWidget->setStyleSheet(Helper::getStyleFromFile("tableList"));
         listWidget->setFixedSize(width() - 50, height() - 70);
         listWidget->move(25, 60);
 
@@ -76,7 +76,7 @@ namespace DbNodes::Modals {
 
         QRegExp regFilter("\\w*" + filter + "\\w*");
 
-        foreach (NODE_POINTER node, nodeVector) {
+        foreach (TABLE_POINTER node, nodeVector) {
             if (regFilter.indexIn(node->getTableName()) != -1) {
                 filteredNodeList.insert(node->getTableId(), node);
 

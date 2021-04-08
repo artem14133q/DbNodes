@@ -17,11 +17,11 @@
 namespace DbNodes::Relations {
 
     RelationLink::RelationLink(
-        const NODE_RAW_POINTER &pkNodeRaw,
-        const NODE_RAW_POINTER &fkNodeRaw,
+        const COLUMN_POINTER &pkColumn,
+        const COLUMN_POINTER &fkColumn,
         const int &relationPosition,
         QWidget *parent
-    ):  Abstract::AbstractRelationView(parent, pkNodeRaw, fkNodeRaw), relationPosition(relationPosition) {
+    ): Abstract::AbstractRelationView(parent, pkColumn, fkColumn), relationPosition(relationPosition) {
         setObjectName("RelationLink");
         setFixedHeight(26);
         setStyleSheet(Helper::getStyleFromFile("relationLink"));
@@ -37,7 +37,7 @@ namespace DbNodes::Relations {
         layout->setSpacing(0);
         layout->setContentsMargins(2,2,2,2);
 
-        auto *label = new QLabel("  " + pkNodeRaw->getTableName() + " ", this);
+        auto *label = new QLabel("  " + pkColumn->getTableName() + " ", this);
         label->setFixedHeight(22);
         label->setStyleSheet(Helper::getStyleFromFile("relationLinkLabel"));
         layout->addWidget(label);
@@ -78,7 +78,7 @@ namespace DbNodes::Relations {
 
     void RelationLink::updateRelation(QPainter &, QPainterPath &)
     {
-        int *fkBuf = fkNodeRaw->dataForPaint();
+        int *fkBuf = fkColumn->dataForPaint();
 
         switch (relationPosition) {
             case RELATION_LINK_POSITION_LEFT:

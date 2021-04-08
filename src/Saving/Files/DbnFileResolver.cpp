@@ -33,11 +33,11 @@ namespace DbNodes::Saving {
 
     void DbnFileResolver::fillTables()
     {
-        auto tables = workArea->getAllNodes();
+        auto tables = workArea->getAllTables();
 
         QList<DbnFileStruct::TableObject> tableObjectsList;
 
-        foreach (const NODE_POINTER &table, tables) {
+        foreach (const TABLE_POINTER &table, tables) {
             DbnFileStruct::TableObject tableObject;
 
             tableObject.setId(table->getTableId());
@@ -53,20 +53,20 @@ namespace DbNodes::Saving {
         object->setTables(tableObjectsList);
     }
 
-    void DbnFileResolver::fillColumns(DbnFileStruct::TableObject &tableObject, const NODE_POINTER &table)
+    void DbnFileResolver::fillColumns(DbnFileStruct::TableObject &tableObject, const TABLE_POINTER &table)
     {
-        auto columns = table->getAllNodeRows();
+        auto columns = table->getAllColumns();
 
         QList<DbnFileStruct::ColumnObject> columnObjectList;
 
-        foreach (const NODE_RAW_POINTER &column, columns.toList()) {
+        foreach (const COLUMN_POINTER &column, columns.toList()) {
             DbnFileStruct::ColumnObject columnObject;
 
-            columnObject.setId(column->getRowId());
-            columnObject.setName(column->getRowName());
-            columnObject.setColumnType(column->getRowType());
-            columnObject.setDbType(column->getRowDbType());
-            columnObject.setNullable(column->getRowIsNull());
+            columnObject.setId(column->getColumnId());
+            columnObject.setName(column->getColumnName());
+            columnObject.setColumnType(column->getColumnType());
+            columnObject.setDbType(column->getColumnDbType());
+            columnObject.setNullable(column->getColumnIsNull());
 
             columnObjectList.push_back(columnObject);
         }
@@ -84,8 +84,8 @@ namespace DbNodes::Saving {
             DbnFileStruct::RelationObject relationObject;
 
             relationObject.setId(relation->getRelationId());
-            relationObject.setFkNodeRawId(relation->getFkNodeRaw()->getRowId());
-            relationObject.setPkNodeRawId(relation->getPkNodeRaw()->getRowId());
+            relationObject.setFkColumnId(relation->getFkColumn()->getColumnId());
+            relationObject.setPkColumnId(relation->getPkColumn()->getColumnId());
             relationObject.setType(relation->getRelationTypeId());
             relationObject.setPosition(relation->getRelationPositionType());
 
@@ -117,7 +117,7 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadTables()
     {
         foreach (const DbnFileStruct::TableObject &tableObject, object->getTables()) {
-            NODE_POINTER table = workArea->createNode(
+            TABLE_POINTER table = workArea->createTable(
                 QPoint(tableObject.getX(), tableObject.getY()),
                 tableObject.getId(),
                 tableObject.getName()
@@ -127,7 +127,7 @@ namespace DbNodes::Saving {
         }
     }
 
-    void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, NODE_POINTER &table)
+    void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, TABLE_POINTER &table)
     {
         foreach (const DbnFileStruct::ColumnObject &columnObject, tableObject.getColumns()) {
             table->addColumnFromFile(
@@ -143,19 +143,19 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadRelations()
     {
         foreach (const DbnFileStruct::RelationObject &relationObject, object->getRelations()) {
-            NODE_RAW_POINTER pkNodeRow = workArea->findNodeRow(
-                Widgets::WorkArea::GET_PK_NODE_ROWS, relationObject.getPkNodeRawId()
+            COLUMN_POINTER pkColumn = workArea->findColumn(
+                    Widgets::WorkArea::GET_PK_COLUMNS, relationObject.getPkColumnId()
             );
 
-            NODE_RAW_POINTER fkNodeRow = workArea->findNodeRow(
-                Widgets::WorkArea::GET_FK_NODE_ROWS, relationObject.getFkNodeRawId()
+            COLUMN_POINTER fkColumn = workArea->findColumn(
+                    Widgets::WorkArea::GET_FK_COLUMNS, relationObject.getFkColumnId()
             );
 
             workArea->makeRelation(
                 relationObject.getId(),
                 relationObject.getType(),
-                pkNodeRow,
-                fkNodeRow
+                pkColumn,
+                fkColumn
             )->setRelationPositionType(
                 relationObject.getPosition()
             );

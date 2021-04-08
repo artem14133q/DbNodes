@@ -10,14 +10,14 @@ namespace DbNodes::Abstract {
 
     AbstractRelationView::AbstractRelationView(
         QWidget *parent,
-        const NODE_RAW_POINTER &pkNodeRaw,
-        const NODE_RAW_POINTER &fkNodeRaw
-    ):  QWidget(parent), fkNodeRaw(fkNodeRaw), pkNodeRaw(pkNodeRaw) {}
+        const COLUMN_POINTER &pkColumn,
+        const COLUMN_POINTER &fkColumn
+    ): QWidget(parent), fkColumn(fkColumn), pkColumn(pkColumn) {}
 
     QMenu * AbstractRelationView::createContextMenu()
     {
         auto *contextMenu = new QMenu();
-        contextMenu->setStyleSheet(Helper::getStyleFromFile("nodeMenu"));
+        contextMenu->setStyleSheet(Helper::getStyleFromFile("tableMenu"));
 
         foreach (const int &relationTypeId, Dictionaries::RelationTypesDictionary::getDictionary().keys()) {
 

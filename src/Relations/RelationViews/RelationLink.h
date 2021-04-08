@@ -9,7 +9,7 @@
 #include "QPointer"
 #include "QContextMenuEvent"
 
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "AbstractRelationView.h"
 
 namespace DbNodes::Relations {
@@ -20,8 +20,8 @@ namespace DbNodes::Relations {
 
         public:
             explicit RelationLink(
-                const NODE_RAW_POINTER &pkNodeRaw,
-                const NODE_RAW_POINTER &fkNodeRaw,
+                const COLUMN_POINTER &pkColumn,
+                const COLUMN_POINTER &fkColumn,
                 const int &relationPosition,
                 QWidget *parent = nullptr
             );

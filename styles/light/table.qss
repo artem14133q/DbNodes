@@ -3,14 +3,14 @@ QWidget {
     border-radius: 5px;
 }
 
-QWidget#Node {
+QWidget#TableNode {
     border: 1px solid #bbbdbe;
 }
 
-QWidget#Node:focus {
+QWidget#TableNode:focus {
     border: 2px solid black;
 }
 
-QWidget#Node[selected="true"] {
+QWidget#TableNode[selected="true"] {
     border: 2px solid #f35c23;
 }

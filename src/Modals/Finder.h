@@ -9,7 +9,7 @@
 #include "QLineEdit"
 
 #include "AbstractModal.h"
-#include "Node.h"
+#include "../Nodes/TableNode.h"
 
 namespace DbNodes::Modals {
 
@@ -18,7 +18,7 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit Finder(const QList<NODE_POINTER> &nodeVector, QWidget *parent = nullptr);
+            explicit Finder(const QList<TABLE_POINTER> &nodeVector, QWidget *parent = nullptr);
 
         signals:
             void selected(const QString &nodeId);
@@ -37,8 +37,8 @@ namespace DbNodes::Modals {
             bool eventFilter(QObject *obj, QEvent *event) override;
 
         private:
-            QList<NODE_POINTER> nodeVector;
-            QHash<QString, NODE_POINTER> filteredNodeList;
+            QList<TABLE_POINTER> nodeVector;
+            QHash<QString, TABLE_POINTER> filteredNodeList;
 
             QListWidget *listWidget{};
             QLineEdit *lineEdit{};

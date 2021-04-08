@@ -51,7 +51,7 @@ namespace DbNodes::Widgets {
             QAction* closeProjectAction{};
             QAction* openSettingsAction{};
             QAction* exitAction{};
-            QAction* findNodeAction{};
+            QAction* findTableAction{};
 
             Menus::RecentMenu *recentProjectsMenu{};
 

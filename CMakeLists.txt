@@ -17,7 +17,8 @@ set(INCLUDE_DIRECTORIES
         src/Settings
         src/Dictionaries
         src/Saving
-        src/Utils)
+        src/Utils
+        src/Nodes)
 
 set(RESOURCES
         main.cpp

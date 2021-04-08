@@ -6,7 +6,7 @@
 #define DBNODES_REPOSITORY_H
 
 #include "QWidget"
-#include "Node.h"
+#include "TableNode.h"
 
 namespace DbNodes::Utils::MultipleSelection {
 
@@ -15,7 +15,7 @@ namespace DbNodes::Utils::MultipleSelection {
         Q_OBJECT
 
         private:
-            QList<NODE_POINTER> selectedNodes;
+            QList<TABLE_POINTER> selectedTables;
 
             bool mousePressed = false;
             QPoint mouseStartPos;
@@ -26,18 +26,18 @@ namespace DbNodes::Utils::MultipleSelection {
         public:
             explicit Repository(QWidget *parent = nullptr);
 
-            void unSelectNodes();
-            static void setSelectToNode(const NODE_POINTER &node, const bool &select);
-            void insertNodeToSelectionList(const NODE_POINTER &node);
-            void removeNodeFromSelectionList(const NODE_POINTER &node);
+            void unSelectTables();
+            static void setSelectToTable(const TABLE_POINTER &table, const bool &select);
+            void insertTableToSelectionList(const TABLE_POINTER &table);
+            void removeTableFromSelectionList(const TABLE_POINTER &table);
 
-            void moveSelectedNode(QObject *node, const QPoint &delta);
-            void initDefaultsConnections(const NODE_POINTER &node);
+            void moveSelectedTable(QObject *table, const QPoint &delta);
+            void initDefaultsConnections(const TABLE_POINTER &table);
 
             void drawSelectionRect(QPainter &painter);
 
             void start(const QPoint &mousePos);
-            void move(const QPoint &mousePos, const QList<NODE_POINTER> &nodes);
+            void move(const QPoint &mousePos, const QList<TABLE_POINTER> &tables);
             void stop();
 
             ~Repository() override;

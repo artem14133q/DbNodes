@@ -27,10 +27,10 @@ namespace DbNodes::Utils::MultipleSelection {
             void disable();
 
         public: signals:
-            void moveSignal(QObject *node, const QPoint &delta);
-            void unSelectNodesSignal();
-            void selectCurrentNodeSignal();
-            void unSelectCurrentNodeSignal();
+            void moveSignal(QObject *table, const QPoint &delta);
+            void unSelectTablesSignal();
+            void selectCurrentTableSignal();
+            void unSelectCurrentTableSignal();
     };
 
 }

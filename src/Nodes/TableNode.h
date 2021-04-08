@@ -1,9 +1,9 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef TABLENODE_H
+#define TABLENODE_H
 
 #include "QVBoxLayout"
 #include "QMouseEvent"
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "QPointer"
 #include "QLabel"
 #include "QLineEdit"
@@ -13,22 +13,22 @@
 #include "Relation.h"
 #include "MultipleSelection/Selectable.h"
 
-#define NODE_POINTER QPointer<Widgets::Node>
+#define TABLE_POINTER QPointer<Nodes::TableNode>
 
-namespace DbNodes::Widgets {
+namespace DbNodes::Nodes {
 
-    class Node : public Abstract::AbstractNode
+    class TableNode : public Abstract::AbstractNode
     {
         Q_OBJECT
 
         public:
-            Node(QWidget *parent, QString id, QString name);
-            explicit Node(QWidget *parent = nullptr);
+            TableNode(QWidget *parent, QString id, QString name);
+            explicit TableNode(QWidget *parent = nullptr);
 
             QString getTableName();
             QString getTableId();
 
-            NODE_RAW_VECTOR getAllNodeRows();
+            COLUMN_VECTOR getAllColumns();
 
             void addColumnFromFile(
                 const QString &id,
@@ -38,7 +38,7 @@ namespace DbNodes::Widgets {
                 const bool &isNull = false
             );
 
-            QVBoxLayout *getLayoutType(const int &nodeRowType);
+            QVBoxLayout *getLayoutType(const int &columnType);
 
             void addRelation(const RELATION_POINTER &relation);
 
@@ -49,7 +49,7 @@ namespace DbNodes::Widgets {
 
             QList<RELATION_POINTER> relations;
 
-            QVBoxLayout* rowsLayout{};
+            QVBoxLayout* columnsLayout{};
             QVBoxLayout* pkLayout{};
             QVBoxLayout* fkLayout{};
 
@@ -60,12 +60,12 @@ namespace DbNodes::Widgets {
 
             void initUI();
 
-            ~Node() override;
+            ~TableNode() override;
 
             #if APP_DEBUG
 
-            static QString debugLayoutType(const int &rowType);
-            void debugNodeRows();
+            static QString debugLayoutType(const int &columnType);
+            void debugTables();
 
             #endif
 
@@ -75,13 +75,13 @@ namespace DbNodes::Widgets {
             void mouseMoveEvent(QMouseEvent *event) override;
             void mouseReleaseEvent(QMouseEvent *event) override;
 
-            QList<NodeRow *> groupNodeRows();
+            QList<Table::Column *> groupColumns();
 
-            void addColumn(int nodeRowType = 0, QPointer<NodeRow> nodeRow = nullptr);
+            void addColumn(int columnType = 0, QPointer<Table::Column> column = nullptr);
             void setTableName(const QString &name);
             void openRenameModal();
     };
 
 }
 
-#endif // NODE_H
+#endif // TABLENODE_H

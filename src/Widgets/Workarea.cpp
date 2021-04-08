@@ -13,7 +13,7 @@
 #include "QApplication"
 
 #include "Workarea.h"
-#include "Node.h"
+#include "TableNode.h"
 #include "RelationTypesDictionary.h"
 
 #include "../helper.h"
@@ -43,11 +43,11 @@ namespace DbNodes::Widgets {
         menu->setStyleSheet(Helper::getStyleFromFile("workAreaMenu"));
 
         // Define actions
-        QAction* createTable = menu->addAction("Create Table");
+        QAction* createTableAction = menu->addAction("Create Table");
 
         // Define slots
-        connect(createTable, &QAction::triggered, this, [this, event] {
-            createNode(event->pos());
+        connect(createTableAction, &QAction::triggered, this, [this, event] {
+            createTable(event->pos());
         });
 
         #if APP_DEBUG
@@ -95,96 +95,96 @@ namespace DbNodes::Widgets {
     }
 
     RELATION_POINTER WorkArea::makeRelation(
-        const QString &relationId,
-        const int &relationType,
-        NODE_RAW_POINTER &pkNodeRaw,
-        NODE_RAW_POINTER &fkNodeRaw
+            const QString &relationId,
+            const int &relationType,
+            COLUMN_POINTER &pkColumn,
+            COLUMN_POINTER &fkColumn
     ) {
-        if (pkNodeRaw->getTableId() == fkNodeRaw->getTableId()) return nullptr;
+        if (pkColumn->getTableId() == fkColumn->getTableId()) return nullptr;
 
         foreach (const RELATION_POINTER &relation, relations) {
-            if (relation->getPkNodeRaw()->getRowId() == pkNodeRaw->getRowId()
-                && relation->getFkNodeRaw()->getRowId() == fkNodeRaw->getRowId())
+            if (relation->getPkColumn()->getColumnId() == pkColumn->getColumnId()
+                && relation->getFkColumn()->getColumnId() == fkColumn->getColumnId())
                 return nullptr;
 
-            if (relation->getPkNodeRaw() == relation->getFkNodeRaw()) return nullptr;
+            if (relation->getPkColumn() == relation->getFkColumn()) return nullptr;
         }
 
-        fkNodeRaw->disableFkRelationButton(true);
+        fkColumn->disableFkRelationButton(true);
 
         RELATION_POINTER relation(
-            new Relations::Relation(this, relationId, relationType, pkNodeRaw, fkNodeRaw)
+            new Relations::Relation(this, relationId, relationType, pkColumn, fkColumn)
         );
 
-        connect(relation, &Relations::Relation::goToRelatedTable, this, &WorkArea::scrollToNode);
+        connect(relation, &Relations::Relation::goToRelatedTable, this, &WorkArea::scrollToTable);
 
         relations.append(relation);
 
-        dynamic_cast<Node *>(fkNodeRaw->parentWidget())->addRelation(relation);
+        dynamic_cast<Nodes::TableNode *>(fkColumn->parentWidget())->addRelation(relation);
 
         return relation;
     }
 
-    NODE_RAW_POINTER WorkArea::findNodeRow(int type, const QString &nodeRowId)
+    COLUMN_POINTER WorkArea::findColumn(int type, const QString &columnId)
     {
-        QVector<NODE_RAW_POINTER> nodeRows;
+        QVector<COLUMN_POINTER> columns;
 
-        if (type == WorkArea::GET_PK_NODE_ROWS)
-            nodeRows = pkList;
-        else if (type == WorkArea::GET_FK_NODE_ROWS)
-            nodeRows = fkList;
+        if (type == WorkArea::GET_PK_COLUMNS)
+            columns = pkList;
+        else if (type == WorkArea::GET_FK_COLUMNS)
+            columns = fkList;
 
-        foreach (const NODE_RAW_POINTER &nodeRow, nodeRows) {
-            if (nodeRow->getRowId() == nodeRowId) return nodeRow;
+        foreach (const COLUMN_POINTER &column, columns) {
+            if (column->getColumnId() == columnId) return column;
         }
 
-        return NODE_RAW_POINTER(nullptr);
+        return COLUMN_POINTER(nullptr);
     }
 
-    // Clean NodeRows list for delete pointer if pointer is empty
-    void WorkArea::cleanNodeRowsList(QVector<NODE_RAW_POINTER> &list)
+    // Clean Columns list for delete pointer if pointer is empty
+    void WorkArea::cleanColumnList(QVector<COLUMN_POINTER> &list)
     {
-        QVectorIterator<NODE_RAW_POINTER> listIterator(list);
+        QVectorIterator<COLUMN_POINTER> listIterator(list);
         while (listIterator.hasNext()) {
-            auto nodeRow = listIterator.next();
-            if (!nodeRow) list.removeOne(nodeRow);
+            auto column = listIterator.next();
+            if (!column) list.removeOne(column);
         }
     }
 
-    void WorkArea::setNodeRaw(NODE_RAW_POINTER &nodeRaw)
+    void WorkArea::setColumn(COLUMN_POINTER &column)
     {
-        if (nodeRaw->getRowType() == NodeRow::PK)
-            pkList.push_back(nodeRaw);
-        else if (nodeRaw->getRowType() == NodeRow::FK)
-            fkList.push_back(nodeRaw);
+        if (column->getColumnType() == Nodes::Table::Column::PK)
+            pkList.push_back(column);
+        else if (column->getColumnType() == Nodes::Table::Column::FK)
+            fkList.push_back(column);
     }
 
-    NODE_POINTER WorkArea::createNode(const QPoint &pos, const QString &id, const QString &name)
+    TABLE_POINTER WorkArea::createTable(const QPoint &pos, const QString &id, const QString &name)
     {
-        NODE_POINTER node;
+        TABLE_POINTER table;
 
         if (id == nullptr || name == nullptr) {
-            node = new Node(this);
+            table = new Nodes::TableNode(this);
         } else {
-            node = new Node(this, id, name);
+            table = new Nodes::TableNode(this, id, name);
         }
 
-        nodeList.push_back(node);
-        node->move(pos);
+        tableList.push_back(table);
+        table->move(pos);
 
-        selectionRepository->initDefaultsConnections(node);
+        selectionRepository->initDefaultsConnections(table);
 
-        return node;
+        return table;
     }
 
-    QList<NODE_POINTER> WorkArea::getAllNodes()
+    QList<TABLE_POINTER> WorkArea::getAllTables()
     {
-        Helper::removeDeletedItems<Node>(nodeList);
+        Helper::removeDeletedItems<Nodes::TableNode>(tableList);
 
-        cleanNodeRowsList(pkList);
-        cleanNodeRowsList(fkList);
+        cleanColumnList(pkList);
+        cleanColumnList(fkList);
 
-        return nodeList;
+        return tableList;
     }
 
     QString WorkArea::getProjectName()
@@ -192,29 +192,29 @@ namespace DbNodes::Widgets {
         return projectName;
     }
 
-    void WorkArea::scrollToNode(const QString &nodeId)
+    void WorkArea::scrollToTable(const QString &tableId)
     {
-        NODE_POINTER node = findNode(nodeId);
+        TABLE_POINTER table = findTable(tableId);
 
         auto *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
 
-        int y = (node->height() < mainWindow->height())
-                ? node->y() - mainWindow->height() / 2 + node->height() / 2
-                : node->y();
+        int y = (table->height() < mainWindow->height())
+                ? table->y() - mainWindow->height() / 2 + table->height() / 2
+                : table->y();
 
-        int x = node->x() - mainWindow->width() / 2 + node->width() / 2;
+        int x = table->x() - mainWindow->width() / 2 + table->width() / 2;
 
         scrollToPosition(QPoint(x, y));
 
-        QTimer::singleShot(0, node, SLOT (setFocus()));
-        node->raise();
+        QTimer::singleShot(0, table, SLOT (setFocus()));
+        table->raise();
     }
 
-    NODE_POINTER WorkArea::findNode(const QString &nodeId)
+    TABLE_POINTER WorkArea::findTable(const QString &tableId)
     {
-        foreach (NODE_POINTER node, getAllNodes()) {
-            if (node->getTableId() == nodeId) {
-                return node;
+        foreach (TABLE_POINTER table, getAllTables()) {
+            if (table->getTableId() == tableId) {
+                return table;
             }
         }
 
@@ -227,14 +227,14 @@ namespace DbNodes::Widgets {
     {
         qDebug() << "============== DEBUG ALL RELATIONS =================";
         for (int i = 0; i < relations.size(); ++i) {
-            auto pkNodeRow(relations[i]->getPkNodeRaw());
-            auto fkNodeRow(relations[i]->getFkNodeRaw());
+            auto pkColumn(relations[i]->getPkColumn());
+            auto fkColumn(relations[i]->getFkColumn());
 
             qDebug() << i
                 << (i < 10 ? " " : "")
-                << pkNodeRow->getTableName() + "::" + pkNodeRow->getRowName()
+                << pkColumn->getTableName() + "::" + pkColumn->getColumnName()
                 << " <-- "
-                << fkNodeRow->getTableName() + "::" + fkNodeRow->getRowName();
+                << fkColumn->getTableName() + "::" + fkColumn->getColumnName();
         }
         qDebug() << "============== DEBUG ALL RELATIONS =================";
     }
@@ -269,7 +269,7 @@ namespace DbNodes::Widgets {
 
     void WorkArea::mouseMoveEvent(QMouseEvent *event)
     {
-        selectionRepository->move(event->pos(), getAllNodes());
+        selectionRepository->move(event->pos(), getAllTables());
     }
 
     void WorkArea::mouseReleaseEvent(QMouseEvent *event)

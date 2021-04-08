@@ -7,7 +7,7 @@
 #include "QPushButton"
 #include "QMouseEvent"
 
-#include "Node.h"
+#include "TableNode.h"
 #include "config.h"
 #include "Relation.h"
 #include "MultipleSelection/Repository.h"
@@ -21,30 +21,30 @@ namespace DbNodes::Widgets {
         public:
             explicit WorkArea(QWidget *parent);
 
-            static const int GET_FK_NODE_ROWS = 2;
-            static const int GET_PK_NODE_ROWS = 1;
+            static const int GET_FK_COLUMNS = 2;
+            static const int GET_PK_COLUMNS = 1;
 
             RELATION_POINTER makeRelation(
                 const QString &relationId,
                 const int &relationType,
-                NODE_RAW_POINTER &pkNodeRaw,
-                NODE_RAW_POINTER &fkNodeRaw
+                COLUMN_POINTER &pkColumn,
+                COLUMN_POINTER &fkColumn
             );
 
-            void setNodeRaw(NODE_RAW_POINTER &nodeRaw);
-            void scrollToNode(const QString &nodeId);
+            void setColumn(COLUMN_POINTER &column);
+            void scrollToTable(const QString &columnId);
             void scrollToPosition(const QPoint &pos);
-            NODE_POINTER findNode(const QString &nodeId);
+            TABLE_POINTER findTable(const QString &columnId);
 
             QString getProjectName();
             void setProjectName(const QString &name);
-            QList<NODE_POINTER> getAllNodes();
-            NODE_RAW_POINTER findNodeRow(int type, const QString &nodeRowId);
+            QList<TABLE_POINTER> getAllTables();
+            COLUMN_POINTER findColumn(int type, const QString &columnId);
 
-            NODE_POINTER createNode(
-                    const QPoint &pos,
-                    const QString &id = nullptr,
-                    const QString &name = nullptr
+            TABLE_POINTER createTable(
+                const QPoint &pos,
+                const QString &id = nullptr,
+                const QString &name = nullptr
             );
 
             const QList<RELATION_POINTER> &getAllRelations();
@@ -55,8 +55,8 @@ namespace DbNodes::Widgets {
             Utils::MultipleSelection::Repository *selectionRepository;
 
             QList<RELATION_POINTER> relations;
-            QVector<NODE_RAW_POINTER> pkList, fkList;
-            QList<NODE_POINTER> nodeList;
+            QVector<COLUMN_POINTER> pkList, fkList;
+            QList<TABLE_POINTER> tableList;
             QString projectName;
 
             void contextMenuEvent(QContextMenuEvent *event) override;
@@ -66,7 +66,7 @@ namespace DbNodes::Widgets {
             void mouseMoveEvent(QMouseEvent *event) override;
             void mouseReleaseEvent(QMouseEvent *event) override;
 
-            static void cleanNodeRowsList(QVector<NODE_RAW_POINTER> &list);
+            static void cleanColumnList(QVector<COLUMN_POINTER> &list);
 
             bool isAntialiasing;
 

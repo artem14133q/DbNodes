@@ -19,12 +19,12 @@ namespace DbNodes::Saving {
 
             void fillProjectParameters();
             void fillTables();
-            void fillColumns(DbnFileStruct::TableObject &tableObject, const NODE_POINTER &table);
+            void fillColumns(DbnFileStruct::TableObject &tableObject, const TABLE_POINTER &table);
             void fillRelations();
 
             void loadProjectParameters();
             void loadTables();
-            void loadColumns(const DbnFileStruct::TableObject &tableObject, NODE_POINTER &table);
+            void loadColumns(const DbnFileStruct::TableObject &tableObject, TABLE_POINTER &table);
             void loadRelations();
 
         public:

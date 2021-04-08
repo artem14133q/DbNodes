@@ -7,10 +7,10 @@
 namespace DbNodes::Relations {
 
     DeleteRelationButton::DeleteRelationButton(
-        const NODE_RAW_POINTER &pkNodeRaw,
-        const NODE_RAW_POINTER &fkNodeRaw,
+        const COLUMN_POINTER &pkColumn,
+        const COLUMN_POINTER &fkColumn,
         QWidget *parent
-    ):  Abstract::AbstractRelationView(parent, pkNodeRaw, fkNodeRaw) {
+    ):  Abstract::AbstractRelationView(parent, pkColumn, fkColumn) {
         setFixedSize(16, 16);
         setStyleSheet("QWidget{border: 0; border-radius: 8px;}");
 
@@ -46,8 +46,8 @@ namespace DbNodes::Relations {
     {
         painter.setPen(QPen(color, 2, Qt::SolidLine, Qt::FlatCap));
 
-        int *pkBuf = pkNodeRaw->dataForPaint();
-        int *fkBuf = fkNodeRaw->dataForPaint();
+        int *pkBuf = pkColumn->dataForPaint();
+        int *fkBuf = fkColumn->dataForPaint();
 
         if (pkBuf[0] < fkBuf[0]) {
             pkBuf[0] += pkBuf[2];

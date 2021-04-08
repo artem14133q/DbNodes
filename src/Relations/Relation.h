@@ -10,7 +10,7 @@
 #include "QColor"
 #include "QPainter"
 
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "AbstractRelationView.h"
 
 #define RELATION_POINTER QPointer<Relations::Relation>
@@ -23,15 +23,15 @@ namespace DbNodes::Relations {
 
         public:
             explicit Relation(
-                QWidget *parent,
-                QString  relationId,
-                int relationTypeId,
-                NODE_RAW_POINTER &pkNodeRaw,
-                NODE_RAW_POINTER &fkNodeRaw
+                    QWidget *parent,
+                    QString  relationId,
+                    int relationTypeId,
+                    COLUMN_POINTER &pkColumn,
+                    COLUMN_POINTER &fkColumn
             );
 
-            NODE_RAW_POINTER getPkNodeRaw();
-            NODE_RAW_POINTER getFkNodeRaw();
+            COLUMN_POINTER getPkColumn();
+            COLUMN_POINTER getFkColumn();
 
             [[nodiscard]]
             int getRelationTypeId() const;
@@ -61,8 +61,8 @@ namespace DbNodes::Relations {
 
             QString relationId;
 
-            NODE_RAW_POINTER pkNodeRaw;
-            NODE_RAW_POINTER fkNodeRaw;
+            COLUMN_POINTER pkColumn;
+            COLUMN_POINTER fkColumn;
 
         public: signals:
             void goToRelatedTable(const QString &id);

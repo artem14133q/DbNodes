@@ -7,7 +7,7 @@
 #include "QContextMenuEvent"
 
 #include "AbstractRelationView.h"
-#include "Noderow.h"
+#include "Table/Column.h"
 
 namespace DbNodes::Relations {
 
@@ -17,8 +17,8 @@ namespace DbNodes::Relations {
 
         public:
             explicit DeleteRelationButton(
-                const NODE_RAW_POINTER &pkNodeRaw,
-                const NODE_RAW_POINTER &fkNodeRaw,
+                const COLUMN_POINTER &pkColumn,
+                const COLUMN_POINTER &fkColumn,
                 QWidget *parent = nullptr
             );
 

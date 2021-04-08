@@ -15,8 +15,8 @@ namespace DbNodes::Saving::DbnFileStruct {
             JSON_OBJECT(RelationObject)
 
             STRING_PROPERTY("id", getId, setId)
-            STRING_PROPERTY("fkNodeRawId", getFkNodeRawId, setFkNodeRawId)
-            STRING_PROPERTY("pkNodeRawId", getPkNodeRawId, setPkNodeRawId)
+            STRING_PROPERTY("fkColumnId", getFkColumnId, setFkColumnId)
+            STRING_PROPERTY("pkColumnId", getPkColumnId, setPkColumnId)
             INT_PROPERTY("type", getType, setType)
             INT_PROPERTY("position", getPosition, setPosition)
     };

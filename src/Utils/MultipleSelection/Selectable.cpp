@@ -30,11 +30,11 @@ namespace DbNodes::Utils::MultipleSelection {
     {
         if (isClicked) {
             if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-                emit selectCurrentNodeSignal();
+                emit selectCurrentTableSignal();
             } else if (QApplication::keyboardModifiers() & Qt::AltModifier) {
-                emit unSelectCurrentNodeSignal();
+                emit unSelectCurrentTableSignal();
             } else {
-                emit unSelectNodesSignal();
+                emit unSelectTablesSignal();
             }
 
             isClicked = false;

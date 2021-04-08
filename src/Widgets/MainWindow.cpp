@@ -157,14 +157,14 @@ namespace DbNodes::Widgets {
 
         auto *tools = menuBar->addMenu("Tools");
 
-        findNodeAction = tools->addAction("Find ...");
-        findNodeAction->setShortcut(QKeySequence("Ctrl+F"));
-        findNodeAction->setEnabled(false);
+        findTableAction = tools->addAction("Find ...");
+        findTableAction->setShortcut(QKeySequence("Ctrl+F"));
+        findTableAction->setEnabled(false);
 
-        connect(findNodeAction, &QAction::triggered, this, [this] () {
-            auto *window = new Modals::Finder(workArea->getAllNodes(), this);
+        connect(findTableAction, &QAction::triggered, this, [this] () {
+            auto *window = new Modals::Finder(workArea->getAllTables(), this);
 
-            connect(window, &Modals::Finder::selected, workArea, &WorkArea::scrollToNode);
+            connect(window, &Modals::Finder::selected, workArea, &WorkArea::scrollToTable);
         });
 
         // return QMenuBar
@@ -282,7 +282,7 @@ namespace DbNodes::Widgets {
         saveProjectAction->setEnabled(enable);
         saveAsProjectAction->setEnabled(enable);
         closeProjectAction->setEnabled(enable);
-        findNodeAction->setEnabled(enable);
+        findTableAction->setEnabled(enable);
     }
 
     void MainWindow::createProject(const QString &name)
