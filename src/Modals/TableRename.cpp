@@ -11,62 +11,48 @@
 
 namespace DbNodes::Modals {
 
-    TableRename::TableRename(QString name, QWidget *parent)
-        : Abstract::AbstractModal(parent), nameTitle(std::move(name))
+    TableRename::TableRename(const QString &name, QWidget *parent)
+        : Abstract::AbstractSettingModal(parent), tableName(name)
     {
-        setFixedSize(300, 80);
-        setWindowTitle(QString("Rename table: %1").arg(nameTitle));
-        setStyleSheet(Helper::getStyleFromFile("subWindow"));
+        setFixedWidth(500);
+        setWindowTitle(QString("Rename table: %1").arg(name));
 
-        Helper::findParentWidgetRecursive(this, "MainWindow")->setDisabled(true);
-        setEnabled(true);
+        prepareWidget();
 
-        initUi();
         show();
     }
 
-    void TableRename::initUi()
+    void TableRename::initSettingsUi()
     {
-        QString buttonStyle = Helper::getStyleFromFile("button");
+        nameLineEdit = createTextSetting("Name:", "name");
 
-        auto *name = new QLabel("Name:", this);
-        name->setStyleSheet(Helper::getStyleFromFile("lineEditName"));
-        name->move(10, 5);
+        // Create buttons
 
-        auto *nameInput = new QLineEdit(nameTitle, this);
-        connect(nameInput, &QLineEdit::textChanged, this, &TableRename::setTitleName);
-        nameInput->setStyleSheet(Helper::getStyleFromFile("lineEdit"));
-        nameInput->setFixedWidth(200);
-        nameInput->move(60, 5);
+        createButton("Cancel", this, [this] {
+            exit();
+        });
 
-        auto *cancel = new QPushButton("Cancel", this);
-        connect(cancel, &QPushButton::clicked, this, &TableRename::exit);
-        cancel->setStyleSheet(buttonStyle);
-        cancel->setFixedWidth(80);
-        cancel->move(110, 45);
-
-        auto *confirm = new QPushButton("Confirm", this);
-        connect(confirm, &QPushButton::clicked, this, &TableRename::confirm);
-        confirm->setStyleSheet(buttonStyle);
-        confirm->setFixedWidth(80);
-        confirm->move(200, 45);
+        createButton("Ok", this, [this] {
+            confirm();
+        });
     }
 
-    void TableRename::setTitleName(const QString &name)
+    QVariant TableRename::getDefaultSetting(const QString &name)
     {
-        nameTitle = name;
+        return tableName;
     }
 
     void TableRename::confirm()
     {
-        emit pushConfirm(nameTitle);
+        emit pushConfirm(newSettingsMap.value("name").toString());
 
-        Abstract::AbstractModal::confirm();
+        enableConfirm(true);
+        Abstract::AbstractSettingModal::confirm();
     }
 
-    void TableRename::exit()
+    void TableRename::afterInitUi()
     {
-        Helper::findParentWidgetRecursive(this, "MainWindow")->setDisabled(false);
-        AbstractModal::exit();
+        nameLineEdit->setFocus();
+        nameLineEdit->selectAll();
     }
 }
