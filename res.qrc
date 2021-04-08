@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/content">
-        <file alias="startup">content/startup.txt</file>
-    </qresource>
-</RCC>
