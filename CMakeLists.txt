@@ -1,6 +1,32 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(DbNodes VERSION 1.0.0 LANGUAGES CXX)
 
+# ====================================================================
+# DEFINES
+# ====================================================================
+set(RESOURCES_FILE_NAME res.qrc)
+
+set(DEV_SCRIPTS
+        "install-resources.py\;${RESOURCES_FILE_NAME}\;content")
+
+set(INCLUDE_DIRECTORIES
+        src/Abstract
+        src/Widgets
+        src/Relations
+        src/Modals
+        src/Settings
+        src/Dictionaries
+        src/Saving
+        src/Utils)
+
+set(RESOURCES
+        main.cpp
+        src/helper.cpp
+        src/helper.h)
+
+set(INCLUDE_PROJECT_LIBS
+        Widgets)
+
 # ==================================================================
 # CONFIGURE CMAKE
 # ==================================================================
@@ -17,6 +43,14 @@ else()
 endif()
 
 configure_file(config.h.in config.h @ONLY)
+
+# ====================================================================
+# EXECUTE DEV SCRIPTS
+# ====================================================================
+
+foreach(SCRIPT IN LISTS DEV_SCRIPTS)
+    execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/dev-scripts/${SCRIPT})
+endforeach()
 
 # ==================================================================
 # SET OUTPUT BINARY FILES DIRS
@@ -40,15 +74,6 @@ find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 # ====================================================================
 # DEFINE SUBDIRECTORIES OF YOUR PROJECT
 # ====================================================================
-set(INCLUDE_DIRECTORIES
-        src/Abstract
-        src/Widgets
-        src/Relations
-        src/Modals
-        src/Settings
-        src/Dictionaries
-        src/Saving
-        src/Utils)
 
 foreach(LIB_PATH IN LISTS INCLUDE_DIRECTORIES)
     add_subdirectory(${LIB_PATH})
@@ -57,12 +82,8 @@ endforeach()
 # =====================================================================
 # DEFINE RESOURCE FILES OF YOUR PROJECT
 # =====================================================================
-set(RESOURCES
-        main.cpp
-        src/helper.cpp
-        src/helper.h)
 
-qt5_add_resources(RESOURCES res.qrc)
+qt5_add_resources(RESOURCES ${RESOURCES_FILE_NAME})
 
 add_executable(${PROJECT_NAME} ${RESOURCES})
 
@@ -77,15 +98,13 @@ add_executable(${PROJECT_NAME} ${RESOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
 
-# ====================================================================
-# DEFILE LIBS OF YOUR PROJECT
-# ====================================================================
 file(COPY styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY dbnodes.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-set(INCLUDE_PROJECT_LIBS
-        Widgets)
+# ====================================================================
+# DEFILE LIBS OF YOUR PROJECT
+# ====================================================================
 
 target_link_libraries(${PROJECT_NAME}
         ${INCLUDE_QT_LIBS}
