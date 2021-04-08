@@ -5,29 +5,32 @@
 #ifndef DBNODES_TABLERENAME_H
 #define DBNODES_TABLERENAME_H
 
-#include "AbstractModal.h"
+#include "AbstractSettingModal.h"
 
 namespace DbNodes::Modals {
 
-    class TableRename: public Abstract::AbstractModal
+    class TableRename: public Abstract::AbstractSettingModal
     {
         Q_OBJECT
 
-        public:
-            explicit TableRename(QString name, QWidget* parent = nullptr);
+        private:
+            QLineEdit *nameLineEdit{};
+            QString tableName;
 
-        signals:
+        public:
+            explicit TableRename(const QString &name, QWidget* parent = nullptr);
+
+        protected:
+            void initSettingsUi() override;
+            QVariant getDefaultSetting(const QString &name) override;
+
+            void afterInitUi() override;
+
+            void confirm() override;
+
+        public: signals:
             void pushConfirm(const QString &name);
 
-        public slots:
-            void setTitleName(const QString &name);
-            void confirm() override;
-            void exit() override;
-
-        private:
-            QString nameTitle;
-
-            void initUi();
     };
 
 }
