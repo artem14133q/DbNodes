@@ -9,14 +9,14 @@
 
 #include "AbstractRelationView.h"
 #include "Relation.h"
-#include "Noderow.h"
+#include "Table/Column.h"
 
 namespace DbNodes::Relations {
 
     class RelationProvider: public QObject
     {
         private:
-            Relation *relation;
+            Relation *relation{};
 
             QWidget *parentWidget{};
 

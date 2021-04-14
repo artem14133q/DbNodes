@@ -4,7 +4,7 @@
 
 #include "RelationFactory.h"
 #include "RelationTypesDictionary.h"
-#include "RelationLinkPositionsDictionary.h"
+#include "RelationPositionsDictionary.h"
 
 #include "RelationProviders/RelationLinkProvider.h"
 #include "RelationProviders/DeleteRelationButtonProvider.h"
@@ -13,23 +13,23 @@ namespace DbNodes::Relations {
 
     RelationFactory::RelationFactory()
     {
-        registerProvider(RELATION_TYPE_LINK, [] () -> RelationProvider * {
+        registerProvider(Dictionaries::RelationTypesDictionary::Type::Link, [] () -> RelationProvider * {
             auto *provider = new RelationLinkProvider();
 
             provider->setParameters({
-                {"relationPosition", RELATION_LINK_POSITION_LEFT}
+                {"relationPosition", Dictionaries::RelationPositionsDictionary::Type::Left}
             });
 
             return provider;
         });
 
-        registerProvider(RELATION_TYPE_PATH, [] () -> RelationProvider * {
+        registerProvider(Dictionaries::RelationTypesDictionary::Type::Path, [] () -> RelationProvider * {
             return new DeleteRelationButtonProvider();
         });
     }
 
     Abstract::AbstractRelationView *RelationFactory::resolveFactory(
-        const int &id,
+        const Dictionaries::RelationTypesDictionary::Type &id,
         const std::function<void ( RelationProvider * )> &callback
     ) {
         RelationProvider *provider = callbacks.value(id)();
@@ -46,8 +46,10 @@ namespace DbNodes::Relations {
         return view;
     }
 
-    void RelationFactory::registerProvider(const int &id, const std::function< RelationProvider * ( void )> &callback)
-    {
+    void RelationFactory::registerProvider(
+        const Dictionaries::RelationTypesDictionary::Type &id,
+        const std::function< RelationProvider * ( void )> &callback
+    ) {
         callbacks.insert(id, callback);
     }
 }

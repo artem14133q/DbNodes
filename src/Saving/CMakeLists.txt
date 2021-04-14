@@ -15,7 +15,7 @@ set(RESOURCES
         Files/DbnFileResolver.h
         Files/ProjectListFileResolver.cpp
         Files/ProjectListFileResolver.h
-        )
+        Files/DbnFileStruct/RelationPathPointObject.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

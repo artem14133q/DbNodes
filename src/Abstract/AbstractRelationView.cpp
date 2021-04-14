@@ -3,32 +3,36 @@
 //
 
 #include "AbstractRelationView.h"
-#include "RelationTypesDictionary.h"
+
+#include <utility>
 #include "../helper.h"
 
 namespace DbNodes::Abstract {
 
     AbstractRelationView::AbstractRelationView(
         QWidget *parent,
-        const NODE_RAW_POINTER &pkNodeRaw,
-        const NODE_RAW_POINTER &fkNodeRaw
-    ):  QWidget(parent), fkNodeRaw(fkNodeRaw), pkNodeRaw(pkNodeRaw) {}
+        Nodes::Table::ColumnPrt pkColumn,
+        Nodes::Table::ColumnPrt fkColumn
+    ): QWidget(parent), fkColumn(std::move(fkColumn)), pkColumn(std::move(pkColumn)) {}
 
     QMenu * AbstractRelationView::createContextMenu()
     {
         auto *contextMenu = new QMenu();
-        contextMenu->setStyleSheet(Helper::getStyleFromFile("nodeMenu"));
+        contextMenu->setStyleSheet(Helper::getStyleFromFile("tableMenu"));
 
         foreach (const int &relationTypeId, Dictionaries::RelationTypesDictionary::getDictionary().keys()) {
 
-            if (getCurrentTypeId() == relationTypeId) continue;
+            auto type = (Dictionaries::RelationTypesDictionary::Type) relationTypeId;
+
+            if (getCurrentTypeId() == type || type == Dictionaries::RelationTypesDictionary::Type::Undefined)
+                continue;
 
             QAction* makeRelationPathType = contextMenu->addAction(
                 "Show " + Dictionaries::RelationTypesDictionary::getValue(relationTypeId).toString()
             );
 
-            connect(makeRelationPathType, &QAction::triggered, this, [this, relationTypeId] {
-                emit changedRelationType(relationTypeId);
+            connect(makeRelationPathType, &QAction::triggered, this, [this, type] {
+                emit changedRelationType(type);
             });
         }
 
@@ -43,17 +47,22 @@ namespace DbNodes::Abstract {
 
     void AbstractRelationView::updateRelation(QPainter &painter, QPainterPath &path) {}
 
-    int AbstractRelationView::getCurrentTypeId() { return 0; }
+    Dictionaries::RelationTypesDictionary::Type AbstractRelationView::getCurrentTypeId()
+    {
+        return Dictionaries::RelationTypesDictionary::Type::Undefined;
+    }
 
     bool AbstractRelationView::hasRelationPositionType()
     {
         return false;
     }
 
-    int AbstractRelationView::relationPositionType()
-    {
-        return 0;
-    }
+    void AbstractRelationView::setRelationPositionType(
+        const Dictionaries::RelationPositionsDictionary::Type &type
+    ) {}
 
-    void AbstractRelationView::setRelationPositionType(const int &type) {}
+    Dictionaries::RelationPositionsDictionary::Type AbstractRelationView::relationPositionType()
+    {
+        return Dictionaries::RelationPositionsDictionary::Type::Undefined;
+    }
 }

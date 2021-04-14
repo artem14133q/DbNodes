@@ -10,10 +10,8 @@
 #include "QColor"
 #include "QPainter"
 
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "AbstractRelationView.h"
-
-#define RELATION_POINTER QPointer<Relations::Relation>
 
 namespace DbNodes::Relations {
 
@@ -25,13 +23,13 @@ namespace DbNodes::Relations {
             explicit Relation(
                 QWidget *parent,
                 QString  relationId,
-                int relationTypeId,
-                NODE_RAW_POINTER &pkNodeRaw,
-                NODE_RAW_POINTER &fkNodeRaw
+                Dictionaries::RelationTypesDictionary::Type relationTypeId,
+                Nodes::Table::ColumnPrt &pkColumn,
+                Nodes::Table::ColumnPrt &fkColumn
             );
 
-            NODE_RAW_POINTER getPkNodeRaw();
-            NODE_RAW_POINTER getFkNodeRaw();
+            Nodes::Table::ColumnPrt getPkColumn();
+            Nodes::Table::ColumnPrt getFkColumn();
 
             [[nodiscard]]
             int getRelationTypeId() const;
@@ -43,14 +41,17 @@ namespace DbNodes::Relations {
             void raise();
 
             int getRelationPositionType();
-            void setRelationPositionType(const int &type);
+            void setRelationPositionType(const Dictionaries::RelationPositionsDictionary::Type &type);
+
+            Abstract::AbstractRelationView *getAbstractRelationView();
 
             ~Relation() override;
 
         public slots:
             void deleteRelation();
             void goToRelationTableSignal();
-            void enableRelationType(const int &relationTypeId);
+            void enableRelationType(const Dictionaries::RelationTypesDictionary::Type &relationTypeId);
+            void createNodeInWorkArea(Abstract::AbstractNode *node);
 
         private:
             Abstract::AbstractRelationView *relationView{};
@@ -61,14 +62,16 @@ namespace DbNodes::Relations {
 
             QString relationId;
 
-            NODE_RAW_POINTER pkNodeRaw;
-            NODE_RAW_POINTER fkNodeRaw;
+            Nodes::Table::ColumnPrt pkColumn;
+            Nodes::Table::ColumnPrt fkColumn;
 
         public: signals:
             void goToRelatedTable(const QString &id);
+            void createNodeInWorkAreaSignal(Abstract::AbstractNode *node);
 
     };
 
+    typedef QPointer<Relations::Relation> RelationPtr;
 }
 
 #endif //DBNODES_RELATION_H

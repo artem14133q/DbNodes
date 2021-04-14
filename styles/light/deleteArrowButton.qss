@@ -7,5 +7,4 @@ QPushButton {
 
 QPushButton:hover {
     color: red;
-    font-weight: bold;
 }

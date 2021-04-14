@@ -12,9 +12,10 @@ namespace DbNodes::Relations {
     Abstract::AbstractRelationView *RelationLinkProvider::create()
     {
         auto *relationView = new RelationLink(
-            getRelation()->getPkNodeRaw(),
-            getRelation()->getFkNodeRaw(),
-            getParameter("relationPosition").toInt(),
+            getRelation()->getPkColumn(),
+            getRelation()->getFkColumn(),
+            (Dictionaries::RelationPositionsDictionary::Type)
+                getParameter("relationPosition").toInt(),
             getParentWidget()
         );
 

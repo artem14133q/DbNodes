@@ -1,4 +1,4 @@
-#include "Noderow.h"
+#include "Column.h"
 
 #include "QHBoxLayout"
 #include "QLineEdit"
@@ -9,62 +9,62 @@
 #include "QPair"
 #include "QDebug"
 
-#include "Node.h"
+#include "TableNode.h"
 #include "Workarea.h"
-#include "../helper.h"
+#include "../../helper.h"
 #include "RelationMaker.h"
 
 #include "DbTableTypesFkDictionary.h"
 #include "DbTableTypesDictionary.h"
 
-namespace DbNodes::Widgets {
+namespace DbNodes::Nodes::Table {
 
-    NodeRow::NodeRow(QVBoxLayout *vb, QWidget *parent, const int &rowType)
-        : NodeRow(
+    Column::Column(QVBoxLayout *vb, QWidget *parent, const Column::Type &columnType)
+        : Column(
             vb,
             parent,
-            "noderow:" + Helper::getCurrentTimeMS(),
+            "column:" + Helper::getCurrentTimeMS(),
             "coloumn",
-            rowType,
-            rowType != NodeRow::FK ? "integer" : "none",
+            columnType,
+            columnType != ForeignKey ? "integer" : "none",
             false
         ) {}
 
-    NodeRow::NodeRow(
+    Column::Column(
         QVBoxLayout *vb,
         QWidget *parent,
-        const QString &rowId,
-        const QString &rowName,
-        const int &rowType,
-        const QString &rowDbType,
-        const bool &rowIsNull
+        const QString &columnId,
+        const QString &columnName,
+        const Column::Type &columnType,
+        const QString &columnDbType,
+        const bool &columnIsNull
     ): DbNodes::Abstract::AbstractNode(parent),
         vb(vb),
-        rowName(const_cast<QString &>(rowName)),
-        rowId(const_cast<QString &>(rowId)),
-        rowDbType(const_cast<QString &>(rowDbType)),
-        rowIsNull(rowIsNull),
-        rowType(rowType)
+        columnName(const_cast<QString &>(columnName)),
+        columnId(const_cast<QString &>(columnId)),
+        columnDbType(const_cast<QString &>(columnDbType)),
+        columnIsNull(columnIsNull),
+        columnType(columnType)
     {
         initUi();
         enableMoveRestrictions(false);
         show();
     }
 
-// Get row name. Call in work area
-    QString NodeRow::getRowName()
+// Get column name. Call in work area
+    QString Column::getColumnName()
     {
-        return rowName;
+        return columnName;
     }
 
 // Private Slot
-    void NodeRow::setRowName(const QString &newRawName)
+    void Column::setColumnName(const QString &newColumnName)
     {
-        rowName = newRawName;
+        columnName = newColumnName;
     }
 
 // Define database types
-    QStringList NodeRow::initTypes() const
+    QStringList Column::initTypes() const
     {
         using namespace DbNodes::Dictionaries;
 
@@ -74,9 +74,9 @@ namespace DbNodes::Widgets {
             typesList.push_back(t.toString());
         }
 
-        /* If NodeRow type is PK return
+        /* If Column type is PK return
         only numeric types */
-        if (rowType == NodeRow::PK)
+        if (columnType == PrimaryKey)
             return typesList;
 
         foreach (const QVariant &t, DbTableTypesDictionary::getAllValues()) {
@@ -86,16 +86,16 @@ namespace DbNodes::Widgets {
         return typesList;
     }
 
-    void NodeRow::initUi()
+    void Column::initUi()
     {
         QString styleName;
 
-        if (rowType == NodeRow::PK)
-            styleName = "pkNodeRow";
-        else if (rowType == NodeRow::FK)
-            styleName = "fkNodeRow";
+        if (columnType == PrimaryKey)
+            styleName = "pkColumn";
+        else if (columnType == ForeignKey)
+            styleName = "fkColumn";
         else
-            styleName = "nodeRow";
+            styleName = "column";
 
         setStyleSheet(Helper::getStyleFromFile(styleName));
 
@@ -106,31 +106,31 @@ namespace DbNodes::Widgets {
 
         // Close PushButton
         auto *pbClose = new QPushButton("X", this);
-        connect(pbClose, &QPushButton::clicked, this, &NodeRow::deleteNodeRow);
+        connect(pbClose, &QPushButton::clicked, this, &Column::deleteColumn);
         pbClose->setFixedWidth(15);
-        pbClose->setStyleSheet(Helper::getStyleFromFile("nodeRowClose"));
+        pbClose->setStyleSheet(Helper::getStyleFromFile("columnClose"));
         hl->addWidget(pbClose);
 
         // If row type is PK set key image
-        if (rowType == NodeRow::PK) {
+        if (columnType == PrimaryKey) {
             auto *key = new QLabel(this);
-            key->setStyleSheet(Helper::getStyleFromFile("nodeRowKeyIcon"));
+            key->setStyleSheet(Helper::getStyleFromFile("columnKeyIcon"));
             key->setPixmap(QPixmap(Helper::getIconPath("key")));
             hl->addWidget(key);
         }
 
         // Name of row
-        auto *leName = new QLineEdit(rowName, this);
+        auto *leName = new QLineEdit(columnName, this);
         leName->setCursorPosition(0);
-        leName->setToolTip(rowName);
+        leName->setToolTip(columnName);
         hl->addWidget(leName);
-        connect(leName, &QLineEdit::textChanged, this, &NodeRow::setRowName);
+        connect(leName, &QLineEdit::textChanged, this, &Column::setColumnName);
 
-        QString leRowTitle = "nodeRowTitle";
+        QString leRowTitle = "columnTitle";
         // Width for FK
-        if (rowType == NodeRow::FK) {
+        if (columnType == ForeignKey) {
             leName->setFixedWidth(208);
-            leRowTitle = "fkNodeRowTitle";
+            leRowTitle = "fkColumnTitle";
 
             QIcon icon;
 
@@ -142,44 +142,44 @@ namespace DbNodes::Widgets {
             fkButton->setIcon(icon);
             fkButton->setStyleSheet(Helper::getStyleFromFile("fkChainButton"));
 
-            connect(fkButton, &QPushButton::clicked, this, &NodeRow::openRelationMaker);
+            connect(fkButton, &QPushButton::clicked, this, &Column::openRelationMaker);
 
             hl->addWidget(fkButton);
         }
         // Width for PK
-        else if (rowType == NodeRow::PK) {
+        else if (columnType == PrimaryKey) {
             leName->setFixedWidth(163);
-            leRowTitle = "pkNodeRowTitle";
+            leRowTitle = "pkColumnTitle";
         }
 
         leName->setStyleSheet(Helper::getStyleFromFile(leRowTitle));
 
         // If FK, not init db types combo box
-        if (rowType != NodeRow::FK) {
+        if (columnType != ForeignKey) {
             auto *cbTypes = new QComboBox(this);
             QStringList dbTypes = initTypes();
             cbTypes->installEventFilter(this);
             cbTypes->addItems(dbTypes);
-            cbTypes->setCurrentIndex(dbTypes.indexOf(rowDbType));
-            cbTypes->setStyleSheet(Helper::getStyleFromFile("nodeRowTypes"));
-            connect(cbTypes, &QComboBox::currentTextChanged, this, &NodeRow::setRowDbType);
+            cbTypes->setCurrentIndex(dbTypes.indexOf(columnDbType));
+            cbTypes->setStyleSheet(Helper::getStyleFromFile("columnTypes"));
+            connect(cbTypes, &QComboBox::currentTextChanged, this, &Column::setColumnDbType);
 
             cbTypes->setFixedWidth(90);
             hl->addWidget(cbTypes);
         }
 
         // If PK, not init NULL button
-        if (rowType != NodeRow::PK) {
+        if (columnType != PrimaryKey) {
             auto *isNull = new QCheckBox("NULL", this);
-            isNull->setChecked(rowIsNull);
+            isNull->setChecked(columnIsNull);
             isNull->setFixedWidth(40);
 
-            QString nodeRowIsNullStyle = "nodeRowIsNull";
-            if (rowType == NodeRow::FK) nodeRowIsNullStyle = "fkNodeRowIsNull";
-            isNull->setStyleSheet(Helper::getStyleFromFile(nodeRowIsNullStyle));
+            QString tableRowIsNullStyle = "columnIsNull";
+            if (columnType == ForeignKey) tableRowIsNullStyle = "fkColumnIsNull";
+            isNull->setStyleSheet(Helper::getStyleFromFile(tableRowIsNullStyle));
 
             hl->addWidget(isNull);
-            connect(isNull, &QCheckBox::clicked, this, &NodeRow::setRowIsNull);
+            connect(isNull, &QCheckBox::clicked, this, &Column::setColumnIsNull);
         }
 
         moveHandle = new QLabel(this);
@@ -191,7 +191,7 @@ namespace DbNodes::Widgets {
         setLayout(hl);
     }
 
-    bool NodeRow::eventFilter(QObject *object, QEvent *event) {
+    bool Column::eventFilter(QObject *object, QEvent *event) {
         if (event->type() == QEvent::Wheel && qobject_cast<QComboBox*>(object))
         {
             event->ignore();
@@ -201,72 +201,57 @@ namespace DbNodes::Widgets {
         return QWidget::eventFilter(object, event);
     }
 
-// Get parent node name
-    QString NodeRow::getTableName()
+// Get parent table name
+    QString Column::getTableName()
     {
-        Node* node = dynamic_cast<Node*>(parentWidget());
+        auto table = dynamic_cast<TableNode *>(parentWidget());
 
-        return node->getTableName();
+        return table->getTableName();
     }
 
-    QString NodeRow::getTableId()
+    QString Column::getTableId()
     {
-        Node* node = dynamic_cast<Node*>(parentWidget());
+        auto table = dynamic_cast<TableNode *>(parentWidget());
 
-        return node->getTableId();
+        return table->getTableId();
     }
 
-    // Get pos in work area
-    int* NodeRow::dataForPaint()
+    Column::Type Column::getColumnType() const
     {
-        int *buf = new int[3];
-
-        buf[0] = parentWidget()->x();
-        buf[1] = parentWidget()->y() + y() + height() / 2;
-        buf[2] = parentWidget()->width();
-
-        return buf;
+        return columnType;
     }
 
-    int NodeRow::getRowType() const
+    void Column::deleteColumn()
     {
-        return rowType;
+        deleteLater();
     }
 
-    void NodeRow::deleteNodeRow()
+    void Column::setColumnDbType(const QString &type)
     {
-        auto* workArea = dynamic_cast<WorkArea*>(parentWidget()->parentWidget());
-        this->~NodeRow();
-        // Update work area when relation delete
-        workArea->update();
+        columnDbType = type;
     }
 
-    void NodeRow::setRowDbType(const QString &type)
+    QString Column::getColumnDbType()
     {
-        rowDbType = type;
+        return columnDbType;
     }
 
-    QString NodeRow::getRowDbType()
+    bool Column::getColumnIsNull() const
     {
-        return rowDbType;
+        return columnIsNull;
     }
 
-    bool NodeRow::getRowIsNull() const
+    QString Column::getColumnId()
     {
-        return rowIsNull;
+        return columnId;
     }
 
-    QString NodeRow::getRowId()
+    void Column::setColumnIsNull(bool checked)
     {
-        return rowId;
+        columnIsNull = checked;
     }
 
-    void NodeRow::setRowIsNull(bool checked)
-    {
-        rowIsNull = checked;
-    }
-
-    void NodeRow::mouseMoveEvent(QMouseEvent *event)
+    void Column::mouseMoveEvent(QMouseEvent *event)
     {
         if (isMovable) {
             parentWidget()->parentWidget()->update();
@@ -274,7 +259,7 @@ namespace DbNodes::Widgets {
         }
     }
 
-    void NodeRow::mousePressEvent(QMouseEvent *event)
+    void Column::mousePressEvent(QMouseEvent *event)
     {
         if (moveHandle->geometry().contains(mapFromGlobal(QCursor::pos()))) {
             setStyleSheet(styleSheet() + "QWidget{border: 1px solid #f36026;}");
@@ -285,12 +270,12 @@ namespace DbNodes::Widgets {
         DbNodes::Abstract::AbstractNode::mousePressEvent(event);
     }
 
-    void NodeRow::mouseReleaseEvent(QMouseEvent *event)
+    void Column::mouseReleaseEvent(QMouseEvent *event)
     {
         if (isMovable) {
-            auto *anotherNodeRow = getNodeRowUnderMouse();
+            auto *anotherColumn = getColumnUnderMouse();
 
-            if (anotherNodeRow) vb->insertWidget(vb->indexOf(anotherNodeRow), this);
+            if (anotherColumn) vb->insertWidget(vb->indexOf(anotherColumn), this);
             else vb->insertWidget(vb->indexOf(this), this);
 
             isMovable = false;
@@ -301,12 +286,12 @@ namespace DbNodes::Widgets {
         DbNodes::Abstract::AbstractNode::mouseReleaseEvent(event);
     }
 
-    NodeRow *NodeRow::getNodeRowUnderMouse()
+    Column *Column::getColumnUnderMouse()
     {
-        foreach(NodeRow *w, parentWidget()->findChildren<NodeRow *>())
+        foreach(Column *w, parentWidget()->findChildren<Column *>())
         {
             if (w->geometry().contains(parentWidget()->mapFromGlobal(QCursor::pos()))
-                && w->getRowType() == rowType
+                && w->getColumnType() == columnType
                 && vb->indexOf(w) != vb->indexOf(this)) {
                 return w;
             }
@@ -315,21 +300,29 @@ namespace DbNodes::Widgets {
         return nullptr;
     }
 
-    void NodeRow::openRelationMaker()
+    void Column::openRelationMaker()
     {
         using namespace DbNodes::Modals;
 
-        auto* workArea = dynamic_cast<WorkArea*>(parentWidget()->parentWidget());
+        auto *workArea = dynamic_cast<Widgets::WorkArea*>(parentWidget()->parentWidget());
 
-        auto *relationMaker = new RelationMaker(this, workArea->getAllNodes());
+        auto *relationMaker = new RelationMaker(this, workArea->getAllTables());
 
         auto globalPos = mapToGlobal(fkButton->pos());
 
         relationMaker->move(globalPos.x() + fkButton->width() + 2,globalPos.y() + fkButton->height() + 2);
     }
 
-    void NodeRow::disableFkRelationButton(const bool &disable)
+    void Column::disableFkRelationButton(const bool &disable)
     {
         fkButton->setDisabled(disable);
+    }
+
+    Abstract::ParamsForDrawing Column::getDrawParams()
+    {
+        return Abstract::ParamsForDrawing(
+            {parentWidget()->x(), parentWidget()->y() + y() + height() / 2},
+            parentWidget()->width()
+        );
     }
 }

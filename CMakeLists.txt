@@ -11,6 +11,7 @@ set(DEV_SCRIPTS
 
 set(INCLUDE_DIRECTORIES
         src/Abstract
+        src/Nodes
         src/Widgets
         src/Relations
         src/Modals

@@ -12,7 +12,6 @@
 #include "QDebug"
 #include "QPair"
 
-#include "OpenFileExceptionsDictionary.h"
 #include "ExceptionModal.h"
 
 namespace DbNodes::Saving {
@@ -74,7 +73,7 @@ namespace DbNodes::Saving {
     {
         QFile file(path);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-            generateException(CAN_NOT_OPEN_FILE_EXCEPTION, path);
+            generateException(Dictionaries::OpenFileExceptionsDictionary::Type::CanNotOpenFile, path);
 
         file.write(content);
         file.close();
@@ -117,11 +116,11 @@ namespace DbNodes::Saving {
         QFile file(path);
 
         if (!file.exists()) {
-            return generateException(FILE_NOT_FOUND_EXCEPTION, path);
+            return generateException(Dictionaries::OpenFileExceptionsDictionary::Type::FileNotFound, path);
         }
 
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return generateException(CAN_NOT_OPEN_FILE_EXCEPTION, path);
+            return generateException(Dictionaries::OpenFileExceptionsDictionary::Type::CanNotOpenFile, path);
         }
 
         while (!file.atEnd()) {
@@ -132,18 +131,20 @@ namespace DbNodes::Saving {
         file.close();
 
         if (fileString.isEmpty()) {
-            return generateException(FILE_IS_EMPTY_EXCEPTION);
+            return generateException(Dictionaries::OpenFileExceptionsDictionary::Type::FileIsEmpty);
         }
 
         if (QJsonDocument::fromJson(fileString).isEmpty()) {
-            return generateException(INVALID_FILE_TYPE_EXCEPTION);
+            return generateException(Dictionaries::OpenFileExceptionsDictionary::Type::InvalidFileType);
         }
 
         return fileString;
     }
 
-    QByteArray SaveManager::generateException(const int &exceptionType, const QString &path)
-    {
+    QByteArray SaveManager::generateException(
+        const Dictionaries::OpenFileExceptionsDictionary::Type &exceptionType,
+        const QString &path
+    ) {
         QString exceptionText = Dictionaries::OpenFileExceptionsDictionary::getValue(exceptionType).toString();
 
         if (exceptionText.indexOf("%1") > 0)

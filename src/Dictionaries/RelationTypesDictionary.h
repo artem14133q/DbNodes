@@ -7,18 +7,22 @@
 
 #include "StructDictionary.h"
 
-#define RELATION_TYPE_PATH 1
-#define RELATION_TYPE_LINK 2
-
 namespace DbNodes::Dictionaries {
 
     class RelationTypesDictionary: public Abstract::Dictionary<int, RelationTypesDictionary>
     {
         public:
+            enum Type {
+                Undefined,
+                Path,
+                Link
+            };
+
             static DICT_MAP(int) initDictionary() {
                 return {
-                    { RELATION_TYPE_PATH  ,   "Relation path" },
-                    { RELATION_TYPE_LINK  ,   "Relation link" },
+                    { Path          ,   "Relation path" },
+                    { Link          ,   "Relation link" },
+                    { Undefined     ,   "Undefined"     },
                 };
             };
     };

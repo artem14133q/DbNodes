@@ -3,6 +3,7 @@
 //
 
 #include "QApplication"
+#include "QDebug"
 
 #include "Selectable.h"
 
@@ -26,7 +27,7 @@ namespace DbNodes::Utils::MultipleSelection {
         }
     }
 
-    void Selectable::disable()
+    void Selectable::flush()
     {
         if (isClicked) {
             if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
@@ -39,6 +40,16 @@ namespace DbNodes::Utils::MultipleSelection {
 
             isClicked = false;
         }
+    }
+
+    void Selectable::setEnable(bool enable)
+    {
+        isEnabled = enable;
+    }
+
+    bool Selectable::enabled()
+    {
+        return isEnabled;
     }
 
 }

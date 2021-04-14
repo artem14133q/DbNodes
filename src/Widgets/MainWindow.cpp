@@ -10,9 +10,6 @@
 #include "Workarea.h"
 #include "Finder.h"
 
-#include "SaveFileTypesDictionary.h"
-#include "DefaultProjectSettingsDictionary.h"
-
 #include "../helper.h"
 
 namespace DbNodes::Widgets {
@@ -57,10 +54,14 @@ namespace DbNodes::Widgets {
 
     void MainWindow::closeCurrentProject(const int &closeProjectStatus, const bool &closeApp)
     {
-        if (closeProjectStatus == PROJECT_NOT_CLOSED) return;
+        if (closeProjectStatus == Modals::ConfirmCloseProject::Type::NotClosed) return;
 
-        if (closeProjectStatus == PROJECT_CLOSE_AND_SAVE) {
-            generateSaveFile(filePath.isEmpty() ? SAVE_TYPE_NEW_FILE : SAVE_TYPE_REWRITE_FILE);
+        if (closeProjectStatus == Modals::ConfirmCloseProject::Type::CloseAndSave) {
+            generateSaveFile(
+                filePath.isEmpty()
+                    ? Dictionaries::SaveFileTypesDictionary::Type::NewFile
+                    : Dictionaries::SaveFileTypesDictionary::Type::NewFile
+            );
         }
 
         enableWorkArea(false);
@@ -144,11 +145,11 @@ namespace DbNodes::Widgets {
         });
 
         connect(saveProjectAction, &QAction::triggered, this, [this] () {
-            generateSaveFile(SAVE_TYPE_REWRITE_FILE);
+            generateSaveFile(Dictionaries::SaveFileTypesDictionary::Type::RewriteFile);
         });
 
         connect(saveAsProjectAction, &QAction::triggered, this, [this] () {
-            generateSaveFile(SAVE_TYPE_NEW_FILE);
+            generateSaveFile(Dictionaries::SaveFileTypesDictionary::Type::NewFile);
         });
 
         connect(openSettingsAction, &QAction::triggered, this, [this] () {
@@ -157,14 +158,14 @@ namespace DbNodes::Widgets {
 
         auto *tools = menuBar->addMenu("Tools");
 
-        findNodeAction = tools->addAction("Find ...");
-        findNodeAction->setShortcut(QKeySequence("Ctrl+F"));
-        findNodeAction->setEnabled(false);
+        findTableAction = tools->addAction("Find ...");
+        findTableAction->setShortcut(QKeySequence("Ctrl+F"));
+        findTableAction->setEnabled(false);
 
-        connect(findNodeAction, &QAction::triggered, this, [this] () {
-            auto *window = new Modals::Finder(workArea->getAllNodes(), this);
+        connect(findTableAction, &QAction::triggered, this, [this] () {
+            auto *window = new Modals::Finder(workArea->getAllTables(), this);
 
-            connect(window, &Modals::Finder::selected, workArea, &WorkArea::scrollToNode);
+            connect(window, &Modals::Finder::selected, workArea, &WorkArea::scrollToTable);
         });
 
         // return QMenuBar
@@ -176,14 +177,26 @@ namespace DbNodes::Widgets {
         auto window = new Modals::NewProject(this);
 
         connect(window, &Modals::NewProject::createProjectSignal, this,
-            [this] (const VARIANTS_MAP &settings) {
+            [this] (const Modals::NewProject::VariantsMap &settings) {
                 if (!closeProjectIfExists()) return;
 
-                createWorkArea(settings.value(NAME_KEY).toString());
+                createWorkArea(settings.value(
+                    Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                        Dictionaries::DefaultProjectSettingsDictionary::Type::name
+                    )
+                ).toString());
 
                 workArea->setFixedSize(
-                    settings.value(WIDTH_KEY).toInt(),
-                    settings.value(HEIGHT_KEY).toInt()
+                    settings.value(
+                        Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                            Dictionaries::DefaultProjectSettingsDictionary::Type::width
+                        )
+                    ).toInt(),
+                    settings.value(
+                        Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                            Dictionaries::DefaultProjectSettingsDictionary::Type::height
+                        )
+                    ).toInt()
                 );
 
                 enableWorkArea(true);
@@ -205,11 +218,11 @@ namespace DbNodes::Widgets {
             int closeType = MainWindow::openConfirmCloseProjectModal();
             closeCurrentProject(closeType, true);
 
-            if (closeType != PROJECT_NOT_CLOSED) QApplication::exit();
+            if (closeType != Modals::ConfirmCloseProject::Type::NotClosed) QApplication::exit();
         }
     }
 
-    int MainWindow::openConfirmCloseProjectModal()
+    Modals::ConfirmCloseProject::Type MainWindow::openConfirmCloseProjectModal()
     {
         Modals::ConfirmCloseProject confirmWindow(workArea->getProjectName(), this);
 
@@ -218,9 +231,9 @@ namespace DbNodes::Widgets {
         return confirmWindow.getProjectCloseType();
     }
 
-    void MainWindow::generateSaveFile(const int &saveType)
+    void MainWindow::generateSaveFile(const Dictionaries::SaveFileTypesDictionary::Type &saveType)
     {
-        if (filePath.isEmpty() || saveType == SAVE_TYPE_NEW_FILE) {
+        if (filePath.isEmpty() || saveType == Dictionaries::SaveFileTypesDictionary::Type::NewFile) {
             filePath = Saving::SaveManager::createNewFile();
 
             projectListFileResolver->appendNewProject(workArea->getProjectName(), filePath);
@@ -282,7 +295,7 @@ namespace DbNodes::Widgets {
         saveProjectAction->setEnabled(enable);
         saveAsProjectAction->setEnabled(enable);
         closeProjectAction->setEnabled(enable);
-        findNodeAction->setEnabled(enable);
+        findTableAction->setEnabled(enable);
     }
 
     void MainWindow::createProject(const QString &name)
@@ -324,7 +337,7 @@ namespace DbNodes::Widgets {
         if (workArea != nullptr) {
             int closeType = openConfirmCloseProjectModal();
 
-            if (closeType == PROJECT_NOT_CLOSED) return false;
+            if (closeType == Modals::ConfirmCloseProject::Type::NotClosed) return false;
 
             closeCurrentProject(closeType);
         }

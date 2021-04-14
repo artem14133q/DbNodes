@@ -30,7 +30,7 @@ namespace DbNodes::Modals {
             void exit() override;
 
         public: signals:
-            void createProjectSignal(const VARIANTS_MAP &properties);
+            void createProjectSignal(const Abstract::AbstractSettingModal::VariantsMap &properties);
     };
 
 }

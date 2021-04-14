@@ -4,6 +4,7 @@
 
 #include "QStyle"
 #include "QApplication"
+#include "QDebug"
 
 #include "Repository.h"
 #include "Selectable.h"
@@ -13,47 +14,47 @@ namespace DbNodes::Utils::MultipleSelection {
 
     Repository::Repository(QWidget *parent): QObject(parent) {}
 
-    void Repository::unSelectNodes()
+    void Repository::unselectNodes()
     {
-        foreach (const NODE_POINTER &node, selectedNodes) {
-            setSelectToNode(node, false);
+        foreach (const Abstract::NodePtr &table, selectedNodes) {
+            setSelectToNode(table, false);
         }
 
         selectedNodes.clear();
     }
 
-    void Repository::setSelectToNode(const NODE_POINTER &node, const bool &select)
+    void Repository::setSelectToNode(const Abstract::NodePtr &node, const bool &select)
     {
-        auto unConstNode = const_cast<NODE_POINTER &>(node);
+        auto unConstNode = const_cast<Abstract::NodePtr &>(node);
 
         unConstNode->setProperty("selected", select);
         unConstNode->style()->unpolish(unConstNode);
         unConstNode->style()->polish(unConstNode);
     }
 
-    void Repository::insertNodeToSelectionList(const NODE_POINTER &node)
+    void Repository::insertNodeToSelectionList(const Abstract::NodePtr &node)
     {
         if (!selectedNodes.contains(node)) {
             selectedNodes.push_back(node);
         }
     }
 
-    void Repository::removeNodeFromSelectionList(const NODE_POINTER &node)
+    void Repository::removeNodeFromSelectionList(const Abstract::NodePtr &node)
     {
         selectedNodes.removeAll(node);
     }
 
     void Repository::moveSelectedNode(QObject *node, const QPoint &delta)
     {
-        Helper::removeDeletedItems<Widgets::Node>(selectedNodes);
+        Helper::removeDeletedItems<Abstract::AbstractNode>(selectedNodes);
 
-        foreach (const NODE_POINTER &currentNode, selectedNodes) {
-            if (currentNode == QPointer(dynamic_cast<Widgets::Node *>(node))) {
+        foreach (const Abstract::NodePtr &currentNode, selectedNodes) {
+            if (currentNode == QPointer(dynamic_cast<Abstract::AbstractNode *>(node))) {
                 continue;
             }
 
             currentNode->blockSignals(true);
-            currentNode->move(currentNode->pos() + delta);
+            currentNode->restrictedMove(currentNode->pos() + delta);
             currentNode->blockSignals(false);
         }
     }
@@ -69,11 +70,11 @@ namespace DbNodes::Utils::MultipleSelection {
         bool altPressed = QApplication::keyboardModifiers() & Qt::AltModifier;
 
         if (!(ctrlPressed || altPressed)) {
-            unSelectNodes();
+            unselectNodes();
         }
     }
 
-    void Repository::move(const QPoint &mousePos, const QList<NODE_POINTER> &nodes)
+    void Repository::move(const QPoint &mousePos, const QList<Abstract::NodePtr> &nodes)
     {
         if (mousePressed) {
             mouseCurrentPos = mousePos;
@@ -84,11 +85,11 @@ namespace DbNodes::Utils::MultipleSelection {
             bool altPressed = QApplication::keyboardModifiers() & Qt::AltModifier;
 
             if (!(ctrlPressed || altPressed)) {
-                unSelectNodes();
+                unselectNodes();
             }
 
-            foreach (const NODE_POINTER &node, nodes) {
-                if (selectionRect.intersects(node->geometry())) {
+            foreach (const Abstract::NodePtr &node, nodes) {
+                if (selectionRect.intersects(node->geometry()) && node->getSelectionUtil()->enabled()) {
                     if (altPressed) {
                         setSelectToNode(node, false);
 
@@ -124,11 +125,11 @@ namespace DbNodes::Utils::MultipleSelection {
         }
     }
 
-    void Repository::initDefaultsConnections(const NODE_POINTER &node)
+    void Repository::initDefaultsConnections(const Abstract::NodePtr &node)
     {
-        Selectable *selectableNode = node->getSelectable();
+        Selectable *selectableNode = node->getSelectionUtil();
 
-        connect(selectableNode, &Selectable::unSelectNodesSignal, this, &Repository::unSelectNodes);
+        connect(selectableNode, &Selectable::unSelectNodesSignal, this, &Repository::unselectNodes);
         connect(selectableNode, &Selectable::moveSignal, this, &Repository::moveSelectedNode);
 
         connect(selectableNode, &Selectable::selectCurrentNodeSignal, this, [this, node] {
@@ -147,5 +148,38 @@ namespace DbNodes::Utils::MultipleSelection {
         selectedNodes.clear();
 
         QObject::deleteLater();
+    }
+
+    void Repository::deleteSelected()
+    {
+        if(selectedNodes.isEmpty()) return;
+
+        QList<Abstract::NodePtr> others = Helper::filter<Abstract::NodePtr>(
+            selectedNodes,
+            [] (const Abstract::NodePtr &node) -> bool {
+                if (node->objectName() == "TableNode") {
+                    node->deleteLater();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+
+        foreach (const Abstract::NodePtr &node, others) {
+            // Call override destructor. When PathPoint signal that it delete.
+            // When TableNode remove PathPoint from list.
+            delete node;
+        }
+
+        selectedNodes.clear();
+    }
+
+    void Repository::initDefaultActionsForUtil(QMenu *menu)
+    {
+        auto deleteSelectedAction = menu->addAction("Delete selected");
+        if (selectedNodes.isEmpty()) deleteSelectedAction->setDisabled(true);
+
+        connect(deleteSelectedAction, &QAction::triggered, this, &Repository::deleteSelected);
     }
 }

@@ -16,6 +16,7 @@ namespace DbNodes::Utils::MultipleSelection {
 
         private:
             bool isClicked = false;
+            bool isEnabled = true;
 
         public:
             explicit Selectable(QObject *object = nullptr);
@@ -24,7 +25,10 @@ namespace DbNodes::Utils::MultipleSelection {
 
             void move(const QPoint &delta);
 
-            void disable();
+            void flush();
+
+            void setEnable(bool enable);
+            bool enabled();
 
         public: signals:
             void moveSignal(QObject *node, const QPoint &delta);

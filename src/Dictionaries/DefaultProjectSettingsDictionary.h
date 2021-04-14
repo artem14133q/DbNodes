@@ -7,20 +7,24 @@
 
 #include "StructDictionary.h"
 
-#define NAME_KEY "name"
-#define WIDTH_KEY "width"
-#define HEIGHT_KEY "height"
-
 namespace DbNodes::Dictionaries {
 
     struct DefaultProjectSettingsDictionary: public Abstract::Dictionary<QString, DefaultProjectSettingsDictionary>
     {
         public:
+            enum Type {
+                name,
+                width,
+                height
+            };
+
+            Q_ENUM(Type);
+
             static DICT_MAP(QString) initDictionary() {
                 return {
-                        { NAME_KEY   , "Undefined" },
-                        { WIDTH_KEY  , 4000        },
-                        { HEIGHT_KEY , 4000        },
+                    { getKey(name)  , "Undefined" },
+                    { getKey(width)  , 4000        },
+                    { getKey(height) , 4000        },
                 };
             };
     };

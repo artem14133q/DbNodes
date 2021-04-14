@@ -7,7 +7,10 @@
 #include "QContextMenuEvent"
 
 #include "AbstractRelationView.h"
-#include "Noderow.h"
+#include "IHasPathConnectors.h"
+#include "RelationPath/Render.h"
+#include "Path/PathPoint.h"
+#include "Table/Column.h"
 
 namespace DbNodes::Relations {
 
@@ -15,24 +18,52 @@ namespace DbNodes::Relations {
     {
         Q_OBJECT
 
+        private:
+            const int DELTA_X_WHEN_CREATE_POINT = 20;
+
+            QColor color;
+
+            Utils::RelationPath::Render *relationRenderer;
+
+            Abstract::PathDirection direction;
+
+            QList<Path::RelationPathPointPtr> points;
+
+            void initUI();
+
         public:
             explicit DeleteRelationButton(
-                const NODE_RAW_POINTER &pkNodeRaw,
-                const NODE_RAW_POINTER &fkNodeRaw,
+                const Nodes::Table::ColumnPrt &pkColumn,
+                const Nodes::Table::ColumnPrt &fkColumn,
                 QWidget *parent = nullptr
             );
 
             void contextMenuEvent(QContextMenuEvent *event) override;
 
             void updateRelation(QPainter &painter, QPainterPath &path) override;
-            int getCurrentTypeId() override;
+            Dictionaries::RelationTypesDictionary::Type getCurrentTypeId() override;
 
-        private:
-            QColor color;
+            QList<Path::RelationPathPointPtr> getPoints();
 
+            ~DeleteRelationButton() override;
+
+
+        protected:
             void deleteRelation();
 
-            void initUI();
+            void drawRelationPath(
+                QPainter &painter,
+                QPainterPath &path,
+                Abstract::ParamsForDrawing &startParams,
+                Abstract::ParamsForDrawing &endParams,
+                const bool &moveEnable
+            );
+
+        public slots:
+            Path::RelationPathPointPtr createPoint(const QPoint &pos = QPoint());
+
+        public: signals:
+            void createPathPointSignal(Path::PathPoint *point);
     };
 
 

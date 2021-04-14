@@ -5,9 +5,7 @@
 #include "TableRename.h"
 #include "QString"
 #include "QLabel"
-#include "QPushButton"
 #include "QLineEdit"
-#include "../helper.h"
 
 namespace DbNodes::Modals {
 

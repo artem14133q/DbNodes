@@ -9,7 +9,7 @@
 #include "QPointer"
 #include "QContextMenuEvent"
 
-#include "Noderow.h"
+#include "Table/Column.h"
 #include "AbstractRelationView.h"
 
 namespace DbNodes::Relations {
@@ -20,31 +20,37 @@ namespace DbNodes::Relations {
 
         public:
             explicit RelationLink(
-                const NODE_RAW_POINTER &pkNodeRaw,
-                const NODE_RAW_POINTER &fkNodeRaw,
-                const int &relationPosition,
+                const Nodes::Table::ColumnPrt &pkColumn,
+                const Nodes::Table::ColumnPrt &fkColumn,
+                const Dictionaries::RelationPositionsDictionary::Type &relationPosition,
                 QWidget *parent = nullptr
             );
 
             void contextMenuEvent(QContextMenuEvent *event) override;
-            void setSidePositionsName(const int &position);
+            void setSidePositionsName(const Dictionaries::RelationPositionsDictionary::Type &position);
 
             void updateRelation(QPainter &painter, QPainterPath &path) override;
-            int getCurrentTypeId() override;
+            Dictionaries::RelationTypesDictionary::Type getCurrentTypeId() override;
 
             void switchPosition();
 
             bool hasRelationPositionType() override;
-            int relationPositionType() override;
-            void setRelationPositionType(const int &type) override;
 
-            static int getNextRelationType(const int &currentRelationType);
+            Dictionaries::RelationPositionsDictionary::Type relationPositionType() override;
+
+            void setRelationPositionType(
+                const Dictionaries::RelationPositionsDictionary::Type &type
+            ) override;
+
+            static Dictionaries::RelationPositionsDictionary::Type getNextRelationPositionType(
+                const Dictionaries::RelationPositionsDictionary::Type &currentRelationType
+            );
 
         private:
             QString sidePositionName;
             QAction *switchSideAction{};
 
-            int relationPosition{};
+            Dictionaries::RelationPositionsDictionary::Type relationPosition{};
 
             void initUI();
     };

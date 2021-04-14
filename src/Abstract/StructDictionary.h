@@ -6,28 +6,44 @@
 #define DBNODES_STRUCTDICTIONARY_H
 
 #include "QVariant"
+#include "QMetaEnum"
+#include "QObject"
+
+#define DICT_MAP(key_type) QHash<key_type, QVariant>
 
 namespace DbNodes::Abstract {
 
     template<typename T1, class T2>
-    struct Dictionary
+    struct Dictionary: public QObject
     {
-        #define DICT_MAP(key_type) QHash<key_type, QVariant>
-
         static DICT_MAP(T1) getDictionary()
         {
             return T2::initDictionary();
         }
 
-        static QVariant getValue(const T1 &key)
-        {
-            return getDictionary().value(key);
-        }
+        public:
 
-        static QVariantList getAllValues()
-        {
-            return QVariantList(getDictionary().values());
-        }
+
+            static QVariant getValue(const T1 &key)
+            {
+                return getDictionary().value(key);
+            }
+
+            static QVariantList getAllValues()
+            {
+                return QVariantList(getDictionary().values());
+            }
+
+            static QList<T1> getAllKeys()
+            {
+                return getDictionary().keys();
+            }
+
+            template<typename QEnum>
+            static QString getKey(const QEnum value)
+            {
+                return QString(QMetaEnum::fromType<QEnum>().valueToKey(value));
+            }
     };
 }
 

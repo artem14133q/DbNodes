@@ -5,8 +5,9 @@
 #ifndef DBNODES_REPOSITORY_H
 #define DBNODES_REPOSITORY_H
 
-#include "QWidget"
-#include "Node.h"
+#include "QPainter"
+
+#include "AbstractNode.h"
 
 namespace DbNodes::Utils::MultipleSelection {
 
@@ -15,7 +16,7 @@ namespace DbNodes::Utils::MultipleSelection {
         Q_OBJECT
 
         private:
-            QList<NODE_POINTER> selectedNodes;
+            QList<Abstract::NodePtr> selectedNodes;
 
             bool mousePressed = false;
             QPoint mouseStartPos;
@@ -26,21 +27,28 @@ namespace DbNodes::Utils::MultipleSelection {
         public:
             explicit Repository(QWidget *parent = nullptr);
 
-            void unSelectNodes();
-            static void setSelectToNode(const NODE_POINTER &node, const bool &select);
-            void insertNodeToSelectionList(const NODE_POINTER &node);
-            void removeNodeFromSelectionList(const NODE_POINTER &node);
+            void unselectNodes();
+            static void setSelectToNode(const Abstract::NodePtr &node, const bool &select);
+            void insertNodeToSelectionList(const Abstract::NodePtr &node);
+            void removeNodeFromSelectionList(const Abstract::NodePtr &node);
 
             void moveSelectedNode(QObject *node, const QPoint &delta);
-            void initDefaultsConnections(const NODE_POINTER &node);
+            void initDefaultsConnections(const Abstract::NodePtr &node);
 
             void drawSelectionRect(QPainter &painter);
 
             void start(const QPoint &mousePos);
-            void move(const QPoint &mousePos, const QList<NODE_POINTER> &nodes);
+            void move(const QPoint &mousePos, const QList<Abstract::NodePtr> &nodes);
             void stop();
 
+            void deleteSelected();
+
+            void initDefaultActionsForUtil(QMenu *menu);
+
             ~Repository() override;
+
+        public: signals:
+            void deleteSelectedNodesSignal();
     };
 
 }

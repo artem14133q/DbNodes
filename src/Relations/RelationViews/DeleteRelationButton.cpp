@@ -7,15 +7,19 @@
 namespace DbNodes::Relations {
 
     DeleteRelationButton::DeleteRelationButton(
-        const NODE_RAW_POINTER &pkNodeRaw,
-        const NODE_RAW_POINTER &fkNodeRaw,
+        const Nodes::Table::ColumnPrt &pkColumn,
+        const Nodes::Table::ColumnPrt &fkColumn,
         QWidget *parent
-    ):  Abstract::AbstractRelationView(parent, pkNodeRaw, fkNodeRaw) {
+    ):  Abstract::AbstractRelationView(parent, pkColumn, fkColumn) {
         setFixedSize(16, 16);
         setStyleSheet("QWidget{border: 0; border-radius: 8px;}");
 
+        relationRenderer = new Utils::RelationPath::Render(this);
+
         color = QColor();
         color.setRgb(47, 167, 227);
+
+        direction = Abstract::leftToRight;
 
         initUI();
     }
@@ -36,46 +40,119 @@ namespace DbNodes::Relations {
 
     void DeleteRelationButton::contextMenuEvent(QContextMenuEvent *event)
     {
+        auto contextMenu = createContextMenu();
+
+        auto createPointAction = contextMenu->addAction("Create path point");
+
+        connect(createPointAction, &QAction::triggered, this, [this] {
+            createPoint();
+        });
+
         auto menuPos = mapToGlobal(event->pos());
         menuPos.setX(menuPos.x() + 5);
-        //Set visible menu
-        createContextMenu()->exec(menuPos);
+        contextMenu->exec(menuPos);
     }
 
     void DeleteRelationButton::updateRelation(QPainter &painter, QPainterPath &path)
     {
         painter.setPen(QPen(color, 2, Qt::SolidLine, Qt::FlatCap));
 
-        int *pkBuf = pkNodeRaw->dataForPaint();
-        int *fkBuf = fkNodeRaw->dataForPaint();
+        Abstract::ParamsForDrawing endParams;
 
-        if (pkBuf[0] < fkBuf[0]) {
-            pkBuf[0] += pkBuf[2];
+        auto startParams = fkColumn->getDrawParams();
 
-            move(fkBuf[0] - width() - 2, fkBuf[1] - height() / 2);
+        foreach (const Path::RelationPathPointPtr &pointPtr, points) {
+            endParams = pointPtr->getDrawParams();
 
-            fkBuf[0] -= width() + 2;
-        } else {
-            fkBuf[0] += fkBuf[2];
+            auto oldParams = endParams;
 
-            move(fkBuf[0] + 2, fkBuf[1] - height() / 2);
+            drawRelationPath(painter, path, startParams, endParams, pointPtr == points.first());
 
-            fkBuf[0] += width();
+            startParams = oldParams;
         }
 
-        int cP12_x = pkBuf[0] + (fkBuf[0] - pkBuf[0]) / 2;
+        endParams = pkColumn->getDrawParams();
 
-        path.moveTo(pkBuf[0], pkBuf[1]);
-        path.cubicTo(cP12_x, pkBuf[1], cP12_x, fkBuf[1], fkBuf[0], fkBuf[1]);
-
-        delete pkBuf;
-        delete fkBuf;
-
-        painter.drawPath(path);
+        drawRelationPath(painter, path, startParams, endParams, points.isEmpty());
     }
 
-    int DeleteRelationButton::getCurrentTypeId()
+    Dictionaries::RelationTypesDictionary::Type DeleteRelationButton::getCurrentTypeId()
     {
-        return RELATION_TYPE_PATH;
+        return Dictionaries::RelationTypesDictionary::Type::Path;
+    }
+
+    Path::RelationPathPointPtr DeleteRelationButton::createPoint(const QPoint &pos)
+    {
+        Helper::removeDeletedItems<Path::PathPoint>(points);
+
+        auto point = new Path::PathPoint(parentWidget());
+
+        connect(point, &Path::PathPoint::deleteRelationPathPointSignal, this, [this, point] {
+            points.removeAll(point);
+            point->deleteLater();
+            parentWidget()->update();
+        });
+
+        if (pos.isNull()) {
+            int deltaX = 0;
+
+            switch (direction) {
+                case Abstract::leftToRight:
+                    deltaX += (DELTA_X_WHEN_CREATE_POINT + width()); break;
+                case Abstract::rightToLeft:
+                    deltaX -= (DELTA_X_WHEN_CREATE_POINT + point->width()); break;
+            }
+
+            point->move(x() + deltaX, y());
+        } else {
+            point->move(pos);
+        }
+
+        points.push_front(Path::RelationPathPointPtr(point));
+
+        emit createPathPointSignal(point);
+
+        parentWidget()->update();
+
+        return point;
+    }
+
+    DeleteRelationButton::~DeleteRelationButton()
+    {
+        delete relationRenderer;
+
+        foreach (const Path::RelationPathPointPtr &point, points) {
+            point->deleteLater();
+        }
+
+        points.clear();
+
+        deleteLater();
+    }
+
+    void DeleteRelationButton::drawRelationPath(
+        QPainter &painter,
+        QPainterPath &path,
+        Abstract::ParamsForDrawing &startParams,
+        Abstract::ParamsForDrawing &endParams,
+        const bool &moveEnable
+    ) {
+        auto currentDirection = relationRenderer->determinateDirection(startParams.first, endParams.first);
+
+        relationRenderer->calculatePosition(startParams, endParams, currentDirection);
+
+        if (moveEnable) {
+            move(relationRenderer->calculateForWidget(startParams, currentDirection));
+            direction = currentDirection;
+        }
+
+        relationRenderer->drawPath(painter, path, startParams.first, endParams.first);
+    }
+
+    QList<Path::RelationPathPointPtr> DeleteRelationButton::getPoints()
+    {
+        Helper::removeDeletedItems<Path::PathPoint>(points);
+
+        return points;
     }
 }

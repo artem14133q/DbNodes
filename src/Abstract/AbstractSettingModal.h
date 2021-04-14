@@ -18,15 +18,15 @@
 
 #include "AbstractModal.h"
 
-#define VARIANTS_MAP QHash<QString, QVariant>
 #define EVENT_CALLBACK(type) std::function<void (type *)>
 
 namespace DbNodes::Abstract
 {
-
     class AbstractSettingModal: public AbstractModal
     {
         public:
+            typedef QHash<QString, QVariant> VariantsMap;
+
             explicit AbstractSettingModal(QWidget *parent = nullptr);
 
             void exit() override;
@@ -41,7 +41,7 @@ namespace DbNodes::Abstract
             QComboBox *createComboBoxSetting(
                 const QString &name,
                 const QString &settingKey,
-                const VARIANTS_MAP &values,
+                const VariantsMap &values,
                 const EVENT_CALLBACK(QComboBox) &callback = nullptr
             );
 

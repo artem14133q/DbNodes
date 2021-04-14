@@ -10,8 +10,8 @@
 #include "QLineEdit"
 #include "QTextBrowser"
 
-#include "Node.h"
-#include "Noderow.h"
+#include "../Nodes/TableNode.h"
+#include "Table/Column.h"
 #include "AbstractModal.h"
 
 namespace DbNodes::Modals {
@@ -21,18 +21,18 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit RelationMaker(Widgets::NodeRow *fkNodeRaw, const QList<NODE_POINTER> &nodeVector);
+            explicit RelationMaker(Nodes::Table::Column *fkColumn, const QList<Nodes::TablePtr> &tableVector);
 
         private:
-            Widgets::NodeRow *fkNodeRawParent;
-            QString currentPkNodeRowId, currentFkNodeRowId;
+            Nodes::Table::Column *fkColumnParent;
+            QString currentPkColumnId, currentFkColumnId;
 
-            QList<NODE_POINTER> nodeVector;
+            QList<Nodes::TablePtr> tableVector;
 
-            QHash<QString, NODE_POINTER> nodeList;
-            QHash<QString, NODE_RAW_POINTER> nodeRowsOfSelectedNode;
+            QHash<QString, Nodes::TablePtr> tableList;
+            QHash<QString, Nodes::Table::ColumnPrt> columnsOfSelectedTable;
 
-            QComboBox *nodeRowsOfNode{}, *nodesSelect{};
+            QComboBox *columnsOfTable{}, *tablesSelect{};
             QWidget *warningWidget{};
             QPushButton *pbCreate{};
             QLineEdit *search{};
@@ -42,15 +42,15 @@ namespace DbNodes::Modals {
             void showWarningIfPkNotFound(const bool &enable, const int &errorType);
 
         protected:
-            void selectNode(const NODE_POINTER &node);
-            void filterNode(const QString &filter = "");
+            void selectTable(const Nodes::TablePtr &table);
+            void filterTable(const QString &filter = "");
             void deleteFilter();
             void confirm() override;
             void exit() override;
 
         protected slots:
-            void selectNodeByIndex(const int &index);
-            void selectNodeRow(const int &index);
+            void selectTableByIndex(const int &index);
+            void selectColumn(const int &index);
     };
 
 }

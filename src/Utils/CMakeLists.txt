@@ -2,7 +2,9 @@ set(LIBRARY_NAME Utils)
 
 set(RESOURCES
         MultipleSelection/Repository.cpp
-        MultipleSelection/Repository.h MultipleSelection/Selectable.cpp MultipleSelection/Selectable.h)
+        MultipleSelection/Repository.h
+        MultipleSelection/Selectable.cpp
+        MultipleSelection/Selectable.h RelationPath/Render.cpp RelationPath/Render.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 
@@ -10,11 +12,11 @@ set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets)
 
 # INCLUDE PROJECT SUBDIRECTORIES
 set(PROJECT_DIRECTORIES
-        ${SRC}/Widgets)
+        ${SRC}/Nodes)
 
 # INCLUDE PROJECT LIBS
 set(PROJECT_LIBS
-        Widgets)
+        Nodes)
 
 include_directories(${CMAKE_BINARY_DIR})
 target_include_directories(${LIBRARY_NAME} PUBLIC ${PROJECT_DIRECTORIES})

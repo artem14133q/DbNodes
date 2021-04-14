@@ -6,6 +6,7 @@
 #define DBNODES_RELATIONOBJECT_H
 
 #include "JsonObject.h"
+#include "RelationPathPointObject.h"
 
 namespace DbNodes::Saving::DbnFileStruct {
 
@@ -15,10 +16,11 @@ namespace DbNodes::Saving::DbnFileStruct {
             JSON_OBJECT(RelationObject)
 
             STRING_PROPERTY("id", getId, setId)
-            STRING_PROPERTY("fkNodeRawId", getFkNodeRawId, setFkNodeRawId)
-            STRING_PROPERTY("pkNodeRawId", getPkNodeRawId, setPkNodeRawId)
+            STRING_PROPERTY("fkColumnId", getFkColumnId, setFkColumnId)
+            STRING_PROPERTY("pkColumnId", getPkColumnId, setPkColumnId)
             INT_PROPERTY("type", getType, setType)
             INT_PROPERTY("position", getPosition, setPosition)
+            LIST_PROPERTY(RelationPathPointObject, "pathPoints", getPathPoints, setPathPoints)
     };
 }
 

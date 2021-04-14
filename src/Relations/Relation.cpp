@@ -18,31 +18,31 @@ namespace DbNodes::Relations {
     Relation::Relation(
         QWidget *parent,
         QString relationId,
-        const int relationTypeId,
-        NODE_RAW_POINTER &pkNodeRaw,
-        NODE_RAW_POINTER &fkNodeRaw
-    ):  QObject(parent),
-        parent(parent),
-        relationId(std::move(relationId)),
-        pkNodeRaw(pkNodeRaw),
-        fkNodeRaw(fkNodeRaw)
+        const Dictionaries::RelationTypesDictionary::Type relationTypeId,
+        Nodes::Table::ColumnPrt &pkColumn,
+        Nodes::Table::ColumnPrt &fkColumn
+    ): QObject(parent),
+       parent(parent),
+       relationId(std::move(relationId)),
+       pkColumn(pkColumn),
+       fkColumn(fkColumn)
     {
         enableRelationType(relationTypeId);
     }
 
-    NODE_RAW_POINTER Relation::getPkNodeRaw()
+    Nodes::Table::ColumnPrt Relation::getPkColumn()
     {
-        return pkNodeRaw;
+        return pkColumn;
     }
 
-    NODE_RAW_POINTER Relation::getFkNodeRaw()
+    Nodes::Table::ColumnPrt Relation::getFkColumn()
     {
-        return fkNodeRaw;
+        return fkColumn;
     }
 
     bool Relation::checkIsRelationValid()
     {
-        return pkNodeRaw && fkNodeRaw;
+        return pkColumn && fkColumn;
     }
 
     Relation::~Relation()
@@ -51,8 +51,8 @@ namespace DbNodes::Relations {
 
         parent->update();
 
-        if (fkNodeRaw) {
-            fkNodeRaw->disableFkRelationButton(false);
+        if (fkColumn) {
+            fkColumn->disableFkRelationButton(false);
         }
 
         deleteLater();
@@ -78,7 +78,7 @@ namespace DbNodes::Relations {
         delete this;
     }
 
-    void Relation::enableRelationType(const int &relationTypeId)
+    void Relation::enableRelationType(const Dictionaries::RelationTypesDictionary::Type &relationTypeId)
     {
         relationType = relationTypeId;
 
@@ -99,7 +99,7 @@ namespace DbNodes::Relations {
 
     void Relation::goToRelationTableSignal()
     {
-        emit goToRelatedTable(pkNodeRaw->getTableId());
+        emit goToRelatedTable(pkColumn->getTableId());
     }
 
     void Relation::raise()
@@ -116,10 +116,20 @@ namespace DbNodes::Relations {
         return 0;
     }
 
-    void Relation::setRelationPositionType(const int &type)
+    void Relation::setRelationPositionType(const Dictionaries::RelationPositionsDictionary::Type &type)
     {
         if (relationView->hasRelationPositionType()) {
             relationView->setRelationPositionType(type);
         }
+    }
+
+    void Relation::createNodeInWorkArea(Abstract::AbstractNode *node)
+    {
+        emit createNodeInWorkAreaSignal(node);
+    }
+
+    Abstract::AbstractRelationView *Relation::getAbstractRelationView()
+    {
+        return relationView;
     }
 }
