@@ -13,6 +13,9 @@
 #include "DrawableWidget.h"
 #include "Table/Column.h"
 
+#include "RelationTypesDictionary.h"
+#include "RelationPositionsDictionary.h"
+
 namespace DbNodes::Abstract {
 
     class AbstractRelationView: public QWidget
@@ -22,27 +25,31 @@ namespace DbNodes::Abstract {
         public:
             explicit AbstractRelationView(
                 QWidget *parent,
-                const COLUMN_POINTER &pkColumn,
-                const COLUMN_POINTER &fkColumn
+                Nodes::Table::ColumnPrt pkColumn,
+                Nodes::Table::ColumnPrt fkColumn
             );
 
             virtual void updateRelation(QPainter &painter, QPainterPath &path);
-            virtual int getCurrentTypeId();
+            virtual Dictionaries::RelationTypesDictionary::Type getCurrentTypeId();
 
             virtual bool hasRelationPositionType();
-            virtual int relationPositionType();
-            virtual void setRelationPositionType(const int &type);
+
+            virtual Dictionaries::RelationPositionsDictionary::Type relationPositionType();
+
+            virtual void setRelationPositionType(
+                const Dictionaries::RelationPositionsDictionary::Type &type
+            );
 
         protected:
-            COLUMN_POINTER fkColumn;
-            COLUMN_POINTER pkColumn;
+            Nodes::Table::ColumnPrt fkColumn;
+            Nodes::Table::ColumnPrt pkColumn;
 
             QMenu * createContextMenu();
 
         public: signals:
             void clickedDelete();
             void clickedGoToRelatedTable();
-            void changedRelationType(const int &type);
+            void changedRelationType(const Dictionaries::RelationTypesDictionary::Type &type);
     };
 
 }

@@ -22,9 +22,6 @@ namespace DbNodes::Nodes {
     TableNode::TableNode(QWidget *parent, QString id, QString name)
         : DbNodes::Abstract::AbstractNode(parent), tableName(std::move(name)), tableId(std::move(id))
     {
-        selectable = new Utils::MultipleSelection::Selectable(this);
-
-        setFocusPolicy(Qt::StrongFocus);
         setObjectName("TableNode");
         initUI();
         show();
@@ -38,14 +35,14 @@ namespace DbNodes::Nodes {
 
     void TableNode::initUI()
     {
-        setStyleSheet(Helper::getStyleFromFile("node"));
+        setStyleSheet(Helper::getStyleFromFile("table"));
 
         // Parent layout
         auto *vl = new QVBoxLayout(this);
         vl->setSizeConstraint(QVBoxLayout::SetFixedSize);
 
         titleLabel = new QLabel(tableName, this);
-        titleLabel->setStyleSheet(Helper::getStyleFromFile("nodeTitle"));
+        titleLabel->setStyleSheet(Helper::getStyleFromFile("tableTitle"));
         titleLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         titleLabel->setFixedWidth(300);
 
@@ -77,26 +74,32 @@ namespace DbNodes::Nodes {
     void TableNode::contextMenuEvent(QContextMenuEvent *event)
     {
         auto *contextMenu = new QMenu();
-        contextMenu->setStyleSheet(Helper::getStyleFromFile("nodeMenu"));
+        contextMenu->setStyleSheet(Helper::getStyleFromFile("tableMenu"));
 
         QAction* rename = contextMenu->addAction("Rename table");
-        // Default NodeRow
+        // Default Column
         QAction* addColumn = contextMenu->addAction("Add column");
-        // PK NodeRow
+        // PK Column
         QAction* addPkColumn = contextMenu->addAction("Add PK column");
-        // FK NodeRow
+        // FK Column
         QAction* addFkColumn = contextMenu->addAction("Add FK column");
-        // Delete table (NodeRow)
-        QAction* deleteTable = contextMenu->addAction("Delete Table");
+        // Delete table
 
+        Abstract::AbstractNode::createDefaultActions(contextMenu);
 
         //Define Slots
-        connect(deleteTable, &QAction::triggered, this, [this] {this->~TableNode();});
-        connect(addColumn, &QAction::triggered, this, [this] {this->addColumn();});
         connect(rename, &QAction::triggered, this, &TableNode::openRenameModal);
-        connect(addPkColumn, &QAction::triggered, this, [this] {this->addColumn(Table::Column::PK);});
-        connect(addFkColumn, &QAction::triggered, this, [this] {this->addColumn(Table::Column::FK);});
+        connect(addColumn, &QAction::triggered, this, [this] {
+            this->addColumn(Table::Column::Type::Default);
+        });
 
+        connect(addPkColumn, &QAction::triggered, this, [this] {
+            this->addColumn(Table::Column::Type::PrimaryKey);
+        });
+
+        connect(addFkColumn, &QAction::triggered, this, [this] {
+            this->addColumn(Table::Column::Type::ForeignKey);
+        });
 
         #if APP_DEBUG
 
@@ -113,17 +116,17 @@ namespace DbNodes::Nodes {
     }
 
     // Create column of types
-    void TableNode::addColumn(int columnType, COLUMN_POINTER column)
+    void TableNode::addColumn(Nodes::Table::Column::Type columnType, Table::ColumnPrt column)
     {
         if (!column) column = new Table::Column(getLayoutType(columnType), this, columnType);
 
         auto *parentWorkArea = dynamic_cast<Widgets::WorkArea*>(parentWidget());
 
-        if (columnType == Table::Column::PK)
+        if (columnType == Table::Column::Type::PrimaryKey)
             pkLayout->addWidget(column);
-        else if (columnType == Table::Column::FK)
+        else if (columnType == Table::Column::Type::ForeignKey)
             fkLayout->addWidget(column);
-        else
+        else if (columnType == Table::Column::Type::Default)
             columnsLayout->addWidget(column);
 
         parentWorkArea->setColumn(column);
@@ -134,23 +137,23 @@ namespace DbNodes::Nodes {
     void TableNode::addColumnFromFile(
         const QString &id,
         const QString &name,
-        const int &type,
+        const Nodes::Table::Column::Type &type,
         const QString &dbType,
         const bool &isNull
     ) {
-        QPointer<Table::Column> nodeRow = new Table::Column(getLayoutType(type), this, id, name, type, dbType, isNull);
+        Table::ColumnPrt nodeRow = new Table::Column(getLayoutType(type), this, id, name, type, dbType, isNull);
         addColumn(type, nodeRow);
     }
 
-    QVector<QPointer<Table::Column>> TableNode::getAllColumns()
+    Table::ColumnPrtVector TableNode::getAllColumns()
     {
-        COLUMN_VECTOR allNodeRows;
+        Table::ColumnPrtVector allColumns;
 
-        foreach (Table::Column *w, groupColumns()) {
-            allNodeRows.push_back(QPointer<Table::Column>(w));
+        foreach (Nodes::Table::Column *column, groupColumns()) {
+            allColumns.push_back(Nodes::Table::ColumnPrt(column));
         }
 
-        return allNodeRows;
+        return allColumns;
     }
 
     // Named node slot
@@ -179,22 +182,19 @@ namespace DbNodes::Nodes {
 
         QWidget *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
 
-        tableRenameModal->move(
-            mainWindow->x() + mainWindow->width() / 2 - tableRenameModal->width() / 2,
-            mainWindow->y() + mainWindow->height() / 2 - tableRenameModal->height() / 2
-        );
+        Helper::moveToCenter(mainWindow, this);
 
         connect(tableRenameModal, &TableRename::pushConfirm, this, [this] (const QString &name) {
-                setTableName(name);
-                titleLabel->setText(name);
+            setTableName(name);
+            titleLabel->setText(name);
         });
     }
 
-    QVBoxLayout *TableNode::getLayoutType(const int &columnType)
+    QVBoxLayout *TableNode::getLayoutType(const Nodes::Table::Column::Type &columnType)
     {
-        if (columnType == Table::Column::PK)
+        if (columnType == Table::Column::Type::PrimaryKey)
             return pkLayout;
-        else if (columnType == Table::Column::FK)
+        else if (columnType == Table::Column::Type::ForeignKey)
             return fkLayout;
         else
             return columnsLayout;
@@ -202,38 +202,43 @@ namespace DbNodes::Nodes {
 
     QList<Table::Column *> TableNode::groupColumns()
     {
-        auto nodeRows = findChildren<Table::Column *>();
+        auto columns = findChildren<Table::Column *>();
 
-        QList<Table::Column *> sortedNodeRows;
-        QList<int> layouts({Table::Column::PK, Table::Column::FK, 0});
+        QList<Table::Column *> sortedColumns;
 
-        foreach (const int &lt, layouts) {
-            QHash<int, Table::Column *> lN;
+        QList<Nodes::Table::Column::Type> layouts({
+            Table::Column::Type::PrimaryKey,
+            Table::Column::Type::ForeignKey,
+            Table::Column::Type::Default
+        });
 
-            foreach (Table::Column *w, nodeRows) {
-                if (w->getColumnType() == lt) lN.insert(getLayoutType(lt)->indexOf(w), w);
+        foreach (const Nodes::Table::Column::Type &layout, layouts) {
+            QHash<int, Table::Column *> group;
+
+            foreach (Table::Column *column, columns) {
+                if (column->getColumnType() == layout)
+                    group.insert(getLayoutType(layout)->indexOf(column), column);
             }
 
-            for (int i = 0; !lN.empty(); ++i) {
-                sortedNodeRows.push_back(lN.take(i));
+            for (int i = 0; !group.empty(); ++i) {
+                sortedColumns.push_back(group.take(i));
             }
         }
 
-        return sortedNodeRows;
+        return sortedColumns;
     }
 
     void TableNode::mousePressEvent(QMouseEvent *event)
     {
         raise();
-        selectable->setClicked(true);
 
-        foreach (const RELATION_POINTER &relation, relations) {
+        foreach (const Relations::RelationPtr &relation, relations) {
             if (relation == nullptr) {
                 relations.removeAll(relation);
                 continue;
             };
 
-            if (relation->getRelationTypeId() == RELATION_TYPE_LINK) {
+            if (relation->getRelationTypeId() == Dictionaries::RelationTypesDictionary::Type::Link) {
                 relation->raise();
             }
         }
@@ -241,7 +246,7 @@ namespace DbNodes::Nodes {
         AbstractNode::mousePressEvent(event);
     }
 
-    void TableNode::addRelation(const RELATION_POINTER &relation)
+    void TableNode::addRelation(const Relations::RelationPtr &relation)
     {
         relations.push_back(relation);
     }
@@ -269,39 +274,13 @@ namespace DbNodes::Nodes {
         qDebug() << "===== DEBUG NODE ROWS DATA ======";
     }
 
-    QString TableNode::debugLayoutType(const int &columnType)
+    QString TableNode::debugLayoutType(const Nodes::Table::Column::Type &columnType)
     {
-        if      (columnType == Table::Column::PK)      return "PK";
-        else if (columnType == Table::Column::FK)      return "FK";
-        else                                        return "RW";
+        if      (columnType == Table::Column::Type::PrimaryKey)   return "PK";
+        else if (columnType == Table::Column::Type::ForeignKey)   return "FK";
+        else                                                      return "RW";
     }
 
 #endif
-
-    void TableNode::mouseMoveEvent(QMouseEvent *event)
-    {
-        QPoint delta(event->globalPos() - oldPos);
-
-        selectable->move(delta);
-
-        Abstract::AbstractNode::mouseMoveEvent(event);
-    }
-
-    void TableNode::mouseReleaseEvent(QMouseEvent *event)
-    {
-        selectable->disable();
-
-        QWidget::mouseReleaseEvent(event);
-    }
-
-    Utils::MultipleSelection::Selectable *TableNode::getSelectable()
-    {
-        return selectable;
-    }
-
-    TableNode::~TableNode()
-    {
-        delete selectable;
-    }
 }
 

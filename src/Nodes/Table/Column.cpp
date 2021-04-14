@@ -19,14 +19,14 @@
 
 namespace DbNodes::Nodes::Table {
 
-    Column::Column(QVBoxLayout *vb, QWidget *parent, const int &columnType)
+    Column::Column(QVBoxLayout *vb, QWidget *parent, const Column::Type &columnType)
         : Column(
             vb,
             parent,
             "column:" + Helper::getCurrentTimeMS(),
             "coloumn",
             columnType,
-            columnType != Column::FK ? "integer" : "none",
+            columnType != ForeignKey ? "integer" : "none",
             false
         ) {}
 
@@ -35,7 +35,7 @@ namespace DbNodes::Nodes::Table {
         QWidget *parent,
         const QString &columnId,
         const QString &columnName,
-        const int &columnType,
+        const Column::Type &columnType,
         const QString &columnDbType,
         const bool &columnIsNull
     ): DbNodes::Abstract::AbstractNode(parent),
@@ -76,7 +76,7 @@ namespace DbNodes::Nodes::Table {
 
         /* If Column type is PK return
         only numeric types */
-        if (columnType == Column::PK)
+        if (columnType == PrimaryKey)
             return typesList;
 
         foreach (const QVariant &t, DbTableTypesDictionary::getAllValues()) {
@@ -90,9 +90,9 @@ namespace DbNodes::Nodes::Table {
     {
         QString styleName;
 
-        if (columnType == Column::PK)
+        if (columnType == PrimaryKey)
             styleName = "pkColumn";
-        else if (columnType == Column::FK)
+        else if (columnType == ForeignKey)
             styleName = "fkColumn";
         else
             styleName = "column";
@@ -112,7 +112,7 @@ namespace DbNodes::Nodes::Table {
         hl->addWidget(pbClose);
 
         // If row type is PK set key image
-        if (columnType == Column::PK) {
+        if (columnType == PrimaryKey) {
             auto *key = new QLabel(this);
             key->setStyleSheet(Helper::getStyleFromFile("columnKeyIcon"));
             key->setPixmap(QPixmap(Helper::getIconPath("key")));
@@ -128,7 +128,7 @@ namespace DbNodes::Nodes::Table {
 
         QString leRowTitle = "columnTitle";
         // Width for FK
-        if (columnType == Column::FK) {
+        if (columnType == ForeignKey) {
             leName->setFixedWidth(208);
             leRowTitle = "fkColumnTitle";
 
@@ -147,7 +147,7 @@ namespace DbNodes::Nodes::Table {
             hl->addWidget(fkButton);
         }
         // Width for PK
-        else if (columnType == Column::PK) {
+        else if (columnType == PrimaryKey) {
             leName->setFixedWidth(163);
             leRowTitle = "pkColumnTitle";
         }
@@ -155,7 +155,7 @@ namespace DbNodes::Nodes::Table {
         leName->setStyleSheet(Helper::getStyleFromFile(leRowTitle));
 
         // If FK, not init db types combo box
-        if (columnType != Column::FK) {
+        if (columnType != ForeignKey) {
             auto *cbTypes = new QComboBox(this);
             QStringList dbTypes = initTypes();
             cbTypes->installEventFilter(this);
@@ -169,13 +169,13 @@ namespace DbNodes::Nodes::Table {
         }
 
         // If PK, not init NULL button
-        if (columnType != Column::PK) {
+        if (columnType != PrimaryKey) {
             auto *isNull = new QCheckBox("NULL", this);
             isNull->setChecked(columnIsNull);
             isNull->setFixedWidth(40);
 
             QString tableRowIsNullStyle = "columnIsNull";
-            if (columnType == Column::FK) tableRowIsNullStyle = "fkColumnIsNull";
+            if (columnType == ForeignKey) tableRowIsNullStyle = "fkColumnIsNull";
             isNull->setStyleSheet(Helper::getStyleFromFile(tableRowIsNullStyle));
 
             hl->addWidget(isNull);
@@ -216,19 +216,7 @@ namespace DbNodes::Nodes::Table {
         return table->getTableId();
     }
 
-    // Get pos in work area
-    int* Column::dataForPaint()
-    {
-        int *buf = new int[3];
-
-        buf[0] = parentWidget()->x();
-        buf[1] = parentWidget()->y() + y() + height() / 2;
-        buf[2] = parentWidget()->width();
-
-        return buf;
-    }
-
-    int Column::getColumnType() const
+    Column::Type Column::getColumnType() const
     {
         return columnType;
     }
@@ -316,7 +304,7 @@ namespace DbNodes::Nodes::Table {
     {
         using namespace DbNodes::Modals;
 
-        auto* workArea = dynamic_cast<Widgets::WorkArea*>(parentWidget()->parentWidget());
+        auto *workArea = dynamic_cast<Widgets::WorkArea*>(parentWidget()->parentWidget());
 
         auto *relationMaker = new RelationMaker(this, workArea->getAllTables());
 
@@ -328,5 +316,13 @@ namespace DbNodes::Nodes::Table {
     void Column::disableFkRelationButton(const bool &disable)
     {
         fkButton->setDisabled(disable);
+    }
+
+    Abstract::ParamsForDrawing Column::getDrawParams()
+    {
+        return Abstract::ParamsForDrawing(
+            {parentWidget()->x(), parentWidget()->y() + y() + height() / 2},
+            parentWidget()->width()
+        );
     }
 }

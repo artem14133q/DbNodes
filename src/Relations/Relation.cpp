@@ -16,11 +16,11 @@
 namespace DbNodes::Relations {
 
     Relation::Relation(
-            QWidget *parent,
-            QString relationId,
-            const int relationTypeId,
-            COLUMN_POINTER &pkColumn,
-            COLUMN_POINTER &fkColumn
+        QWidget *parent,
+        QString relationId,
+        const Dictionaries::RelationTypesDictionary::Type relationTypeId,
+        Nodes::Table::ColumnPrt &pkColumn,
+        Nodes::Table::ColumnPrt &fkColumn
     ): QObject(parent),
        parent(parent),
        relationId(std::move(relationId)),
@@ -30,12 +30,12 @@ namespace DbNodes::Relations {
         enableRelationType(relationTypeId);
     }
 
-    COLUMN_POINTER Relation::getPkColumn()
+    Nodes::Table::ColumnPrt Relation::getPkColumn()
     {
         return pkColumn;
     }
 
-    COLUMN_POINTER Relation::getFkColumn()
+    Nodes::Table::ColumnPrt Relation::getFkColumn()
     {
         return fkColumn;
     }
@@ -78,7 +78,7 @@ namespace DbNodes::Relations {
         delete this;
     }
 
-    void Relation::enableRelationType(const int &relationTypeId)
+    void Relation::enableRelationType(const Dictionaries::RelationTypesDictionary::Type &relationTypeId)
     {
         relationType = relationTypeId;
 
@@ -116,10 +116,20 @@ namespace DbNodes::Relations {
         return 0;
     }
 
-    void Relation::setRelationPositionType(const int &type)
+    void Relation::setRelationPositionType(const Dictionaries::RelationPositionsDictionary::Type &type)
     {
         if (relationView->hasRelationPositionType()) {
             relationView->setRelationPositionType(type);
         }
+    }
+
+    void Relation::createNodeInWorkArea(Abstract::AbstractNode *node)
+    {
+        emit createNodeInWorkAreaSignal(node);
+    }
+
+    Abstract::AbstractRelationView *Relation::getAbstractRelationView()
+    {
+        return relationView;
     }
 }

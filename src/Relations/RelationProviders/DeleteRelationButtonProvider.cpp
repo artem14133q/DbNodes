@@ -9,11 +9,20 @@ namespace DbNodes::Relations {
 
     Abstract::AbstractRelationView *DeleteRelationButtonProvider::create()
     {
-        auto *relationView = new DeleteRelationButton(getRelation()->getPkColumn(), getRelation()->getFkColumn(),
+        auto *relationView = new DeleteRelationButton(
+            getRelation()->getPkColumn(),
+            getRelation()->getFkColumn(),
             getParentWidget()
         );
 
         initDefaultsConnects(relationView);
+
+        connect(
+            relationView,
+            &DeleteRelationButton::createPathPointSignal,
+            getRelation(),
+            &Relation::createNodeInWorkArea
+        );
 
         return relationView;
     }

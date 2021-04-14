@@ -20,7 +20,7 @@ namespace DbNodes::Settings {
         return instance;
     }
 
-    void MainSettings::subscribe(const QString &settingName, const CONNECTOR_CALLBACK &callback)
+    void MainSettings::subscribe(const QString &settingName, const ConnectorCallback &callback)
     {
         callbacks.insert(settingName, callback);
     }

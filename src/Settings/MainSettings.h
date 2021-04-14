@@ -10,14 +10,15 @@
 
 #include "utility"
 
-#define CONNECTOR_CALLBACK std::function<void (const QVariant &)>
-
 namespace DbNodes::Settings {
 
     class MainSettings: public QSettings
     {
+        public:
+            typedef std::function<void (const QVariant &)> ConnectorCallback;
+
         private:
-            QHash<QString, CONNECTOR_CALLBACK> callbacks;
+            QHash<QString, ConnectorCallback> callbacks;
 
             static MainSettings *instance;
             MainSettings();
@@ -29,7 +30,7 @@ namespace DbNodes::Settings {
             static MainSettings *getInstance();
             Q_DISABLE_COPY(MainSettings)
 
-            void subscribe(const QString &settingName, const CONNECTOR_CALLBACK &callback);
+            void subscribe(const QString &settingName, const ConnectorCallback &callback);
             void unBind(const QString &settingName);
 
             static QVariant get(const QString &key);

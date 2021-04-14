@@ -21,16 +21,16 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit RelationMaker(Nodes::Table::Column *fkColumn, const QList<TABLE_POINTER> &tableVector);
+            explicit RelationMaker(Nodes::Table::Column *fkColumn, const QList<Nodes::TablePtr> &tableVector);
 
         private:
             Nodes::Table::Column *fkColumnParent;
             QString currentPkColumnId, currentFkColumnId;
 
-            QList<TABLE_POINTER> tableVector;
+            QList<Nodes::TablePtr> tableVector;
 
-            QHash<QString, TABLE_POINTER> tableList;
-            QHash<QString, COLUMN_POINTER> columnsOfSelectedTable;
+            QHash<QString, Nodes::TablePtr> tableList;
+            QHash<QString, Nodes::Table::ColumnPrt> columnsOfSelectedTable;
 
             QComboBox *columnsOfTable{}, *tablesSelect{};
             QWidget *warningWidget{};
@@ -42,7 +42,7 @@ namespace DbNodes::Modals {
             void showWarningIfPkNotFound(const bool &enable, const int &errorType);
 
         protected:
-            void selectTable(const TABLE_POINTER &table);
+            void selectTable(const Nodes::TablePtr &table);
             void filterTable(const QString &filter = "");
             void deleteFilter();
             void confirm() override;

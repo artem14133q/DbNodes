@@ -3,7 +3,6 @@
 #include "QPoint"
 #include "QVector"
 #include "QPainter"
-#include "QPen"
 #include "QPainterPath"
 #include "QDebug"
 #include "QScrollArea"
@@ -14,7 +13,7 @@
 
 #include "Workarea.h"
 #include "TableNode.h"
-#include "RelationTypesDictionary.h"
+#include "RelationViews/Path/PathPoint.h"
 
 #include "../helper.h"
 
@@ -24,9 +23,17 @@ namespace DbNodes::Widgets {
     {
         setObjectName("WorkArea");
         // Set fixed size for work area
-        setFixedSize(20000, 10000);
 
         selectionRepository = new Utils::MultipleSelection::Repository(this);
+
+        connect(
+            selectionRepository,
+            &Utils::MultipleSelection::Repository::deleteSelectedNodesSignal,
+            this,
+            [this] {
+                Helper::removeDeletedItems<Abstract::AbstractNode>(nodeList);
+            }
+        );
 
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
 
@@ -49,6 +56,8 @@ namespace DbNodes::Widgets {
         connect(createTableAction, &QAction::triggered, this, [this, event] {
             createTable(event->pos());
         });
+
+        selectionRepository->initDefaultActionsForUtil(menu);
 
         #if APP_DEBUG
 
@@ -74,7 +83,7 @@ namespace DbNodes::Widgets {
         QPainterPath bezierPath;
 
         // Loop for paint arrows
-        foreach (const RELATION_POINTER &relation, relations) {
+        foreach (const Relations::RelationPtr &relation, relations) {
             if (!relation) {
                 relations.removeAt(relations.indexOf(relation));
                 continue;
@@ -90,19 +99,18 @@ namespace DbNodes::Widgets {
             relation->updateRelation(painter, bezierPath);
         }
 
-
         selectionRepository->drawSelectionRect(painter);
     }
 
-    RELATION_POINTER WorkArea::makeRelation(
+    Relations::RelationPtr WorkArea::makeRelation(
             const QString &relationId,
-            const int &relationType,
-            COLUMN_POINTER &pkColumn,
-            COLUMN_POINTER &fkColumn
+            const Dictionaries::RelationTypesDictionary::Type &relationType,
+            Nodes::Table::ColumnPrt &pkColumn,
+            Nodes::Table::ColumnPrt &fkColumn
     ) {
         if (pkColumn->getTableId() == fkColumn->getTableId()) return nullptr;
 
-        foreach (const RELATION_POINTER &relation, relations) {
+        foreach (const Relations::RelationPtr &relation, relations) {
             if (relation->getPkColumn()->getColumnId() == pkColumn->getColumnId()
                 && relation->getFkColumn()->getColumnId() == fkColumn->getColumnId())
                 return nullptr;
@@ -112,11 +120,21 @@ namespace DbNodes::Widgets {
 
         fkColumn->disableFkRelationButton(true);
 
-        RELATION_POINTER relation(
+        Relations::RelationPtr relation(
             new Relations::Relation(this, relationId, relationType, pkColumn, fkColumn)
         );
 
         connect(relation, &Relations::Relation::goToRelatedTable, this, &WorkArea::scrollToTable);
+
+        connect(
+            relation,
+            &Relations::Relation::createNodeInWorkAreaSignal,
+            this,
+            [this] (Abstract::AbstractNode *node) {
+                nodeList.push_back(QPointer<Abstract::AbstractNode>(node));
+                selectionRepository->initDefaultsConnections(node);
+            }
+        );
 
         relations.append(relation);
 
@@ -125,43 +143,43 @@ namespace DbNodes::Widgets {
         return relation;
     }
 
-    COLUMN_POINTER WorkArea::findColumn(int type, const QString &columnId)
+    Nodes::Table::ColumnPrt WorkArea::findColumn(int type, const QString &columnId)
     {
-        QVector<COLUMN_POINTER> columns;
+        Nodes::Table::ColumnPrtVector columns;
 
         if (type == WorkArea::GET_PK_COLUMNS)
             columns = pkList;
         else if (type == WorkArea::GET_FK_COLUMNS)
             columns = fkList;
 
-        foreach (const COLUMN_POINTER &column, columns) {
+        foreach (const Nodes::Table::ColumnPrt &column, columns) {
             if (column->getColumnId() == columnId) return column;
         }
 
-        return COLUMN_POINTER(nullptr);
+        return Nodes::Table::ColumnPrt(nullptr);
     }
 
     // Clean Columns list for delete pointer if pointer is empty
-    void WorkArea::cleanColumnList(QVector<COLUMN_POINTER> &list)
+    void WorkArea::cleanColumnList(Nodes::Table::ColumnPrtVector &list)
     {
-        QVectorIterator<COLUMN_POINTER> listIterator(list);
+        QVectorIterator<Nodes::Table::ColumnPrt> listIterator(list);
         while (listIterator.hasNext()) {
             auto column = listIterator.next();
             if (!column) list.removeOne(column);
         }
     }
 
-    void WorkArea::setColumn(COLUMN_POINTER &column)
+    void WorkArea::setColumn(Nodes::Table::ColumnPrt &column)
     {
-        if (column->getColumnType() == Nodes::Table::Column::PK)
+        if (column->getColumnType() == Nodes::Table::Column::Type::PrimaryKey)
             pkList.push_back(column);
-        else if (column->getColumnType() == Nodes::Table::Column::FK)
+        else if (column->getColumnType() == Nodes::Table::Column::Type::ForeignKey)
             fkList.push_back(column);
     }
 
-    TABLE_POINTER WorkArea::createTable(const QPoint &pos, const QString &id, const QString &name)
+    Nodes::TablePtr WorkArea::createTable(const QPoint &pos, const QString &id, const QString &name)
     {
-        TABLE_POINTER table;
+        Nodes::TablePtr table;
 
         if (id == nullptr || name == nullptr) {
             table = new Nodes::TableNode(this);
@@ -169,22 +187,35 @@ namespace DbNodes::Widgets {
             table = new Nodes::TableNode(this, id, name);
         }
 
-        tableList.push_back(table);
+        nodeList.push_back(table->toNode());
         table->move(pos);
 
-        selectionRepository->initDefaultsConnections(table);
+        selectionRepository->initDefaultsConnections(table->toNode());
 
         return table;
     }
 
-    QList<TABLE_POINTER> WorkArea::getAllTables()
+    QList<Nodes::TablePtr> WorkArea::getAllTables()
     {
-        Helper::removeDeletedItems<Nodes::TableNode>(tableList);
+        QList<Nodes::TablePtr> tables;
+
+        foreach (const Abstract::NodePtr &node, getAllNodes()) {
+            if (node->objectName() == "TableNode") {
+                tables.push_back(qobject_cast<Nodes::TableNode *>(node));
+            }
+        }
 
         cleanColumnList(pkList);
         cleanColumnList(fkList);
 
-        return tableList;
+        return tables;
+    }
+
+    QList<Abstract::NodePtr> WorkArea::getAllNodes()
+    {
+        Helper::removeDeletedItems<Abstract::AbstractNode>(nodeList);
+
+        return nodeList;
     }
 
     QString WorkArea::getProjectName()
@@ -194,7 +225,7 @@ namespace DbNodes::Widgets {
 
     void WorkArea::scrollToTable(const QString &tableId)
     {
-        TABLE_POINTER table = findTable(tableId);
+        Nodes::TablePtr table = findTable(tableId);
 
         auto *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
 
@@ -210,9 +241,9 @@ namespace DbNodes::Widgets {
         table->raise();
     }
 
-    TABLE_POINTER WorkArea::findTable(const QString &tableId)
+    Nodes::TablePtr WorkArea::findTable(const QString &tableId)
     {
-        foreach (TABLE_POINTER table, getAllTables()) {
+        foreach (Nodes::TablePtr table, getAllTables()) {
             if (table->getTableId() == tableId) {
                 return table;
             }
@@ -250,7 +281,7 @@ namespace DbNodes::Widgets {
         QWidget::deleteLater();
     }
 
-    const QList<RELATION_POINTER> &WorkArea::getAllRelations()
+    const QList<Relations::RelationPtr> &WorkArea::getAllRelations()
     {
         return relations;
     }
@@ -269,7 +300,7 @@ namespace DbNodes::Widgets {
 
     void WorkArea::mouseMoveEvent(QMouseEvent *event)
     {
-        selectionRepository->move(event->pos(), getAllTables());
+        selectionRepository->move(event->pos(), getAllNodes());
     }
 
     void WorkArea::mouseReleaseEvent(QMouseEvent *event)
@@ -281,7 +312,7 @@ namespace DbNodes::Widgets {
 
     void WorkArea::scrollToPosition(const QPoint &pos)
     {
-        auto *scrollWidget = static_cast<QScrollArea *>(parentWidget()->parentWidget());
+        auto *scrollWidget = dynamic_cast<QScrollArea *>(parentWidget()->parentWidget());
 
         scrollWidget->verticalScrollBar()->setValue(pos.y());
         scrollWidget->horizontalScrollBar()->setValue(pos.x());

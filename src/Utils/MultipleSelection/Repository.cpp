@@ -4,6 +4,7 @@
 
 #include "QStyle"
 #include "QApplication"
+#include "QDebug"
 
 #include "Repository.h"
 #include "Selectable.h"
@@ -13,48 +14,48 @@ namespace DbNodes::Utils::MultipleSelection {
 
     Repository::Repository(QWidget *parent): QObject(parent) {}
 
-    void Repository::unSelectTables()
+    void Repository::unselectNodes()
     {
-        foreach (const TABLE_POINTER &table, selectedTables) {
-            setSelectToTable(table, false);
+        foreach (const Abstract::NodePtr &table, selectedNodes) {
+            setSelectToNode(table, false);
         }
 
-        selectedTables.clear();
+        selectedNodes.clear();
     }
 
-    void Repository::setSelectToTable(const TABLE_POINTER &table, const bool &select)
+    void Repository::setSelectToNode(const Abstract::NodePtr &node, const bool &select)
     {
-        auto unConstTable = const_cast<TABLE_POINTER &>(table);
+        auto unConstNode = const_cast<Abstract::NodePtr &>(node);
 
-        unConstTable->setProperty("selected", select);
-        unConstTable->style()->unpolish(unConstTable);
-        unConstTable->style()->polish(unConstTable);
+        unConstNode->setProperty("selected", select);
+        unConstNode->style()->unpolish(unConstNode);
+        unConstNode->style()->polish(unConstNode);
     }
 
-    void Repository::insertTableToSelectionList(const TABLE_POINTER &table)
+    void Repository::insertNodeToSelectionList(const Abstract::NodePtr &node)
     {
-        if (!selectedTables.contains(table)) {
-            selectedTables.push_back(table);
+        if (!selectedNodes.contains(node)) {
+            selectedNodes.push_back(node);
         }
     }
 
-    void Repository::removeTableFromSelectionList(const TABLE_POINTER &table)
+    void Repository::removeNodeFromSelectionList(const Abstract::NodePtr &node)
     {
-        selectedTables.removeAll(table);
+        selectedNodes.removeAll(node);
     }
 
-    void Repository::moveSelectedTable(QObject *table, const QPoint &delta)
+    void Repository::moveSelectedNode(QObject *node, const QPoint &delta)
     {
-        Helper::removeDeletedItems<Nodes::TableNode>(selectedTables);
+        Helper::removeDeletedItems<Abstract::AbstractNode>(selectedNodes);
 
-        foreach (const TABLE_POINTER &currentTable, selectedTables) {
-            if (currentTable == QPointer(dynamic_cast<Nodes::TableNode *>(table))) {
+        foreach (const Abstract::NodePtr &currentNode, selectedNodes) {
+            if (currentNode == QPointer(dynamic_cast<Abstract::AbstractNode *>(node))) {
                 continue;
             }
 
-            currentTable->blockSignals(true);
-            currentTable->move(currentTable->pos() + delta);
-            currentTable->blockSignals(false);
+            currentNode->blockSignals(true);
+            currentNode->restrictedMove(currentNode->pos() + delta);
+            currentNode->blockSignals(false);
         }
     }
 
@@ -69,11 +70,11 @@ namespace DbNodes::Utils::MultipleSelection {
         bool altPressed = QApplication::keyboardModifiers() & Qt::AltModifier;
 
         if (!(ctrlPressed || altPressed)) {
-            unSelectTables();
+            unselectNodes();
         }
     }
 
-    void Repository::move(const QPoint &mousePos, const QList<TABLE_POINTER> &tables)
+    void Repository::move(const QPoint &mousePos, const QList<Abstract::NodePtr> &nodes)
     {
         if (mousePressed) {
             mouseCurrentPos = mousePos;
@@ -84,19 +85,19 @@ namespace DbNodes::Utils::MultipleSelection {
             bool altPressed = QApplication::keyboardModifiers() & Qt::AltModifier;
 
             if (!(ctrlPressed || altPressed)) {
-                unSelectTables();
+                unselectNodes();
             }
 
-            foreach (const TABLE_POINTER &table, tables) {
-                if (selectionRect.intersects(table->geometry())) {
+            foreach (const Abstract::NodePtr &node, nodes) {
+                if (selectionRect.intersects(node->geometry()) && node->getSelectionUtil()->enabled()) {
                     if (altPressed) {
-                        setSelectToTable(table, false);
+                        setSelectToNode(node, false);
 
-                        removeTableFromSelectionList(table);
+                        removeNodeFromSelectionList(node);
                     } else {
-                        setSelectToTable(table, true);
+                        setSelectToNode(node, true);
 
-                        insertTableToSelectionList(table);
+                        insertNodeToSelectionList(node);
                     }
                 }
             }
@@ -124,28 +125,61 @@ namespace DbNodes::Utils::MultipleSelection {
         }
     }
 
-    void Repository::initDefaultsConnections(const TABLE_POINTER &table)
+    void Repository::initDefaultsConnections(const Abstract::NodePtr &node)
     {
-        Selectable *selectableTable = table->getSelectable();
+        Selectable *selectableNode = node->getSelectionUtil();
 
-        connect(selectableTable, &Selectable::unSelectTablesSignal, this, &Repository::unSelectTables);
-        connect(selectableTable, &Selectable::moveSignal, this, &Repository::moveSelectedTable);
+        connect(selectableNode, &Selectable::unSelectNodesSignal, this, &Repository::unselectNodes);
+        connect(selectableNode, &Selectable::moveSignal, this, &Repository::moveSelectedNode);
 
-        connect(selectableTable, &Selectable::selectCurrentTableSignal, this, [this, table] {
-            setSelectToTable(table, true);
-            insertTableToSelectionList(table);
+        connect(selectableNode, &Selectable::selectCurrentNodeSignal, this, [this, node] {
+            setSelectToNode(node, true);
+            insertNodeToSelectionList(node);
         });
 
-        connect(selectableTable, &Selectable::unSelectCurrentTableSignal, this, [this, table] {
-            setSelectToTable(table, false);
-            removeTableFromSelectionList(table);
+        connect(selectableNode, &Selectable::unSelectCurrentNodeSignal, this, [this, node] {
+            setSelectToNode(node, false);
+            removeNodeFromSelectionList(node);
         });
     }
 
     Repository::~Repository()
     {
-        selectedTables.clear();
+        selectedNodes.clear();
 
         QObject::deleteLater();
+    }
+
+    void Repository::deleteSelected()
+    {
+        if(selectedNodes.isEmpty()) return;
+
+        QList<Abstract::NodePtr> others = Helper::filter<Abstract::NodePtr>(
+            selectedNodes,
+            [] (const Abstract::NodePtr &node) -> bool {
+                if (node->objectName() == "TableNode") {
+                    node->deleteLater();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+
+        foreach (const Abstract::NodePtr &node, others) {
+            // Call override destructor. When PathPoint signal that it delete.
+            // When TableNode remove PathPoint from list.
+            delete node;
+        }
+
+        selectedNodes.clear();
+    }
+
+    void Repository::initDefaultActionsForUtil(QMenu *menu)
+    {
+        auto deleteSelectedAction = menu->addAction("Delete selected");
+        if (selectedNodes.isEmpty()) deleteSelectedAction->setDisabled(true);
+
+        connect(deleteSelectedAction, &QAction::triggered, this, &Repository::deleteSelected);
     }
 }

@@ -19,13 +19,23 @@ namespace DbNodes::Saving {
 
             void fillProjectParameters();
             void fillTables();
-            void fillColumns(DbnFileStruct::TableObject &tableObject, const TABLE_POINTER &table);
+            void fillColumns(DbnFileStruct::TableObject &tableObject, const Nodes::TablePtr &table);
             void fillRelations();
+
+            void fillRelationPathPoints(
+                DbnFileStruct::RelationObject &relationObject,
+                const Relations::RelationPtr &relation
+            );
 
             void loadProjectParameters();
             void loadTables();
-            void loadColumns(const DbnFileStruct::TableObject &tableObject, TABLE_POINTER &table);
+            void loadColumns(const DbnFileStruct::TableObject &tableObject, Nodes::TablePtr &table);
             void loadRelations();
+
+            void loadRelationPathPoints(
+                const DbnFileStruct::RelationObject &relationObject,
+                const Relations::RelationPtr &relation
+            );
 
         public:
             explicit DbnFileResolver(SaveManager *saveManager, Widgets::WorkArea *workArea);

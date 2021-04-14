@@ -7,52 +7,54 @@
 
 #include "StructDictionary.h"
 
-// ========== Numeric types =======
-#define         FLOAT           0
-#define         DOUBLE          1
-
-// ========== Char types ==========
-#define         CHAR            2
-#define         TEXT            3
-#define         VARCHAR         4
-#define         LONGTEXT        5
-
-// ========== Time types ==========
-#define         TIME            6
-#define         DATA            7
-#define         DATETIME        8
-#define         TIMESTAMP       9
-#define         YEAR            10
-
-// ========== Other ===============
-#define         BINARY          11
-#define         BOOL            12
-#define         JSON            13
-
 namespace DbNodes::Dictionaries {
 
     struct DbTableTypesDictionary: public Abstract::Dictionary<int, DbTableTypesDictionary>
     {
         public:
+            enum Type {
+                // Numeric types
+                Float,
+                Double,
+
+                // Symbolic types
+                Char,
+                Text,
+                Varchar,
+                Longtext,
+
+                // Time types
+                Time,
+                Date,
+                Datetime,
+                Timestamp,
+                Year,
+
+                // Other
+                Binary,
+                Bool,
+                Json
+            };
+
             static DICT_MAP(int) initDictionary() {
                 return {
-                    { FLOAT     ,   "float"     },
-                    { DOUBLE    ,   "double"    },
+                    { Float     ,   "float"     },
+                    { Double    ,   "double"    },
 
-                    { CHAR      ,   "char"      },
-                    { VARCHAR   ,   "varchar"   },
-                    { TEXT      ,   "text"      },
-                    { LONGTEXT  ,   "longtext"  },
+                    { Char      ,   "char"      },
+                    { Varchar   ,   "varchar"   },
+                    { Text      ,   "text"      },
+                    { Longtext  ,   "longtext"  },
 
-                    { TIME      ,   "time"      },
-                    { DATA      ,   "date"      },
-                    { DATETIME  ,   "datetime"  },
-                    { TIMESTAMP ,   "timestamp" },
-                    { YEAR      ,   "year"      },
+                    { Time      ,   "time"      },
+                    { Date      ,   "date"      },
+                    { Datetime  ,   "datetime"  },
+                    { Timestamp ,   "timestamp" },
+                    { Year      ,   "year"      },
 
-                    { BINARY    ,   "binary"    },
-                    { BOOL      ,   "bool"      },
-                    { JSON      ,   "json"      },
+                    { Binary    ,   "binary"    },
+                    { Bool      ,   "bool"      },
+                    { Json      ,   "json"      },
                 };
             };
     };

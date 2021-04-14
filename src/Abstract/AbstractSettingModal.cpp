@@ -177,7 +177,7 @@ namespace DbNodes::Abstract {
     QComboBox *AbstractSettingModal::createComboBoxSetting(
         const QString &name,
         const QString &settingKey,
-        const VARIANTS_MAP &values,
+        const VariantsMap &values,
         const EVENT_CALLBACK(QComboBox) &callback
     ) {
         auto *hl = new QHBoxLayout();

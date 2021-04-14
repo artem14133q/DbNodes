@@ -17,6 +17,9 @@
 
 #include "Menus/RecentMenu.h"
 
+#include "SaveFileTypesDictionary.h"
+#include "DefaultProjectSettingsDictionary.h"
+
 #include "config.h"
 
 namespace DbNodes::Widgets {
@@ -32,7 +35,7 @@ namespace DbNodes::Widgets {
         public slots:
             void closeCurrentProject(const int &closeProjectStatus, const bool &closeApp = false);
             bool closeProjectIfExists();
-            void generateSaveFile(const int &saveType);
+            void generateSaveFile(const Dictionaries::SaveFileTypesDictionary::Type &saveType);
             void createNewProject();
             void openSaveFile(const QString &path = nullptr);
 
@@ -62,7 +65,7 @@ namespace DbNodes::Widgets {
             QMenuBar* defineMenuBar();
 
             void setTitle(const QString &name, const QString &path);
-            int openConfirmCloseProjectModal();
+            Modals::ConfirmCloseProject::Type openConfirmCloseProjectModal();
 
             void closeEvent(QCloseEvent * event) override;
 

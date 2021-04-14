@@ -11,14 +11,14 @@ set(DEV_SCRIPTS
 
 set(INCLUDE_DIRECTORIES
         src/Abstract
+        src/Nodes
         src/Widgets
         src/Relations
         src/Modals
         src/Settings
         src/Dictionaries
         src/Saving
-        src/Utils
-        src/Nodes)
+        src/Utils)
 
 set(RESOURCES
         main.cpp

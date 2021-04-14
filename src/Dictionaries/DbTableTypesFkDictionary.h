@@ -7,21 +7,22 @@
 
 #include "StructDictionary.h"
 
-// =========== Numeric types =========
-#define         TYPE_INTEGER        0
-#define         TYPE_TINYINT        1
-#define         TYPE_BIGINT         2
-
 namespace DbNodes::Dictionaries {
 
     struct DbTableTypesFkDictionary: public Abstract::Dictionary<int, DbTableTypesFkDictionary>
     {
+        enum Type {
+            Integer,
+            Tinyint,
+            Bigint
+        };
+
         public:
             static DICT_MAP(int) initDictionary() {
                 return {
-                    { TYPE_INTEGER  ,   "integer"   },
-                    { TYPE_TINYINT  ,   "tinyint"   },
-                    { TYPE_BIGINT   ,   "bigint"    },
+                    { Integer  ,   "integer"   },
+                    { Tinyint  ,   "tinyint"   },
+                    { Bigint   ,   "bigint"    },
                 };
             };
     };

@@ -16,7 +16,7 @@ namespace DbNodes::Relations {
     class RelationProvider: public QObject
     {
         private:
-            Relation *relation;
+            Relation *relation{};
 
             QWidget *parentWidget{};
 

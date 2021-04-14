@@ -3,6 +3,7 @@
 //
 
 #include "QApplication"
+#include "QDebug"
 
 #include "Selectable.h"
 
@@ -26,19 +27,29 @@ namespace DbNodes::Utils::MultipleSelection {
         }
     }
 
-    void Selectable::disable()
+    void Selectable::flush()
     {
         if (isClicked) {
             if (QApplication::keyboardModifiers() & Qt::ControlModifier) {
-                emit selectCurrentTableSignal();
+                emit selectCurrentNodeSignal();
             } else if (QApplication::keyboardModifiers() & Qt::AltModifier) {
-                emit unSelectCurrentTableSignal();
+                emit unSelectCurrentNodeSignal();
             } else {
-                emit unSelectTablesSignal();
+                emit unSelectNodesSignal();
             }
 
             isClicked = false;
         }
+    }
+
+    void Selectable::setEnable(bool enable)
+    {
+        isEnabled = enable;
+    }
+
+    bool Selectable::enabled()
+    {
+        return isEnabled;
     }
 
 }

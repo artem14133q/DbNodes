@@ -12,8 +12,6 @@
 #include "AbstractSettingModal.h"
 #include "DrawableWidget.h"
 
-#define VARIANTS_MAP QHash<QString, QVariant>
-
 namespace DbNodes::Modals {
 
     class Settings : public Abstract::AbstractSettingModal

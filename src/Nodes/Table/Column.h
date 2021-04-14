@@ -10,39 +10,44 @@
 #include "QPushButton"
 
 #include "AbstractNode.h"
-
-#define COLUMN_POINTER QPointer<Nodes::Table::Column>
-#define COLUMN_VECTOR QVector<COLUMN_POINTER>
+#include "IHasPathConnectors.h"
 
 namespace DbNodes::Nodes::Table {
 
-    class Column : public Abstract::AbstractNode
+    class Column : public Abstract::AbstractNode, public Abstract::IHasPathConnectors
     {
         Q_OBJECT
 
         public:
-            explicit Column(QVBoxLayout *vb, QWidget *parent = nullptr, const int &rowType = 0);
+            enum Type {
+                Default,
+                PrimaryKey,
+                ForeignKey
+            };
+
+            explicit Column(
+                QVBoxLayout *vb,
+                QWidget *parent = nullptr,
+                const Column::Type &columnType = Column::Type::Default
+            );
 
             explicit Column(
                 QVBoxLayout *vb,
                 QWidget *parent,
                 const QString &columnId,
                 const QString &columnName,
-                const int &columnType,
+                const Column::Type &columnType,
                 const QString &columnDbType,
                 const bool &columnIsNull = false
             );
-
-            static const int PK = 1;
-            static const int FK = 2;
 
             QString getTableName();
             QString getTableId();
             QString getColumnId();
 
-            int* dataForPaint();
+            Abstract::ParamsForDrawing getDrawParams() override;
 
-            [[nodiscard]] int getColumnType() const;
+            [[nodiscard]] Type getColumnType() const;
             [[nodiscard]] bool getColumnIsNull() const;
 
             QString getColumnName();
@@ -62,10 +67,12 @@ namespace DbNodes::Nodes::Table {
             QString columnId;
             QString columnDbType;
             bool columnIsNull;
-            int columnType;
+            Type columnType;
 
             QLabel *moveHandle{};
             QPushButton *fkButton{};
+
+            void initUi();
 
         protected:
             void mouseMoveEvent(QMouseEvent *event) override;
@@ -74,14 +81,15 @@ namespace DbNodes::Nodes::Table {
 
             [[nodiscard]] QStringList initTypes() const;
 
-            void initUi();
             void deleteColumn();
             void setColumnName(const QString &);
             void setColumnDbType(const QString &);
-            void setColumnIsNull(bool);
+            void setColumnIsNull(bool isNull);
             void openRelationMaker();
     };
 
+    typedef QPointer<Nodes::Table::Column> ColumnPrt;
+    typedef QVector<ColumnPrt> ColumnPrtVector;
 }
 
 #endif // COLUMN_H

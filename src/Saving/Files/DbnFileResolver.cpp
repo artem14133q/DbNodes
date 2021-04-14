@@ -3,8 +3,9 @@
 //
 
 #include "DbnFileResolver.h"
-
-#include <utility>
+#include "RelationViews/Path/PathPoint.h"
+#include "RelationTypesDictionary.h"
+#include "RelationViews/DeleteRelationButton.h"
 
 namespace DbNodes::Saving {
 
@@ -37,7 +38,7 @@ namespace DbNodes::Saving {
 
         QList<DbnFileStruct::TableObject> tableObjectsList;
 
-        foreach (const TABLE_POINTER &table, tables) {
+        foreach (const Nodes::TablePtr &table, tables) {
             DbnFileStruct::TableObject tableObject;
 
             tableObject.setId(table->getTableId());
@@ -53,13 +54,13 @@ namespace DbNodes::Saving {
         object->setTables(tableObjectsList);
     }
 
-    void DbnFileResolver::fillColumns(DbnFileStruct::TableObject &tableObject, const TABLE_POINTER &table)
+    void DbnFileResolver::fillColumns(DbnFileStruct::TableObject &tableObject, const Nodes::TablePtr &table)
     {
         auto columns = table->getAllColumns();
 
         QList<DbnFileStruct::ColumnObject> columnObjectList;
 
-        foreach (const COLUMN_POINTER &column, columns.toList()) {
+        foreach (const Nodes::Table::ColumnPrt &column, columns.toList()) {
             DbnFileStruct::ColumnObject columnObject;
 
             columnObject.setId(column->getColumnId());
@@ -80,7 +81,7 @@ namespace DbNodes::Saving {
 
         QList<DbnFileStruct::RelationObject> relationObjectsList;
 
-        foreach (const RELATION_POINTER &relation, relations) {
+        foreach (const Relations::RelationPtr &relation, relations) {
             DbnFileStruct::RelationObject relationObject;
 
             relationObject.setId(relation->getRelationId());
@@ -88,6 +89,8 @@ namespace DbNodes::Saving {
             relationObject.setPkColumnId(relation->getPkColumn()->getColumnId());
             relationObject.setType(relation->getRelationTypeId());
             relationObject.setPosition(relation->getRelationPositionType());
+
+            fillRelationPathPoints(relationObject, relation);
 
             relationObjectsList.push_back(relationObject);
         }
@@ -117,7 +120,7 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadTables()
     {
         foreach (const DbnFileStruct::TableObject &tableObject, object->getTables()) {
-            TABLE_POINTER table = workArea->createTable(
+            Nodes::TablePtr table = workArea->createTable(
                 QPoint(tableObject.getX(), tableObject.getY()),
                 tableObject.getId(),
                 tableObject.getName()
@@ -127,13 +130,13 @@ namespace DbNodes::Saving {
         }
     }
 
-    void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, TABLE_POINTER &table)
+    void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, Nodes::TablePtr &table)
     {
         foreach (const DbnFileStruct::ColumnObject &columnObject, tableObject.getColumns()) {
             table->addColumnFromFile(
                 columnObject.getId(),
                 columnObject.getName(),
-                columnObject.getColumnType(),
+                (Nodes::Table::Column::Type) columnObject.getColumnType(),
                 columnObject.getDbType(),
                 columnObject.getNullable()
             );
@@ -143,27 +146,70 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadRelations()
     {
         foreach (const DbnFileStruct::RelationObject &relationObject, object->getRelations()) {
-            COLUMN_POINTER pkColumn = workArea->findColumn(
+            Nodes::Table::ColumnPrt pkColumn = workArea->findColumn(
                     Widgets::WorkArea::GET_PK_COLUMNS, relationObject.getPkColumnId()
             );
 
-            COLUMN_POINTER fkColumn = workArea->findColumn(
+            Nodes::Table::ColumnPrt fkColumn = workArea->findColumn(
                     Widgets::WorkArea::GET_FK_COLUMNS, relationObject.getFkColumnId()
             );
 
-            workArea->makeRelation(
+            auto relation = workArea->makeRelation(
                 relationObject.getId(),
-                relationObject.getType(),
+                (Dictionaries::RelationTypesDictionary::Type) relationObject.getType(),
                 pkColumn,
                 fkColumn
-            )->setRelationPositionType(
-                relationObject.getPosition()
             );
+
+            relation->setRelationPositionType(
+                (Dictionaries::RelationPositionsDictionary::Type) relationObject.getPosition()
+            );
+
+            loadRelationPathPoints(relationObject, relation);
         }
     }
 
     QString DbnFileResolver::getProjectName()
     {
         return object->getProjectParameters().getName();
+    }
+
+    void DbnFileResolver::fillRelationPathPoints(
+        DbnFileStruct::RelationObject &relationObject,
+        const QPointer<Relations::Relation> &relation
+    ) {
+        if (relation->getRelationTypeId() != Dictionaries::RelationTypesDictionary::Type::Path) {
+            return;
+        }
+
+        QList<DbnFileStruct::RelationPathPointObject> relationPathPointObjectList;
+
+        auto deleteRelationButton = dynamic_cast<Relations::DeleteRelationButton *>(relation->getAbstractRelationView());
+
+        foreach (const Relations::Path::RelationPathPointPtr &pathPointPtr, deleteRelationButton->getPoints()) {
+            DbnFileStruct::RelationPathPointObject relationPathPointObject;
+
+            relationPathPointObject.setX(pathPointPtr->x());
+            relationPathPointObject.setY(pathPointPtr->y());
+
+            relationPathPointObjectList.push_front(relationPathPointObject);
+        }
+
+        relationObject.setPathPoints(relationPathPointObjectList);
+    }
+
+    void DbnFileResolver::loadRelationPathPoints(
+        const DbnFileStruct::RelationObject &relationObject,
+        const QPointer<Relations::Relation> &relation
+    ) {
+        if (relation->getRelationTypeId() != Dictionaries::RelationTypesDictionary::Type::Path) {
+            return;
+        }
+
+        auto deleteRelationButton = dynamic_cast<Relations::DeleteRelationButton *>(relation->getAbstractRelationView());
+
+        foreach (const DbnFileStruct::RelationPathPointObject &pointObject, relationObject.getPathPoints()) {
+            deleteRelationButton->createPoint(QPoint(pointObject.getX(), pointObject.getY()));
+        }
     }
 }

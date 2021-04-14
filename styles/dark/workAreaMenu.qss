@@ -7,3 +7,7 @@ QMenu {
 QMenu::item:selected {
     color: #2ba2df;
 }
+
+QMenu::item:disabled {
+    color: #7b7e81;
+}

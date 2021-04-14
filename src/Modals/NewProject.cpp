@@ -47,16 +47,34 @@ namespace DbNodes::Modals {
 
     void NewProject::initSettingsUi()
     {
-        nameEdit = createTextSetting("Project name:", NAME_KEY,
+        nameEdit = createTextSetting(
+            "Project name:",
+            Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                Dictionaries::DefaultProjectSettingsDictionary::Type::name
+            ),
             [this] (QLineEdit *lineEdit) {
                 validPropertyName(lineEdit);
             }
         );
 
-        auto widthSpin = createSpinboxSetting("Workspace width:", WIDTH_KEY, {2000, 8000});
+        auto widthSpin = createSpinboxSetting(
+            "Workspace width:",
+            Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                    Dictionaries::DefaultProjectSettingsDictionary::Type::width
+            ),
+            {2000, 8000}
+        );
+
         widthSpin->setPrefix("px ");
 
-        auto heightSpin = createSpinboxSetting("Workspace height:", HEIGHT_KEY, {2000, 8000});
+        auto heightSpin = createSpinboxSetting(
+            "Workspace height:",
+            Dictionaries::DefaultProjectSettingsDictionary::getKey(
+                    Dictionaries::DefaultProjectSettingsDictionary::Type::height
+            ),
+            {2000, 8000}
+        );
+
         heightSpin->setPrefix("px ");
 
         setSpacing(15);

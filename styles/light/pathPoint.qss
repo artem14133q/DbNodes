@@ -1,0 +1,13 @@
+﻿QWidget#PathPoint {
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid #4285f4;
+}
+
+QWidget#PathPoint:focus {
+    border: 2px solid black;
+}
+
+QWidget#PathPoint[selected="true"] {
+    border: 2px solid #f36127;
+}

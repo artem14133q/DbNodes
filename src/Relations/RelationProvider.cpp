@@ -53,24 +53,24 @@ namespace DbNodes::Relations {
     void RelationProvider::initDefaultsConnects(Abstract::AbstractRelationView *relationView)
     {
         connect(
-                relationView,
-                &Abstract::AbstractRelationView::clickedDelete,
-                getRelation(),
-                &Relations::Relation::deleteRelation
+            relationView,
+            &Abstract::AbstractRelationView::clickedDelete,
+            getRelation(),
+            &Relations::Relation::deleteRelation
         );
 
         connect(
-                relationView,
-                &Abstract::AbstractRelationView::changedRelationType,
-                getRelation(),
-                &Relations::Relation::enableRelationType
+            relationView,
+            &Abstract::AbstractRelationView::changedRelationType,
+            getRelation(),
+            &Relations::Relation::enableRelationType
         );
 
         connect(
-                relationView,
-                &Abstract::AbstractRelationView::clickedGoToRelatedTable,
-                getRelation(),
-                &Relations::Relation::goToRelationTableSignal
+            relationView,
+            &Abstract::AbstractRelationView::clickedGoToRelatedTable,
+            getRelation(),
+            &Relations::Relation::goToRelationTableSignal
         );
     }
 };

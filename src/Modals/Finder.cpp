@@ -10,7 +10,7 @@
 
 namespace DbNodes::Modals {
 
-    Finder::Finder(const QList<TABLE_POINTER> &nodeVector, QWidget *parent)
+    Finder::Finder(const QList<Nodes::TablePtr> &nodeVector, QWidget *parent)
         : Abstract::AbstractModal(parent), nodeVector(nodeVector)
     {
         setFixedSize(400, 600);
@@ -76,7 +76,7 @@ namespace DbNodes::Modals {
 
         QRegExp regFilter("\\w*" + filter + "\\w*");
 
-        foreach (TABLE_POINTER node, nodeVector) {
+        foreach (Nodes::TablePtr node, nodeVector) {
             if (regFilter.indexIn(node->getTableName()) != -1) {
                 filteredNodeList.insert(node->getTableId(), node);
 

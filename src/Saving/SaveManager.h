@@ -8,13 +8,19 @@
 #include "QObject"
 #include "QHash"
 
+#include "OpenFileExceptionsDictionary.h"
+
 namespace DbNodes::Saving {
 
     class SaveManager: public QObject
     {
         private:
             QByteArray readFile(const QString &path);
-            QByteArray generateException(const int &exceptionType, const QString &path = nullptr);
+
+            QByteArray generateException(
+                const Dictionaries::OpenFileExceptionsDictionary::Type &exceptionType,
+                const QString &path = nullptr
+            );
 
             QString lastOpenedPath = "";
 

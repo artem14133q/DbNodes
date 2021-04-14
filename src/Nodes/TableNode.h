@@ -13,8 +13,6 @@
 #include "Relation.h"
 #include "MultipleSelection/Selectable.h"
 
-#define TABLE_POINTER QPointer<Nodes::TableNode>
-
 namespace DbNodes::Nodes {
 
     class TableNode : public Abstract::AbstractNode
@@ -28,26 +26,22 @@ namespace DbNodes::Nodes {
             QString getTableName();
             QString getTableId();
 
-            COLUMN_VECTOR getAllColumns();
+            Table::ColumnPrtVector getAllColumns();
 
             void addColumnFromFile(
                 const QString &id,
                 const QString &name,
-                const int &type,
+                const Nodes::Table::Column::Type &type,
                 const QString &dbType,
                 const bool &isNull = false
             );
 
-            QVBoxLayout *getLayoutType(const int &columnType);
+            QVBoxLayout *getLayoutType(const Nodes::Table::Column::Type &columnType);
 
-            void addRelation(const RELATION_POINTER &relation);
-
-            Utils::MultipleSelection::Selectable *getSelectable();
+            void addRelation(const Relations::RelationPtr &relation);
 
         private:
-            Utils::MultipleSelection::Selectable *selectable;
-
-            QList<RELATION_POINTER> relations;
+            QList<Relations::RelationPtr> relations;
 
             QVBoxLayout* columnsLayout{};
             QVBoxLayout* pkLayout{};
@@ -60,11 +54,9 @@ namespace DbNodes::Nodes {
 
             void initUI();
 
-            ~TableNode() override;
-
             #if APP_DEBUG
 
-            static QString debugLayoutType(const int &columnType);
+            static QString debugLayoutType(const Nodes::Table::Column::Type &columnType);
             void debugTables();
 
             #endif
@@ -72,15 +64,18 @@ namespace DbNodes::Nodes {
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
             void mousePressEvent(QMouseEvent *event) override;
-            void mouseMoveEvent(QMouseEvent *event) override;
-            void mouseReleaseEvent(QMouseEvent *event) override;
 
             QList<Table::Column *> groupColumns();
 
-            void addColumn(int columnType = 0, QPointer<Table::Column> column = nullptr);
             void setTableName(const QString &name);
             void openRenameModal();
+
+        protected slots:
+            void addColumn(Nodes::Table::Column::Type columnType, Table::ColumnPrt column = nullptr);
+
     };
+
+    typedef QPointer<Nodes::TableNode> TablePtr;
 
 }
 

@@ -18,7 +18,7 @@ namespace DbNodes::Modals {
         Q_OBJECT
 
         public:
-            explicit Finder(const QList<TABLE_POINTER> &nodeVector, QWidget *parent = nullptr);
+            explicit Finder(const QList<Nodes::TablePtr> &nodeVector, QWidget *parent = nullptr);
 
         signals:
             void selected(const QString &nodeId);
@@ -37,8 +37,8 @@ namespace DbNodes::Modals {
             bool eventFilter(QObject *obj, QEvent *event) override;
 
         private:
-            QList<TABLE_POINTER> nodeVector;
-            QHash<QString, TABLE_POINTER> filteredNodeList;
+            QList<Nodes::TablePtr> nodeVector;
+            QHash<QString, Nodes::TablePtr> filteredNodeList;
 
             QListWidget *listWidget{};
             QLineEdit *lineEdit{};

@@ -4,7 +4,7 @@ set(RESOURCES
         MultipleSelection/Repository.cpp
         MultipleSelection/Repository.h
         MultipleSelection/Selectable.cpp
-        MultipleSelection/Selectable.h)
+        MultipleSelection/Selectable.h RelationPath/Render.cpp RelationPath/Render.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

@@ -10,23 +10,21 @@
 
 #include "RelationLink.h"
 #include "Workarea.h"
-#include "RelationTypesDictionary.h"
-#include "RelationLinkPositionsDictionary.h"
 #include "../../helper.h"
 
 namespace DbNodes::Relations {
 
     RelationLink::RelationLink(
-        const COLUMN_POINTER &pkColumn,
-        const COLUMN_POINTER &fkColumn,
-        const int &relationPosition,
+        const Nodes::Table::ColumnPrt &pkColumn,
+        const Nodes::Table::ColumnPrt &fkColumn,
+        const Dictionaries::RelationPositionsDictionary::Type &relationPosition,
         QWidget *parent
     ): Abstract::AbstractRelationView(parent, pkColumn, fkColumn), relationPosition(relationPosition) {
         setObjectName("RelationLink");
         setFixedHeight(26);
         setStyleSheet(Helper::getStyleFromFile("relationLink"));
         initUI();
-        setSidePositionsName(getNextRelationType(relationPosition));
+        setSidePositionsName(getNextRelationPositionType(relationPosition));
         adjustSize();
     }
 
@@ -70,30 +68,35 @@ namespace DbNodes::Relations {
         contextMenu->exec(menuPos);
     }
 
-    void RelationLink::setSidePositionsName(const int &position)
-    {
+    void RelationLink::setSidePositionsName(
+        const Dictionaries::RelationPositionsDictionary::Type &position
+    ) {
         sidePositionName = QString("Move to the %1 side")
-                .arg(Dictionaries::RelationLinkPositionsDictionary::getValue(position).toString());
+                .arg(Dictionaries::RelationPositionsDictionary::getValue(position).toString());
     }
 
     void RelationLink::updateRelation(QPainter &, QPainterPath &)
     {
-        int *fkBuf = fkColumn->dataForPaint();
+        auto fkParams = fkColumn->getDrawParams();
+        auto fkPos = fkParams.first;
 
         switch (relationPosition) {
-            case RELATION_LINK_POSITION_LEFT:
+            case Dictionaries::RelationPositionsDictionary::Type::Left :
                 move(
-                        fkBuf[0] - width() - 2,
-                        fkBuf[1] - height() / 2
+                    fkPos.x() - width() - 2,
+                    fkPos.y() - height() / 2
                 );
 
                 break;
-            case RELATION_LINK_POSITION_RIGHT:
+            case Dictionaries::RelationPositionsDictionary::Type::Right :
                 move(
-                        fkBuf[0] + fkBuf[2] + 2,
-                        fkBuf[1] - height() / 2
+                    fkPos.x() + fkParams.second + 2,
+                    fkPos.y() - height() / 2
                 );
 
+                break;
+
+            case Dictionaries::RelationPositionsDictionary::Undefined:
                 break;
         }
     }
@@ -101,14 +104,14 @@ namespace DbNodes::Relations {
     void RelationLink::switchPosition()
     {
         setSidePositionsName(relationPosition);
-        relationPosition = getNextRelationType(relationPosition);
+        relationPosition = getNextRelationPositionType(relationPosition);
 
         parentWidget()->update();
     }
 
-    int RelationLink::getCurrentTypeId()
+    Dictionaries::RelationTypesDictionary::Type RelationLink::getCurrentTypeId()
     {
-        return RELATION_TYPE_LINK;
+        return Dictionaries::RelationTypesDictionary::Type::Link;
     }
 
     bool RelationLink::hasRelationPositionType()
@@ -116,28 +119,30 @@ namespace DbNodes::Relations {
         return true;
     }
 
-    int RelationLink::relationPositionType()
+    Dictionaries::RelationPositionsDictionary::Type RelationLink::relationPositionType()
     {
         return relationPosition;
     }
 
-    void RelationLink::setRelationPositionType(const int &type)
-    {
-        relationPosition = type;
-        setSidePositionsName(getNextRelationType(relationPosition));
+    void RelationLink::setRelationPositionType(
+        const Dictionaries::RelationPositionsDictionary::Type &currentRelationType
+    ) {
+        relationPosition = currentRelationType;
+        setSidePositionsName(getNextRelationPositionType(relationPosition));
     }
 
-    int RelationLink::getNextRelationType(const int &currentRelationType)
-    {
+    Dictionaries::RelationPositionsDictionary::Type RelationLink::getNextRelationPositionType(
+            const Dictionaries::RelationPositionsDictionary::Type &currentRelationType
+    ) {
         switch (currentRelationType) {
-            case RELATION_LINK_POSITION_LEFT:
-                return RELATION_LINK_POSITION_RIGHT;
+            case Dictionaries::RelationPositionsDictionary::Type::Left :
+                return Dictionaries::RelationPositionsDictionary::Type::Right;
 
-            case RELATION_LINK_POSITION_RIGHT:
-                return RELATION_LINK_POSITION_LEFT;
+            case Dictionaries::RelationPositionsDictionary::Type::Right :
+                return Dictionaries::RelationPositionsDictionary::Type::Left;
 
             default:
-                return 0;
+                return Dictionaries::RelationPositionsDictionary::Type::Undefined;
         }
     }
 }

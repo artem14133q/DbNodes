@@ -14,7 +14,7 @@ set(RESOURCES
         RelationFactory.cpp
         RelationFactory.h
         Relation.h
-        Relation.cpp)
+        Relation.cpp RelationViews/Path/PathPoint.cpp RelationViews/Path/PathPoint.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

@@ -4,7 +4,7 @@
 #include "QRegExp"
 
 #include "RelationMaker.h"
-#include "RelationMakerErrors.h"
+#include "RelationMakerErrorsDictionary.h"
 #include "RelationTypesDictionary.h"
 #include "Workarea.h"
 #include "../helper.h"
@@ -13,7 +13,7 @@ namespace DbNodes::Modals {
 
     RelationMaker::RelationMaker(
             Nodes::Table::Column *fkColumn,
-            const QList<TABLE_POINTER> &tableVector
+            const QList<Nodes::TablePtr> &tableVector
     ) : Abstract::AbstractModal(fkColumn), fkColumnParent(fkColumn), tableVector(tableVector)
     {
         setFixedSize(300, 400);
@@ -126,13 +126,13 @@ namespace DbNodes::Modals {
         Abstract::AbstractModal::exit();
     }
 
-    void RelationMaker::selectTable(const TABLE_POINTER &table)
+    void RelationMaker::selectTable(const Nodes::TablePtr &table)
     {
         columnsOfSelectedTable.clear();
         columnsOfTable->clear();
 
-        foreach (const COLUMN_POINTER column, table->getAllColumns().toList()) {
-            if (column->getColumnType() == Nodes::Table::Column::PK) {
+        foreach (const Nodes::Table::ColumnPrt column, table->getAllColumns().toList()) {
+            if (column->getColumnType() == Nodes::Table::Column::Type::PrimaryKey) {
                 columnsOfSelectedTable.insert(column->getColumnId(), column);
                 columnsOfTable->addItem(column->getColumnName(), column->getColumnId());
             }
@@ -143,7 +143,10 @@ namespace DbNodes::Modals {
             columnsOfTable->setCurrentIndex(columnsOfTable->findData(currentPkColumnId));
         }
 
-        showWarningIfPkNotFound(columnsOfSelectedTable.isEmpty(), CANNOT_FIND_PK_COLUMNS);
+        showWarningIfPkNotFound(
+            columnsOfSelectedTable.isEmpty(),
+            Dictionaries::RelationMakerErrorsDictionary::Type::CannotFindPkColumns
+        );
     }
 
     void RelationMaker::selectTableByIndex(const int &index)
@@ -164,12 +167,12 @@ namespace DbNodes::Modals {
 
         auto *workArea = dynamic_cast<WorkArea*>(Helper::findParentWidgetRecursive(this, "WorkArea"));
 
-        auto pkColumn = workArea->findColumn(Nodes::Table::Column::PK, currentPkColumnId);
-        auto fkColumn = workArea->findColumn(Nodes::Table::Column::FK, currentFkColumnId);
+        auto pkColumn = workArea->findColumn(Nodes::Table::Column::Type::PrimaryKey, currentPkColumnId);
+        auto fkColumn = workArea->findColumn(Nodes::Table::Column::Type::ForeignKey, currentFkColumnId);
 
         workArea->makeRelation(
             "relation:" + Helper::getCurrentTimeMS(),
-            RELATION_TYPE_PATH,
+            Dictionaries::RelationTypesDictionary::Type::Path,
             pkColumn,
             fkColumn
         );
@@ -179,11 +182,9 @@ namespace DbNodes::Modals {
 
     void RelationMaker::showWarningIfPkNotFound(const bool &enable, const int &errorType)
     {
-        using namespace DbNodes::Dictionaries;
-
         if (enable) {
             warningWidget->show();
-            warningText->setText(RelationMakerErrors::getValue(errorType).toString());
+            warningText->setText(Dictionaries::RelationMakerErrorsDictionary::getValue(errorType).toString());
         } else {
             warningWidget->hide();
         }
@@ -198,7 +199,7 @@ namespace DbNodes::Modals {
         tableList.clear();
         tablesSelect->clear();
 
-        foreach (const TABLE_POINTER table, tableVector) {
+        foreach (const Nodes::TablePtr table, tableVector) {
             if (table->getTableId() != fkColumnParent->getTableId() && regFilter.indexIn(table->getTableName()) != -1) {
                 tableList.insert(table->getTableId(), table);
                 tablesSelect->addItem(table->getTableName(), table->getTableId());
@@ -211,7 +212,10 @@ namespace DbNodes::Modals {
             selectTable(table);
             tablesSelect->setCurrentIndex(tablesSelect->findData(table->getTableId()));
         } else {
-            showWarningIfPkNotFound(true, CANNOT_FIND_TABLES);
+            showWarningIfPkNotFound(
+                true,
+                Dictionaries::RelationMakerErrorsDictionary::Type::CannotFindTables
+            );
 
             columnsOfSelectedTable.clear();
             columnsOfTable->clear();
