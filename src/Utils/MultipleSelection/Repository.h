@@ -46,9 +46,6 @@ namespace DbNodes::Utils::MultipleSelection {
             void initDefaultActionsForUtil(QMenu *menu);
 
             ~Repository() override;
-
-        public: signals:
-            void deleteSelectedNodesSignal();
     };
 
 }

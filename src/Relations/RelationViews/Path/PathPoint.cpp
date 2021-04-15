@@ -55,7 +55,7 @@ namespace DbNodes::Relations::Path
         deleteNodeAction = contextMenu->addAction("Delete");
 
         connect(deleteNodeAction, &QAction::triggered, this, [this] {
-            emit deleteRelationPathPointSignal();
+            emit deleteNodeSignal();
         });
 
         auto menuPos = mapToGlobal(event->pos());
@@ -66,7 +66,7 @@ namespace DbNodes::Relations::Path
 
     PathPoint::~PathPoint()
     {
-        emit deleteRelationPathPointSignal();
+        emit deleteNodeSignal();
 
         deleteLater();
     }

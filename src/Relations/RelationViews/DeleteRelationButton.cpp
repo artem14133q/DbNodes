@@ -87,7 +87,7 @@ namespace DbNodes::Relations {
 
         auto point = new Path::PathPoint(parentWidget());
 
-        connect(point, &Path::PathPoint::deleteRelationPathPointSignal, this, [this, point] {
+        connect(point, &Abstract::AbstractNode::deleteNodeSignal, this, [this, point] {
             points.removeAll(point);
             point->deleteLater();
             parentWidget()->update();

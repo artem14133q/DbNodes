@@ -1,6 +1,5 @@
 #include "QMenuBar"
 #include "QDesktopWidget"
-#include "QFileDialog"
 #include "QApplication"
 #include "iostream"
 
@@ -60,7 +59,7 @@ namespace DbNodes::Widgets {
             generateSaveFile(
                 filePath.isEmpty()
                     ? Dictionaries::SaveFileTypesDictionary::Type::NewFile
-                    : Dictionaries::SaveFileTypesDictionary::Type::NewFile
+                    : Dictionaries::SaveFileTypesDictionary::Type::RewriteFile
             );
         }
 

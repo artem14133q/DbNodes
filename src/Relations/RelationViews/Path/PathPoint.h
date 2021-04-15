@@ -14,8 +14,6 @@ namespace DbNodes::Relations::Path {
 
     class PathPoint : public Abstract::AbstractNode, public Abstract::IHasPathConnectors
     {
-        Q_OBJECT
-
         private:
             void initUI();
 
@@ -33,9 +31,6 @@ namespace DbNodes::Relations::Path {
 
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
-
-        public: signals:
-            void deleteRelationPathPointSignal();
     };
 
     typedef QPointer<Relations::Path::PathPoint> RelationPathPointPtr;

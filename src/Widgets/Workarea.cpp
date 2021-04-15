@@ -26,15 +26,6 @@ namespace DbNodes::Widgets {
 
         selectionRepository = new Utils::MultipleSelection::Repository(this);
 
-        connect(
-            selectionRepository,
-            &Utils::MultipleSelection::Repository::deleteSelectedNodesSignal,
-            this,
-            [this] {
-                Helper::removeDeletedItems<Abstract::AbstractNode>(nodeList);
-            }
-        );
-
         isAntialiasing = Helper::getSettingValue("rendering.antialiasing").toBool();
 
         Helper::subscribeSettingUpdate("rendering.antialiasing", [this] (const QVariant &value) {

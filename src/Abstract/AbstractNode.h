@@ -21,6 +21,8 @@ namespace DbNodes::Abstract {
 
     class AbstractNode : public DrawableWidget
     {
+        Q_OBJECT
+
         private:
             bool moveRestrictions = true;
             QPoint oldPos{};
@@ -46,6 +48,9 @@ namespace DbNodes::Abstract {
             void enableMoveRestrictions(const bool &enable);
 
             void createDefaultActions(QMenu *menu);
+
+        public: signals:
+            void deleteNodeSignal();
     };
 }
 
