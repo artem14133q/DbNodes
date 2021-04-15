@@ -19,6 +19,18 @@ QComboBox::on {
     color: black;
 }
 
-QComboBox::!on {
+/*QComboBox QAbstractItemView {*/
+/*    background-color: #444341;*/
+/*}*/
+
+QComboBox QAbstractItemView::item {
+    border: 0;
+    height: 20px;
     color: black;
+    background-color: transparent;
+}
+
+QComboBox QAbstractItemView::item:selected {
+    color: white;
+    background-color: black;
 }

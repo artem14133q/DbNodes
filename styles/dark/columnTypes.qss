@@ -5,17 +5,33 @@ QComboBox {
     color: #2ba2df;
     font: bold;
 }
+
 QComboBox::drop-down {
     background-color: transparent;
     padding-right: 6px;
 }
+
 QComboBox:hover {
     border: 1px solid #efefef;
     border-radius: 3px;
 }
-QComboBox::on {
-    color: #2ba2df;
-}
+
 QComboBox::!on {
+    color: #efefef;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #444341;
+}
+
+QComboBox QAbstractItemView::item {
+    border: 0;
+    height: 20px;
+    color: #efefef;
+    background-color: transparent;
+}
+
+QComboBox QAbstractItemView::item:selected {
+    background-color: #2ba2df;
     color: #efefef;
 }

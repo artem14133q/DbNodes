@@ -6,6 +6,7 @@
 #include "QStringList"
 #include "QCheckBox"
 #include "QPixmap"
+#include "QListView"
 #include "QPair"
 #include "QDebug"
 
@@ -120,7 +121,7 @@ namespace DbNodes::Nodes::Table {
         }
 
         // Name of row
-        auto *leName = new QLineEdit(columnName, this);
+        auto leName = new QLineEdit(columnName, this);
         leName->setCursorPosition(0);
         leName->setToolTip(columnName);
         hl->addWidget(leName);
@@ -156,7 +157,8 @@ namespace DbNodes::Nodes::Table {
 
         // If FK, not init db types combo box
         if (columnType != ForeignKey) {
-            auto *cbTypes = new QComboBox(this);
+            auto cbTypes = new QComboBox(this);
+            cbTypes->setView(new QListView());
             QStringList dbTypes = initTypes();
             cbTypes->installEventFilter(this);
             cbTypes->addItems(dbTypes);
@@ -170,7 +172,7 @@ namespace DbNodes::Nodes::Table {
 
         // If PK, not init NULL button
         if (columnType != PrimaryKey) {
-            auto *isNull = new QCheckBox("NULL", this);
+            auto isNull = new QCheckBox("NULL", this);
             isNull->setChecked(columnIsNull);
             isNull->setFixedWidth(40);
 
@@ -201,7 +203,7 @@ namespace DbNodes::Nodes::Table {
         return QWidget::eventFilter(object, event);
     }
 
-// Get parent table name
+    // Get parent table name
     QString Column::getTableName()
     {
         auto table = dynamic_cast<TableNode *>(parentWidget());
