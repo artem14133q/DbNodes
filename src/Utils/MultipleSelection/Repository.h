@@ -7,14 +7,13 @@
 
 #include "QPainter"
 
+#include "AbstractUtil.h"
 #include "AbstractNode.h"
 
 namespace DbNodes::Utils::MultipleSelection {
 
-    class Repository: public QObject
+    class Repository: public AbstractUtil
     {
-        Q_OBJECT
-
         private:
             QList<Abstract::NodePtr> selectedNodes;
 
@@ -41,9 +40,9 @@ namespace DbNodes::Utils::MultipleSelection {
             void move(const QPoint &mousePos, const QList<Abstract::NodePtr> &nodes);
             void stop();
 
-            void deleteSelected();
+            void initDefaultActionsForUtil(QMenu *menu) override;
 
-            void initDefaultActionsForUtil(QMenu *menu);
+            void deleteSelected();
 
             ~Repository() override;
     };

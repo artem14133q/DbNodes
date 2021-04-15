@@ -9,11 +9,12 @@
 #include "QPainter"
 #include "QPainterPath"
 
+#include "AbstractUtil.h"
 #include "IHasPathConnectors.h"
 
 namespace DbNodes::Utils::RelationPath {
 
-    class Render : public QObject
+    class Render : public AbstractUtil
     {
         private:
             QWidget *parentWidget;

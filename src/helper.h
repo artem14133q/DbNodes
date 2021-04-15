@@ -24,6 +24,7 @@ class Helper
         static void unBindSetting(const QString &key);
         static void moveToCenter(QWidget *mapToWidget, QWidget *currentWidget);
         static QString replaceHomePathInFullPath(const QString &path, const QString &replace = "~");
+        static void updateParentRecursive(QWidget *currentWidget, const QString &name);
 
         static void standardWidgetsHeight(
             const int &height,

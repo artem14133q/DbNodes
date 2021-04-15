@@ -9,7 +9,7 @@
 
 namespace DbNodes::Utils::MultipleSelection {
 
-    Selectable::Selectable(QObject *object) : QObject(object) {}
+    Selectable::Selectable(QObject *object) : AbstractUtil(object) {}
 
     void Selectable::setClicked(const bool &clicked)
     {

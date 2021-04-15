@@ -12,7 +12,7 @@
 
 namespace DbNodes::Utils::MultipleSelection {
 
-    Repository::Repository(QWidget *parent): QObject(parent) {}
+    Repository::Repository(QWidget *parent): AbstractUtil(parent) {}
 
     void Repository::unselectNodes()
     {
@@ -147,7 +147,7 @@ namespace DbNodes::Utils::MultipleSelection {
     {
         selectedNodes.clear();
 
-        QObject::deleteLater();
+        deleteLater();
     }
 
     void Repository::deleteSelected()

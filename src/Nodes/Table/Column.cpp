@@ -49,6 +49,9 @@ namespace DbNodes::Nodes::Table {
     {
         initUi();
         enableMoveRestrictions(false);
+
+        movingUtil = new Utils::ListMoving::Moving(moveHandle, this);
+
         show();
     }
 
@@ -255,51 +258,34 @@ namespace DbNodes::Nodes::Table {
 
     void Column::mouseMoveEvent(QMouseEvent *event)
     {
-        if (isMovable) {
-            parentWidget()->parentWidget()->update();
-            DbNodes::Abstract::AbstractNode::mouseMoveEvent(event);
-        }
+        if (movingUtil->move()) {
+            Abstract::AbstractNode::mouseMoveEvent(event);
+        };
     }
 
     void Column::mousePressEvent(QMouseEvent *event)
     {
-        if (moveHandle->geometry().contains(mapFromGlobal(QCursor::pos()))) {
-            setStyleSheet(styleSheet() + "QWidget{border: 1px solid #f36026;}");
-            isMovable = true;
-            raise();
-        }
+        movingUtil->enable();
 
-        DbNodes::Abstract::AbstractNode::mousePressEvent(event);
+        Abstract::AbstractNode::mousePressEvent(event);
     }
 
     void Column::mouseReleaseEvent(QMouseEvent *event)
     {
-        if (isMovable) {
-            auto *anotherColumn = getColumnUnderMouse();
+        auto selectedColumn = movingUtil->getWidgetUnderMouse<Column>([this] (Column *column) -> bool {
+            return column->geometry().contains(parentWidget()->mapFromGlobal(QCursor::pos()))
+                && column->getColumnType() == columnType
+                && vb->indexOf(column) != vb->indexOf(this);
+        });
 
-            if (anotherColumn) vb->insertWidget(vb->indexOf(anotherColumn), this);
-            else vb->insertWidget(vb->indexOf(this), this);
+        movingUtil->replace([this, selectedColumn] {
+            if (selectedColumn)
+                vb->insertWidget(vb->indexOf(selectedColumn), this);
+            else
+                vb->insertWidget(vb->indexOf(this), this);
+        });
 
-            isMovable = false;
-            setStyleSheet(styleSheet().split("QWidget{border: 1px solid #f36026;}")[0]);
-        }
-
-        parentWidget()->parentWidget()->update();
         DbNodes::Abstract::AbstractNode::mouseReleaseEvent(event);
-    }
-
-    Column *Column::getColumnUnderMouse()
-    {
-        foreach(Column *w, parentWidget()->findChildren<Column *>())
-        {
-            if (w->geometry().contains(parentWidget()->mapFromGlobal(QCursor::pos()))
-                && w->getColumnType() == columnType
-                && vb->indexOf(w) != vb->indexOf(this)) {
-                return w;
-            }
-        }
-
-        return nullptr;
     }
 
     void Column::openRelationMaker()

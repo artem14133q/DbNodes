@@ -11,6 +11,7 @@
 
 #include "AbstractNode.h"
 #include "IHasPathConnectors.h"
+#include "ListMoving/Moving.h"
 
 namespace DbNodes::Nodes::Table {
 
@@ -54,12 +55,11 @@ namespace DbNodes::Nodes::Table {
             QString getColumnDbType();
 
             bool eventFilter(QObject *object, QEvent *event) override;
-            Column *getColumnUnderMouse();
 
             void disableFkRelationButton(const bool &disable);
 
         private:
-            bool isMovable = false;
+            Utils::ListMoving::Moving *movingUtil;
 
             QVBoxLayout *vb;
 

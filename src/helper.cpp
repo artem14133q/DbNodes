@@ -129,14 +129,15 @@ void Helper::standardWidgetsHeight(const int &height, QWidget *parent, const QSt
             }
         }
 
-        widget->setFixedHeight(30);
+        widget->setFixedHeight(height);
     }
 
     parent->adjustSize();
 }
 
-//QString Helper::getIconFullPath(const QString &iconName, const bool &styled)
-//{
-//    auto path = getIconPath(iconName, styled);
-//}
+void Helper::updateParentRecursive(QWidget *currentWidget, const QString &name)
+{
+    auto workArea = Helper::findParentWidgetRecursive(currentWidget, name);
+    workArea->update();
+}
 

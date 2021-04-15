@@ -6,7 +6,7 @@
 
 namespace DbNodes::Utils::RelationPath {
 
-    Render::Render(QWidget *parent): QObject(parent)
+    Render::Render(QWidget *parent): AbstractUtil(parent)
     {
         parentWidget = parent;
     }

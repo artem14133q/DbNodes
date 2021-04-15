@@ -8,9 +8,11 @@
 #include "QObject"
 #include "QPoint"
 
+#include "AbstractUtil.h"
+
 namespace DbNodes::Utils::MultipleSelection {
 
-    class Selectable: public QObject
+    class Selectable: public AbstractUtil
     {
         Q_OBJECT
 
