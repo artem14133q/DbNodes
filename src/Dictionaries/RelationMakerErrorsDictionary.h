@@ -17,7 +17,7 @@ namespace DbNodes::Dictionaries {
                 CannotFindTables
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { CannotFindPkColumns  ,   "Cannot find primary keys in current table" },
                     { CannotFindTables     ,   "Cannot find tables"                        },

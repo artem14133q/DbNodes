@@ -21,7 +21,14 @@ namespace DbNodes::Relations {
             relationView,
             &DeleteRelationButton::createPathPointSignal,
             getRelation(),
-            &Relation::createNodeInWorkArea
+            &Relation::createNodeInWorkAreaProxy
+        );
+
+        connect(
+            relationView,
+            &DeleteRelationButton::deletePathPointSignal,
+            getRelation(),
+            &Relation::deleteNodeInWorkAreaProxy
         );
 
         return relationView;

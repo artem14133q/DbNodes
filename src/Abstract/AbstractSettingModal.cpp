@@ -97,14 +97,14 @@ namespace DbNodes::Abstract {
         const QString &settingKey,
         const EVENT_CALLBACK(QLineEdit) &callback
     ) {
-        auto *hl = new QHBoxLayout();
+        auto hl = new QHBoxLayout();
 
         hl->addSpacing(settingIndent);
         hl->addWidget(getTitle(name));
 
         auto value = getDefaultSetting(settingKey);
 
-        auto *lineEdit = new QLineEdit(scrollWidget);
+        auto lineEdit = new QLineEdit(scrollWidget);
         lineEdit->setFixedHeight(30);
         lineEdit->setStyleSheet(Helper::getStyleFromFile("lineEdit lineEditError"));
         lineEdit->setProperty("warning", false);
@@ -129,32 +129,31 @@ namespace DbNodes::Abstract {
     QSpinBox *AbstractSettingModal::createSpinboxSetting(
         const QString &name,
         const QString &settingKey,
-        const QPoint &range,
+        const QSize &range,
         const EVENT_CALLBACK(QSpinBox) &callback
     ) {
-        auto *hl = new QHBoxLayout();
+        auto hl = new QHBoxLayout();
 
         hl->addSpacing(settingIndent);
         hl->addWidget(getTitle(name));
 
         auto value = getDefaultSetting(settingKey).toInt();
 
-        auto *spinBox = new QSpinBox(scrollWidget);
+        auto spinBox = new QSpinBox(scrollWidget);
         spinBox->setValue(value);
 
         spinBox->setStyleSheet(
-            Helper::getStyleFromFile("settingSpinBox")
-                .arg(Helper::getIconPath("up_arrow", false))
-                .arg(Helper::getIconPath("down_arrow", false))
+            Helper::getStyleFromFile("settingSpinBox").arg(
+                Helper::getIconPath("up_arrow", false),
+                Helper::getIconPath("down_arrow", false)
+            )
         );
 
         spinBox->setFixedSize(100, 30);
 
         if (!range.isNull()) {
-            spinBox->setRange(range.x(), range.y());
+            spinBox->setRange(range.width(), range.height());
         }
-
-        spinBox->setValue(value);
 
         connect(spinBox, (void(QSpinBox::*)(int))&QSpinBox::valueChanged, this,
             [this, spinBox, settingKey, callback] (int value) {
@@ -180,12 +179,12 @@ namespace DbNodes::Abstract {
         const VariantsMap &values,
         const EVENT_CALLBACK(QComboBox) &callback
     ) {
-        auto *hl = new QHBoxLayout();
+        auto hl = new QHBoxLayout();
 
         hl->addSpacing(settingIndent);
         hl->addWidget(getTitle(name));
 
-        auto *comboBox = new QComboBox(scrollWidget);
+        auto comboBox = new QComboBox(scrollWidget);
 
         comboBox->setStyleSheet(
             Helper::getStyleFromFile("settingsComboBox")
@@ -218,6 +217,50 @@ namespace DbNodes::Abstract {
         scrollLayout->addLayout(hl);
 
         return comboBox;
+    }
+
+    QSlider *AbstractSettingModal::createSliderSetting(
+        const QString &name,
+        const QString &settingKey,
+        const QPair<int, int> &range,
+        const EVENT_CALLBACK(QSlider) &callback
+    ) {
+        auto hl = new QHBoxLayout();
+
+        hl->addSpacing(settingIndent);
+        hl->addWidget(getTitle(name));
+
+        auto value = Helper::getSettingValue(settingKey).toInt();
+
+        auto slider = new QSlider(scrollWidget);
+
+        slider->setFixedSize(200, 30);
+        slider->setRange(range.first, range.second);
+        slider->setValue(value);
+
+        slider->setStyleSheet(Helper::getStyleFromFile("settingSlider"));
+
+        connect(slider, &QSlider::valueChanged,this,
+            [this, slider, settingKey, callback] (int value) {
+                if (callback != nullptr) callback(slider);
+                changeSettingMap(settingKey, value);
+            }
+        );
+
+        settingsMap.insert(settingKey, value);
+
+        auto maxValueTitle = getTitle(QString::number(range.second));
+        maxValueTitle->adjustSize();
+
+        hl->addStretch();
+        hl->addWidget(getTitle(QString::number(range.first)));
+        hl->addWidget(slider);
+        hl->addWidget(maxValueTitle);
+        hl->addSpacing(85 - maxValueTitle->width());
+
+        scrollLayout->addLayout(hl);
+
+        return slider;
     }
 
     void AbstractSettingModal::exit()

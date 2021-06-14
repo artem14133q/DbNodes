@@ -35,6 +35,13 @@ namespace DbNodes::Relations {
 
     void DeleteRelationButton::deleteRelation()
     {
+        foreach (const auto &point, points) {
+            point->emitDelete();
+            point->deleteLater();
+        }
+
+        points.clear();
+
         emit clickedDelete();
     }
 
@@ -89,8 +96,8 @@ namespace DbNodes::Relations {
 
         connect(point, &Abstract::AbstractNode::deleteNodeSignal, this, [this, point] {
             points.removeAll(point);
-            point->deleteLater();
-            parentWidget()->update();
+
+            emit deletePathPointSignal(point);
         });
 
         if (pos.isNull()) {

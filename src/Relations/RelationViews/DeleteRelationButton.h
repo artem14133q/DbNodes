@@ -64,6 +64,7 @@ namespace DbNodes::Relations {
 
         public: signals:
             void createPathPointSignal(Path::PathPoint *point);
+            void deletePathPointSignal(Path::PathPoint *point);
     };
 
 

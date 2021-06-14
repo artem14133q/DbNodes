@@ -36,7 +36,7 @@ namespace DbNodes::Dictionaries {
                 Json
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { Float     ,   "float"     },
                     { Double    ,   "double"    },

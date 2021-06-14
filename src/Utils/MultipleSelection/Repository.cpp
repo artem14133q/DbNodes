@@ -28,7 +28,6 @@ namespace DbNodes::Utils::MultipleSelection {
         auto unConstNode = const_cast<Abstract::NodePtr &>(node);
 
         unConstNode->setProperty("selected", select);
-        unConstNode->style()->unpolish(unConstNode);
         unConstNode->style()->polish(unConstNode);
     }
 
@@ -154,25 +153,13 @@ namespace DbNodes::Utils::MultipleSelection {
     {
         if(selectedNodes.isEmpty()) return;
 
-        QList<Abstract::NodePtr> others = Helper::filter<Abstract::NodePtr>(
-            selectedNodes,
-            [] (const Abstract::NodePtr &node) -> bool {
-                if (node->objectName() == "TableNode") {
-                    node->deleteLater();
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        );
-
-        foreach (const Abstract::NodePtr &node, others) {
-            // Call override destructor. When PathPoint signal that it delete.
-            // When TableNode remove PathPoint from list.
-            delete node;
+        foreach (const Abstract::NodePtr &node, selectedNodes) {
+            node->emitDelete();
+            node->deleteLater();
         }
 
         selectedNodes.clear();
+        parentWidget()->update();
     }
 
     void Repository::initDefaultActionsForUtil(QMenu *menu)

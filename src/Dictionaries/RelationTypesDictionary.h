@@ -18,7 +18,7 @@ namespace DbNodes::Dictionaries {
                 Link
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { Path          ,   "Relation path" },
                     { Link          ,   "Relation link" },

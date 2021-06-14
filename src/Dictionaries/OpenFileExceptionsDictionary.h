@@ -20,7 +20,7 @@ namespace DbNodes::Dictionaries {
                 FileIsEmpty
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { FileNotFound, "Cannot find project file: '%1'"},
                     { InvalidFileType,"File type not valid"},

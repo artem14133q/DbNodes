@@ -27,8 +27,6 @@ namespace DbNodes::Relations::Path {
 
             Abstract::ParamsForDrawing getDrawParams() override;
 
-            ~PathPoint() override;
-
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
     };

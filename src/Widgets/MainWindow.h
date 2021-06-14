@@ -18,7 +18,6 @@
 #include "Menus/RecentMenu.h"
 
 #include "SaveFileTypesDictionary.h"
-#include "DefaultProjectSettingsDictionary.h"
 
 #include "config.h"
 

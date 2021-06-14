@@ -101,14 +101,6 @@ namespace DbNodes::Nodes {
             this->addColumn(Table::Column::Type::ForeignKey);
         });
 
-        #if APP_DEBUG
-
-        QAction* debugAction = contextMenu->addAction("[DEBUG] - COLUMN DATA");
-
-        connect(debugAction, &QAction::triggered, this, &TableNode::debugTables);
-
-        #endif
-
         auto menuPos = mapToGlobal(event->pos());
         menuPos.setX(menuPos.x() + 5);
         //Set visible menu
@@ -180,10 +172,6 @@ namespace DbNodes::Nodes {
 
         auto* tableRenameModal = new TableRename(tableName, this);
 
-        QWidget *mainWindow = Helper::findParentWidgetRecursive(this, "MainWindow");
-
-        Helper::moveToCenter(mainWindow, this);
-
         connect(tableRenameModal, &TableRename::pushConfirm, this, [this] (const QString &name) {
             setTableName(name);
             titleLabel->setText(name);
@@ -244,43 +232,13 @@ namespace DbNodes::Nodes {
         }
 
         AbstractNode::mousePressEvent(event);
+
+        parentWidget()->update();
     }
 
     void TableNode::addRelation(const Relations::RelationPtr &relation)
     {
         relations.push_back(relation);
     }
-
-#if APP_DEBUG
-
-    void TableNode::debugTables()
-    {
-        qDebug() << "===== DEBUG NODE ROWS DATA ======";
-
-        foreach (Table::Column *w, groupColumns()) {
-            int index = getLayoutType(w->getColumnType())->indexOf(w);
-
-            qDebug() << index
-                << (index < 10 ? " " : "")
-                << "[ "
-                << w->getColumnId()
-                << " | "
-                << debugLayoutType(w->getColumnType())
-                << " | "
-                << w->getColumnName()
-                << " ]";
-        }
-
-        qDebug() << "===== DEBUG NODE ROWS DATA ======";
-    }
-
-    QString TableNode::debugLayoutType(const Nodes::Table::Column::Type &columnType)
-    {
-        if      (columnType == Table::Column::Type::PrimaryKey)   return "PK";
-        else if (columnType == Table::Column::Type::ForeignKey)   return "FK";
-        else                                                      return "RW";
-    }
-
-#endif
 }
 

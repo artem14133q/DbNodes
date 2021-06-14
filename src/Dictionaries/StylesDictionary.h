@@ -17,11 +17,11 @@ namespace DbNodes::Dictionaries {
     struct StylesDictionary: public Abstract::Dictionary<QString, StylesDictionary>
     {
         public:
-            static DICT_MAP(QString) initDictionary(const QString &folder) {
+            static DictMap getDictionary(const QString &folder) {
                 QDir directory(folder);
                 auto stylesDirs = directory.entryList(QDir::AllDirs|QDir::NoDotAndDotDot);
 
-                DICT_MAP(QString) styles;
+                DictMap styles;
 
                 foreach (const QString &styleDir, stylesDirs) {
                     auto configFile = folder + "/" + styleDir + "/config.ini";
@@ -36,8 +36,8 @@ namespace DbNodes::Dictionaries {
                 return styles;
             };
 
-            static DICT_MAP(QString) getFoldersDictionary(const QString &folder) {
-                return initDictionary(folder);
+            static DictMap getFoldersDictionary(const QString &folder) {
+                return getDictionary(folder);
             }
     };
 

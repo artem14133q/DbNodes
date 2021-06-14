@@ -13,6 +13,9 @@
 #include "MultipleSelection/Repository.h"
 
 #include "RelationTypesDictionary.h"
+#include "Minimap/MinimapWidget.h"
+
+#include "MinimapPositionsDictionary.h"
 
 namespace DbNodes::Widgets {
 
@@ -52,10 +55,14 @@ namespace DbNodes::Widgets {
 
             const QList<Relations::RelationPtr> &getAllRelations();
 
+            void createMinimap();
+
             ~WorkArea() override;
 
         private:
             Utils::MultipleSelection::Repository *selectionRepository;
+
+            Minimap::MinimapWidget *minimap{};
 
             QList<Relations::RelationPtr> relations;
             Nodes::Table::ColumnPrtVector pkList, fkList;
@@ -72,12 +79,6 @@ namespace DbNodes::Widgets {
             static void cleanColumnList(Nodes::Table::ColumnPrtVector &list);
 
             bool isAntialiasing;
-
-            #if APP_DEBUG
-
-            void debugRelation();
-
-            #endif
     };
 
 }

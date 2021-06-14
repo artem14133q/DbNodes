@@ -63,11 +63,4 @@ namespace DbNodes::Relations::Path
         //Set visible menu
         contextMenu->exec(menuPos);
     }
-
-    PathPoint::~PathPoint()
-    {
-        emit deleteNodeSignal();
-
-        deleteLater();
-    }
 }
