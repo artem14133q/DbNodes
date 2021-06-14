@@ -6,23 +6,21 @@
 #define DBNODES_STRUCTDICTIONARY_H
 
 #include "QVariant"
-#include "QMetaEnum"
 #include "QObject"
-
-#define DICT_MAP(key_type) QHash<key_type, QVariant>
 
 namespace DbNodes::Abstract {
 
-    template<typename T1, class T2>
+    template<class T1, class T2>
     struct Dictionary: public QObject
     {
-        static DICT_MAP(T1) getDictionary()
+        typedef QHash<T1, QVariant> DictMap;
+
+        static DictMap getDictionary()
         {
-            return T2::initDictionary();
+            return T2::getDictionary();
         }
 
         public:
-
 
             static QVariant getValue(const T1 &key)
             {
@@ -39,10 +37,9 @@ namespace DbNodes::Abstract {
                 return getDictionary().keys();
             }
 
-            template<typename QEnum>
-            static QString getKey(const QEnum value)
+            static bool has(const T1 &key)
             {
-                return QString(QMetaEnum::fromType<QEnum>().valueToKey(value));
+                return getDictionary().contains(key);
             }
     };
 }

@@ -1,8 +1,7 @@
 #include "QLabel"
+#include "QApplication"
 
 #include "NewProject.h"
-
-#include "DefaultProjectSettingsDictionary.h"
 
 #include "../helper.h"
 
@@ -49,9 +48,7 @@ namespace DbNodes::Modals {
     {
         nameEdit = createTextSetting(
             "Project name:",
-            Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                Dictionaries::DefaultProjectSettingsDictionary::Type::name
-            ),
+            "name",
             [this] (QLineEdit *lineEdit) {
                 validPropertyName(lineEdit);
             }
@@ -59,9 +56,7 @@ namespace DbNodes::Modals {
 
         auto widthSpin = createSpinboxSetting(
             "Workspace width:",
-            Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                    Dictionaries::DefaultProjectSettingsDictionary::Type::width
-            ),
+            "width",
             {2000, 8000}
         );
 
@@ -69,9 +64,7 @@ namespace DbNodes::Modals {
 
         auto heightSpin = createSpinboxSetting(
             "Workspace height:",
-            Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                    Dictionaries::DefaultProjectSettingsDictionary::Type::height
-            ),
+            "height",
             {2000, 8000}
         );
 
@@ -94,7 +87,13 @@ namespace DbNodes::Modals {
 
     QVariant NewProject::getDefaultSetting(const QString &name)
     {
-        return Dictionaries::DefaultProjectSettingsDictionary::getValue(name);
+        QHash<QString, QVariant> dict({
+            {"name"     , "Undefined"   },
+            {"width"    , 4000          },
+            {"height"   , 4000          },
+        });
+
+        return dict.value(name);
     }
 
     void NewProject::enableConfirm(const bool &enable)

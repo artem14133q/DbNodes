@@ -88,13 +88,10 @@ namespace DbNodes::Relations {
 
         RelationFactory relationFactory;
 
-        relationView = relationFactory.resolveFactory(
-            relationTypeId,
-            [this] (RelationProvider * provider) {
-                provider->setParent(parent);
-                provider->setRelation(this);
-            }
-        );
+        relationView = relationFactory.resolveFactory(relationTypeId,[this] (RelationProvider * provider) {
+            provider->setParent(parent);
+            provider->setRelation(this);
+        });
     }
 
     void Relation::goToRelationTableSignal()
@@ -123,9 +120,14 @@ namespace DbNodes::Relations {
         }
     }
 
-    void Relation::createNodeInWorkArea(Abstract::AbstractNode *node)
+    void Relation::createNodeInWorkAreaProxy(Abstract::AbstractNode *node)
     {
         emit createNodeInWorkAreaSignal(node);
+    }
+
+    void Relation::deleteNodeInWorkAreaProxy(Abstract::AbstractNode *node)
+    {
+        emit deleteNodeInWorkAreaSignal(node);
     }
 
     Abstract::AbstractRelationView *Relation::getAbstractRelationView()

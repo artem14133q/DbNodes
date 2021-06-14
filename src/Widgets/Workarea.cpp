@@ -22,7 +22,6 @@ namespace DbNodes::Widgets {
     WorkArea::WorkArea(QWidget *parent): QWidget(parent)
     {
         setObjectName("WorkArea");
-        // Set fixed size for work area
 
         selectionRepository = new Utils::MultipleSelection::Repository(this);
 
@@ -49,14 +48,6 @@ namespace DbNodes::Widgets {
         });
 
         selectionRepository->initDefaultActionsForUtil(menu);
-
-        #if APP_DEBUG
-
-        QAction* debugRelations = menu->addAction("[DEBUG] - SHOW ALL RELATIONS");
-
-        connect(debugRelations, &QAction::triggered, this, &WorkArea::debugRelation);
-
-        #endif
 
         // Create Menu
         menu->exec(mapToGlobal(event->pos()));
@@ -91,6 +82,8 @@ namespace DbNodes::Widgets {
         }
 
         selectionRepository->drawSelectionRect(painter);
+
+        minimap->updatePos(parentWidget());
     }
 
     Relations::RelationPtr WorkArea::makeRelation(
@@ -124,6 +117,15 @@ namespace DbNodes::Widgets {
             [this] (Abstract::AbstractNode *node) {
                 nodeList.push_back(QPointer<Abstract::AbstractNode>(node));
                 selectionRepository->initDefaultsConnections(node);
+            }
+        );
+
+        connect(
+            relation,
+            &Relations::Relation::deleteNodeInWorkAreaSignal,
+            this,
+            [this] (Abstract::AbstractNode *node) {
+                nodeList.removeAll(QPointer(node));
             }
         );
 
@@ -183,6 +185,10 @@ namespace DbNodes::Widgets {
 
         selectionRepository->initDefaultsConnections(table->toNode());
 
+        connect(table, &Nodes::TableNode::deleteNodeSignal, this, [this, table] {
+            nodeList.removeAll(table->toNode());
+        });
+
         return table;
     }
 
@@ -228,8 +234,8 @@ namespace DbNodes::Widgets {
 
         scrollToPosition(QPoint(x, y));
 
-        QTimer::singleShot(0, table, SLOT (setFocus()));
         table->raise();
+        QTimer::singleShot(0, table, SLOT (setFocus()));
     }
 
     Nodes::TablePtr WorkArea::findTable(const QString &tableId)
@@ -243,33 +249,11 @@ namespace DbNodes::Widgets {
         return nullptr;
     }
 
-#if APP_DEBUG
-
-    void WorkArea::debugRelation()
-    {
-        qDebug() << "============== DEBUG ALL RELATIONS =================";
-        for (int i = 0; i < relations.size(); ++i) {
-            auto pkColumn(relations[i]->getPkColumn());
-            auto fkColumn(relations[i]->getFkColumn());
-
-            qDebug() << i
-                << (i < 10 ? " " : "")
-                << pkColumn->getTableName() + "::" + pkColumn->getColumnName()
-                << " <-- "
-                << fkColumn->getTableName() + "::" + fkColumn->getColumnName();
-        }
-        qDebug() << "============== DEBUG ALL RELATIONS =================";
-    }
-
-#endif
-
     WorkArea::~WorkArea()
     {
-        delete selectionRepository;
-
         Helper::unBindSetting("rendering.antialiasing");
 
-        QWidget::deleteLater();
+        deleteLater();
     }
 
     const QList<Relations::RelationPtr> &WorkArea::getAllRelations()
@@ -307,5 +291,39 @@ namespace DbNodes::Widgets {
 
         scrollWidget->verticalScrollBar()->setValue(pos.y());
         scrollWidget->horizontalScrollBar()->setValue(pos.x());
+    }
+
+    void WorkArea::createMinimap()
+    {
+        auto *scrollWidget = dynamic_cast<QScrollArea *>(parentWidget()->parentWidget());
+
+        auto minimapPosition = Helper::getSettingValue("minimap.position").toInt();
+
+        minimap = new Minimap::MinimapWidget(
+            (Dictionaries::MinimapPositionsDictionary::Type) minimapPosition,
+            nodeList,
+            size(),
+            parentWidget()->parentWidget()
+        );
+
+        connect(minimap, &Minimap::MinimapWidget::moveToPositionSignal, this, &WorkArea::scrollToPosition);
+
+        connect(
+            scrollWidget->verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            minimap,
+            [this] (int value) {
+                minimap->moveIndicator({minimap->getIndicatorPos().x(), minimap->prepareSize(value)});
+            }
+        );
+
+        connect(
+            scrollWidget->horizontalScrollBar(),
+            &QScrollBar::valueChanged,
+            minimap,
+            [this] (int value) {
+                minimap->moveIndicator({minimap->prepareSize(value), minimap->getIndicatorPos().y()});
+            }
+        );
     }
 }

@@ -19,7 +19,7 @@ namespace DbNodes::Dictionaries {
                 Left,
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { Right  ,   "right"     },
                     { Left   ,   "left"      },

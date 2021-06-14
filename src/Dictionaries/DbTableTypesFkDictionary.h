@@ -11,14 +11,14 @@ namespace DbNodes::Dictionaries {
 
     struct DbTableTypesFkDictionary: public Abstract::Dictionary<int, DbTableTypesFkDictionary>
     {
-        enum Type {
-            Integer,
-            Tinyint,
-            Bigint
-        };
-
         public:
-            static DICT_MAP(int) initDictionary() {
+            enum Type {
+                Integer,
+                Tinyint,
+                Bigint
+            };
+
+            static DictMap getDictionary() {
                 return {
                     { Integer  ,   "integer"   },
                     { Tinyint  ,   "tinyint"   },

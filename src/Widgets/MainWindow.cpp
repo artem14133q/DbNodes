@@ -33,7 +33,7 @@ namespace DbNodes::Widgets {
 
     void MainWindow::setTitle(const QString &name, const QString &path)
     {
-        setWindowTitle(QString("[%1] @ %2 - DbNodes").arg(path).arg(name));
+        setWindowTitle(QString("[%1] @ %2 - DbNodes").arg(path, name));
     }
 
     void MainWindow::createWorkArea(const QString &projectName)
@@ -179,23 +179,11 @@ namespace DbNodes::Widgets {
             [this] (const Modals::NewProject::VariantsMap &settings) {
                 if (!closeProjectIfExists()) return;
 
-                createWorkArea(settings.value(
-                    Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                        Dictionaries::DefaultProjectSettingsDictionary::Type::name
-                    )
-                ).toString());
+                createWorkArea(settings.value("name").toString());
 
                 workArea->setFixedSize(
-                    settings.value(
-                        Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                            Dictionaries::DefaultProjectSettingsDictionary::Type::width
-                        )
-                    ).toInt(),
-                    settings.value(
-                        Dictionaries::DefaultProjectSettingsDictionary::getKey(
-                            Dictionaries::DefaultProjectSettingsDictionary::Type::height
-                        )
-                    ).toInt()
+                    settings.value("width").toInt(),
+                    settings.value("height").toInt()
                 );
 
                 enableWorkArea(true);
@@ -285,8 +273,11 @@ namespace DbNodes::Widgets {
         if (enable) {
             setCentralWidget(scrollArea);
             scrollArea->show();
+            workArea->createMinimap();
         } else {
+            delete workArea;
             delete scrollArea;
+
             scrollArea = nullptr;
             workArea = nullptr;
         }

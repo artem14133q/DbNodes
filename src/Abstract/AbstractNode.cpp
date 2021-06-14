@@ -20,18 +20,36 @@ namespace DbNodes::Abstract {
         selectable->setClicked(true);
 
         oldPos = event->globalPos();
+
+        isHandled = true;
     }
 
     void AbstractNode::mouseMoveEvent(QMouseEvent *event)
     {
-        QPoint delta(event->globalPos() - oldPos);
+        if (isHandled) {
+            QPoint cursorPos = event->globalPos();
 
-        selectable->move(delta);
+            QPoint delta(cursorPos - oldPos);
 
-        restrictedMove(delta.x() + x(), delta.y() + y());
+            selectable->move(delta);
 
-        oldPos = event->globalPos();
-        parentWidget()->update();
+            if (abroadHandle) {
+                auto localCursorPos = parentWidget()->mapFromGlobal(cursorPos);
+
+                if (!geometry().contains(geometry().x(), localCursorPos.y())) {
+                    delta.ry() = 0;
+                }
+
+                if (!geometry().contains(localCursorPos.x(), geometry().y())) {
+                    delta.rx() = 0;
+                }
+            }
+
+            restrictedMove(delta.x() + x(), delta.y() + y());
+
+            oldPos = cursorPos;
+            parentWidget()->update();
+        }
     }
 
     void AbstractNode::enableMoveRestrictions(const bool &enable)
@@ -47,25 +65,27 @@ namespace DbNodes::Abstract {
     void AbstractNode::mouseReleaseEvent(QMouseEvent *event)
     {
         selectable->flush();
+
+        isHandled = false;
     }
 
     void AbstractNode::restrictedMove(int newX, int newY)
     {
-        move(newX, newY);
-
         if (moveRestrictions) {
-            if (x() < 0)
-                move(0, y());
+            if (newX < 0)
+                newX = 0;
 
-            if (y() < 0)
-                move(x(), 0);
+            if (newY < 0)
+                newY = 0;
 
-            if ((x() + width()) > parentWidget()->width())
-                move(parentWidget()->width() - width(), y());
+            if ((newX + width()) > parentWidget()->width())
+                newX = parentWidget()->width() - width();
 
-            if ((y() + height()) > parentWidget()->height())
-                move(x(), parentWidget()->height() - height());
+            if ((newY + height()) > parentWidget()->height())
+                newY =  parentWidget()->height() - height();
         }
+
+        move(newX, newY);
     }
 
     void AbstractNode::restrictedMove(const QPoint &pos)
@@ -82,6 +102,19 @@ namespace DbNodes::Abstract {
     {
         deleteNodeAction = menu->addAction("Delete");
 
-        connect(deleteNodeAction, &QAction::triggered, this, &AbstractNode::deleteLater);
+        connect(deleteNodeAction, &QAction::triggered, this, [this] {
+            emit deleteNodeSignal();
+            deleteLater();
+        });
+    }
+
+    void AbstractNode::rememberPosWhenAbroad(const bool &enable)
+    {
+        abroadHandle = enable;
+    }
+
+    void AbstractNode::emitDelete()
+    {
+        emit deleteNodeSignal();
     }
 }

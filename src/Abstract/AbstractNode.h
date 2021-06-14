@@ -24,7 +24,10 @@ namespace DbNodes::Abstract {
         Q_OBJECT
 
         private:
+            bool isHandled = false;
             bool moveRestrictions = true;
+            bool abroadHandle = false;
+
             QPoint oldPos{};
 
             Utils::MultipleSelection::Selectable *selectable;
@@ -38,14 +41,17 @@ namespace DbNodes::Abstract {
 
             Utils::MultipleSelection::Selectable *getSelectionUtil();
 
+            void enableMoveRestrictions(const bool &enable);
+            void rememberPosWhenAbroad(const bool &enable);
+
+            void emitDelete();
+
         protected:
             QAction *deleteNodeAction{};
 
             void mousePressEvent(QMouseEvent *event) override;
             void mouseMoveEvent(QMouseEvent *event) override;
             void mouseReleaseEvent(QMouseEvent *event) override;
-
-            void enableMoveRestrictions(const bool &enable);
 
             void createDefaultActions(QMenu *menu);
 

@@ -51,7 +51,8 @@ namespace DbNodes::Relations {
             void deleteRelation();
             void goToRelationTableSignal();
             void enableRelationType(const Dictionaries::RelationTypesDictionary::Type &relationTypeId);
-            void createNodeInWorkArea(Abstract::AbstractNode *node);
+            void createNodeInWorkAreaProxy(Abstract::AbstractNode *node);
+            void deleteNodeInWorkAreaProxy(Abstract::AbstractNode *node);
 
         private:
             Abstract::AbstractRelationView *relationView{};
@@ -68,6 +69,7 @@ namespace DbNodes::Relations {
         public: signals:
             void goToRelatedTable(const QString &id);
             void createNodeInWorkAreaSignal(Abstract::AbstractNode *node);
+            void deleteNodeInWorkAreaSignal(Abstract::AbstractNode *node);
 
     };
 

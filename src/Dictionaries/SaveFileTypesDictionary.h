@@ -17,7 +17,7 @@ namespace DbNodes::Dictionaries {
                 RewriteFile
             };
 
-            static DICT_MAP(int) initDictionary() {
+            static DictMap getDictionary() {
                 return {
                     { NewFile       , "Create new save file"    },
                     { RewriteFile   , "Overwrite existing file" },

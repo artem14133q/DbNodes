@@ -54,13 +54,6 @@ namespace DbNodes::Nodes {
 
             void initUI();
 
-            #if APP_DEBUG
-
-            static QString debugLayoutType(const Nodes::Table::Column::Type &columnType);
-            void debugTables();
-
-            #endif
-
         protected:
             void contextMenuEvent(QContextMenuEvent *event) override;
             void mousePressEvent(QMouseEvent *event) override;

@@ -54,8 +54,15 @@ namespace DbNodes::Abstract
             QSpinBox *createSpinboxSetting(
                 const QString &name,
                 const QString &settingKey,
-                const QPoint &range = QPoint(),
+                const QSize &range = QSize(),
                 const EVENT_CALLBACK(QSpinBox) &callback = nullptr
+            );
+
+            QSlider *createSliderSetting(
+                const QString &name,
+                const QString &settingKey,
+                const QPair<int, int> &range = {0, 0},
+                const EVENT_CALLBACK(QSlider) &callback = nullptr
             );
 
             void createSettingGroup(const QString &name);
