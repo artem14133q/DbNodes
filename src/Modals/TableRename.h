@@ -30,7 +30,7 @@ namespace DbNodes::Modals {
 
         public: signals:
             void pushConfirm(const QString &name);
-
+            void pushExit();
     };
 
 }

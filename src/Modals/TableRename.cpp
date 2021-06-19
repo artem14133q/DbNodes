@@ -27,6 +27,7 @@ namespace DbNodes::Modals {
         // Create buttons
 
         createButton("Cancel", this, [this] {
+            emit pushExit();
             exit();
         });
 
