@@ -176,6 +176,11 @@ namespace DbNodes::Nodes {
             setTableName(name);
             titleLabel->setText(name);
         });
+
+        connect(tableRenameModal, &TableRename::pushExit, this, [this] () {
+            emit deleteNodeSignal();
+            deleteLater();
+        });
     }
 
     QVBoxLayout *TableNode::getLayoutType(const Nodes::Table::Column::Type &columnType)
