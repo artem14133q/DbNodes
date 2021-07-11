@@ -28,6 +28,8 @@ set(RESOURCES
 set(INCLUDE_PROJECT_LIBS
         Widgets)
 
+set(INI_CONFIG dbnodes.ini)
+
 # ==================================================================
 # CONFIGURE CMAKE
 # ==================================================================
@@ -101,7 +103,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRECTORIES})
 
 file(COPY styles DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
-file(COPY dbnodes.ini DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY ${INI_CONFIG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # ====================================================================
 # DEFILE LIBS OF YOUR PROJECT

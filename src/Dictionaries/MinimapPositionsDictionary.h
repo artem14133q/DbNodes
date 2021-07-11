@@ -14,20 +14,29 @@ namespace DbNodes::Dictionaries {
         // type: 0 ---------- 0 ----------- 0 ----------- 0
         //       ^            ^             ^             ^
         //     Bottom        Top          Right          Left
+        //
+        // if (position & MinimapPositionsDictionary::Left) {
+        //      do something ...
+        // }
 
         public:
-            enum Type {
-                TopLeft = 5, // 0101
-                TopRight = 6, // 0110
-                BottomLeft = 9, // 1001
-                BottomRight = 10, // 1010
-
-                Left = 1, // 0001
-                Right = 2, // 0010
-                Top = 4, // 0100
-                Bottom = 8 // 1000
+            enum Side {
+                Left            = 1,    // 0001
+                Right           = 2,    // 0010
+                Top             = 4,    // 0100
+                Bottom          = 8,    // 1000
             };
 
+            enum Type {
+                TopLeft         = 5,    // 0101
+                TopRight        = 6,    // 0110
+                BottomLeft      = 9,    // 1001
+                BottomRight     = 10,   // 1010
+            };
+
+            /**
+             * @return minimap positions dictionary
+             */
             static DictMap getDictionary() {
                 return {
                     { TopLeft       , "Top Left"        },
@@ -37,6 +46,9 @@ namespace DbNodes::Dictionaries {
                 };
             };
 
+            /**
+             * @return dictionary with QString type key
+             */
             static QHash<QString, QVariant> getPreparedDictionary()
             {
                 QHash<QString, QVariant> preparedHash;

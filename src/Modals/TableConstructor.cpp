@@ -2,14 +2,14 @@
 // Created by artem on 26.12.2020.
 //
 
-#include "TableRename.h"
+#include "TableConstructor.h"
 #include "QString"
 #include "QLabel"
 #include "QLineEdit"
 
 namespace DbNodes::Modals {
 
-    TableRename::TableRename(const QString &name, QWidget *parent)
+    TableConstructor::TableConstructor(const QString &name, QWidget *parent)
         : Abstract::AbstractSettingModal(parent), tableName(name)
     {
         setFixedWidth(500);
@@ -20,9 +20,16 @@ namespace DbNodes::Modals {
         show();
     }
 
-    void TableRename::initSettingsUi()
+    void TableConstructor::initSettingsUi()
     {
-        nameLineEdit = createTextSetting("Name:", "name");
+        nameLineEdit = createTextSetting("Name", "name");
+
+        setSpacing(15);
+
+        createSpinboxSetting("Foreign keys", "foreignCount", {0, 999});
+        createSpinboxSetting("Columns", "defaultCount", {0, 999});
+
+        createCheckboxSetting("Add id column", "addId");
 
         // Create buttons
 
@@ -36,20 +43,20 @@ namespace DbNodes::Modals {
         });
     }
 
-    QVariant TableRename::getDefaultSetting(const QString &name)
+    QVariant TableConstructor::getDefaultSetting(const QString &name)
     {
         return tableName;
     }
 
-    void TableRename::confirm()
+    void TableConstructor::confirm()
     {
-        emit pushConfirm(newSettingsMap.value("name").toString());
+        emit pushConfirm(newSettingsMap);
 
         enableConfirm(true);
         Abstract::AbstractSettingModal::confirm();
     }
 
-    void TableRename::afterInitUi()
+    void TableConstructor::afterInitUi()
     {
         nameLineEdit->setFocus();
         nameLineEdit->selectAll();

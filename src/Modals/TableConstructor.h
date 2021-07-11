@@ -2,14 +2,14 @@
 // Created by artem on 26.12.2020.
 //
 
-#ifndef DBNODES_TABLERENAME_H
-#define DBNODES_TABLERENAME_H
+#ifndef DBNODES_TABLECONSTRUCTOR_H
+#define DBNODES_TABLECONSTRUCTOR_H
 
 #include "AbstractSettingModal.h"
 
 namespace DbNodes::Modals {
 
-    class TableRename: public Abstract::AbstractSettingModal
+    class TableConstructor: public Abstract::AbstractSettingModal
     {
         Q_OBJECT
 
@@ -18,7 +18,7 @@ namespace DbNodes::Modals {
             QString tableName;
 
         public:
-            explicit TableRename(const QString &name, QWidget* parent = nullptr);
+            explicit TableConstructor(const QString &name, QWidget* parent = nullptr);
 
         protected:
             void initSettingsUi() override;
@@ -29,10 +29,10 @@ namespace DbNodes::Modals {
             void confirm() override;
 
         public: signals:
-            void pushConfirm(const QString &name);
+            void pushConfirm(const QHash<QString, QVariant> &settingsMap);
             void pushExit();
     };
 
 }
 
-#endif //DBNODES_TABLERENAME_H
+#endif //DBNODES_TABLECONSTRUCTOR_H

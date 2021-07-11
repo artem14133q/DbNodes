@@ -1,7 +1,7 @@
 set(LIBRARY_NAME Dictionaries)
 
 set(RESOURCES
-        DbTableTypesFkDictionary.h
+        DbTableTypesIndexDictionary.h
         DbTableTypesDictionary.h
         RelationMakerErrorsDictionary.h
         StylesDictionary.h

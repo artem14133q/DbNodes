@@ -24,12 +24,14 @@ namespace DbNodes::Dictionaries {
                 DictMap styles;
 
                 foreach (const QString &styleDir, stylesDirs) {
+                    // TODO: (todo_path_generator)
                     auto configFile = folder + "/" + styleDir + "/config.ini";
 
                     if (!QFile::exists(configFile)) continue;
 
                     QSettings styleSettings(configFile, QSettings::IniFormat);
 
+                    // TODO: (todo_path_generator)
                     styles.insert(styleDir, styleSettings.value("info/title").toString());
                 }
 

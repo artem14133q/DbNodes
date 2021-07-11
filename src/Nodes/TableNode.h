@@ -1,19 +1,21 @@
 #ifndef TABLENODE_H
 #define TABLENODE_H
 
-#include "QVBoxLayout"
-#include "QMouseEvent"
-#include "Table/Column.h"
-#include "QPointer"
-#include "QLabel"
-#include "QLineEdit"
-#include "config.h"
+#include <QVBoxLayout>
+#include <QMouseEvent>
+#include <QPointer>
+#include <QLineEdit>
+#include <QLabel>
 
+#include "MultipleSelection/Selectable.h"
+#include "Table/Column.h"
 #include "AbstractNode.h"
 #include "Relation.h"
-#include "MultipleSelection/Selectable.h"
+#include "config.h"
 
 namespace DbNodes::Nodes {
+
+    using ColumnType = Nodes::Table::Column::Type;
 
     class TableNode : public Abstract::AbstractNode
     {
@@ -21,24 +23,25 @@ namespace DbNodes::Nodes {
 
         public:
             TableNode(QWidget *parent, QString id, QString name);
-            explicit TableNode(QWidget *parent = nullptr);
+            explicit TableNode(QWidget *parent = nullptr, const QString& name = "table");
 
             QString getTableName();
             QString getTableId();
 
             Table::ColumnPrtVector getAllColumns();
 
-            void addColumnFromFile(
+            void createColumn(
                 const QString &id,
                 const QString &name,
-                const Nodes::Table::Column::Type &type,
+                const ColumnType &type,
                 const QString &dbType,
                 const bool &isNull = false
             );
 
-            QVBoxLayout *getLayoutType(const Nodes::Table::Column::Type &columnType);
+            QVBoxLayout *getLayoutType(const ColumnType &columnType);
 
             void addRelation(const Relations::RelationPtr &relation);
+            static QString generateId();
 
         private:
             QList<Relations::RelationPtr> relations;
@@ -63,7 +66,8 @@ namespace DbNodes::Nodes {
             void setTableName(const QString &name);
             void openRenameModal();
 
-        protected slots:
+        public slots:
+            // Slots need fully-qualified types
             void addColumn(Nodes::Table::Column::Type columnType, Table::ColumnPrt column = nullptr);
 
     };

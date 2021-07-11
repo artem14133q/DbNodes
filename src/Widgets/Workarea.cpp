@@ -1,19 +1,19 @@
-#include "QMenu"
-#include "QContextMenuEvent"
-#include "QPoint"
-#include "QVector"
-#include "QPainter"
-#include "QPainterPath"
-#include "QDebug"
-#include "QScrollArea"
-#include "QScrollBar"
-#include "QTimer"
-#include "QStyle"
-#include "QApplication"
+#include <QMenu>
+#include <QContextMenuEvent>
+#include <QPoint>
+#include <QVector>
+#include <QPainter>
+#include <QPainterPath>
+#include <QDebug>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QTimer>
+#include <QStyle>
+#include <QApplication>
 
+#include "RelationViews/Path/PathPoint.h"
 #include "Workarea.h"
 #include "TableNode.h"
-#include "RelationViews/Path/PathPoint.h"
 
 #include "../helper.h"
 

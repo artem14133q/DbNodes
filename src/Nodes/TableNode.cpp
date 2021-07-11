@@ -9,10 +9,11 @@
 #include "QApplication"
 
 #include "TableNode.h"
-#include "TableRename.h"
+#include "TableConstructor.h"
 #include "Table/Column.h"
 #include "Workarea.h"
 #include "RelationTypesDictionary.h"
+#include "TableGenerator/TableGeneratorUtil.h"
 
 #include <utility>
 #include "../helper.h"
@@ -27,8 +28,8 @@ namespace DbNodes::Nodes {
         show();
     }
 
-    TableNode::TableNode(QWidget *parent)
-        : TableNode(parent, "table:" + Helper::getCurrentTimeMS(), "table")
+    TableNode::TableNode(QWidget *parent, const QString& name)
+        : TableNode(parent,TableNode::generateId(),name)
     {
         openRenameModal();
     }
@@ -90,15 +91,15 @@ namespace DbNodes::Nodes {
         //Define Slots
         connect(rename, &QAction::triggered, this, &TableNode::openRenameModal);
         connect(addColumn, &QAction::triggered, this, [this] {
-            this->addColumn(Table::Column::Type::Default);
+            this->addColumn(ColumnType::Default);
         });
 
         connect(addPkColumn, &QAction::triggered, this, [this] {
-            this->addColumn(Table::Column::Type::PrimaryKey);
+            this->addColumn(ColumnType::PrimaryKey);
         });
 
         connect(addFkColumn, &QAction::triggered, this, [this] {
-            this->addColumn(Table::Column::Type::ForeignKey);
+            this->addColumn(ColumnType::ForeignKey);
         });
 
         auto menuPos = mapToGlobal(event->pos());
@@ -108,17 +109,17 @@ namespace DbNodes::Nodes {
     }
 
     // Create column of types
-    void TableNode::addColumn(Nodes::Table::Column::Type columnType, Table::ColumnPrt column)
+    void TableNode::addColumn(ColumnType columnType, Table::ColumnPrt column)
     {
         if (!column) column = new Table::Column(getLayoutType(columnType), this, columnType);
 
         auto *parentWorkArea = dynamic_cast<Widgets::WorkArea*>(parentWidget());
 
-        if (columnType == Table::Column::Type::PrimaryKey)
+        if (columnType == ColumnType::PrimaryKey)
             pkLayout->addWidget(column);
-        else if (columnType == Table::Column::Type::ForeignKey)
+        else if (columnType == ColumnType::ForeignKey)
             fkLayout->addWidget(column);
-        else if (columnType == Table::Column::Type::Default)
+        else if (columnType == ColumnType::Default)
             columnsLayout->addWidget(column);
 
         parentWorkArea->setColumn(column);
@@ -126,10 +127,10 @@ namespace DbNodes::Nodes {
         adjustSize();
     }
 
-    void TableNode::addColumnFromFile(
+    void TableNode::createColumn(
         const QString &id,
         const QString &name,
-        const Nodes::Table::Column::Type &type,
+        const ColumnType &type,
         const QString &dbType,
         const bool &isNull
     ) {
@@ -169,25 +170,46 @@ namespace DbNodes::Nodes {
     void TableNode::openRenameModal()
     {
         using namespace DbNodes::Modals;
+        using TableGeneratorUtil = Utils::TableGenerator::TableGeneratorUtil;
 
-        auto* tableRenameModal = new TableRename(tableName, this);
+        auto* tableRenameModal = new TableConstructor(tableName, this);
 
-        connect(tableRenameModal, &TableRename::pushConfirm, this, [this] (const QString &name) {
-            setTableName(name);
-            titleLabel->setText(name);
-        });
+        connect(tableRenameModal, &TableConstructor::pushConfirm, this,
+            [this] (const QHash<QString, QVariant> &settingsMap) {
 
-        connect(tableRenameModal, &TableRename::pushExit, this, [this] () {
+                auto name = settingsMap.value("name").toString();
+                setTableName(name);
+                titleLabel->setText(name);
+
+                auto tableGenerator = TableGeneratorUtil::fillTable(this);
+
+                if (settingsMap.value("addId").toBool()) {
+                    tableGenerator->createIndexColumn("id");
+                }
+
+                for (int i = 0; i < settingsMap.value("foreignCount").toInt(); ++i) {
+                    tableGenerator->createForeignColumn(QString("foreign_column_%1").arg(i));
+                }
+
+                for (int i = 0; i < settingsMap.value("defaultCount").toInt(); ++i) {
+                    tableGenerator->createDefaultColumn(QString("column_%1").arg(i));
+                }
+
+                tableGenerator->deleteLater();
+            }
+        );
+
+        connect(tableRenameModal, &TableConstructor::pushExit, this, [this] () {
             emit deleteNodeSignal();
             deleteLater();
         });
     }
 
-    QVBoxLayout *TableNode::getLayoutType(const Nodes::Table::Column::Type &columnType)
+    QVBoxLayout *TableNode::getLayoutType(const ColumnType &columnType)
     {
-        if (columnType == Table::Column::Type::PrimaryKey)
+        if (columnType == ColumnType::PrimaryKey)
             return pkLayout;
-        else if (columnType == Table::Column::Type::ForeignKey)
+        else if (columnType == ColumnType::ForeignKey)
             return fkLayout;
         else
             return columnsLayout;
@@ -199,13 +221,13 @@ namespace DbNodes::Nodes {
 
         QList<Table::Column *> sortedColumns;
 
-        QList<Nodes::Table::Column::Type> layouts({
-            Table::Column::Type::PrimaryKey,
-            Table::Column::Type::ForeignKey,
-            Table::Column::Type::Default
+        QList<ColumnType> layouts({
+            ColumnType::PrimaryKey,
+            ColumnType::ForeignKey,
+            ColumnType::Default
         });
 
-        foreach (const Nodes::Table::Column::Type &layout, layouts) {
+        foreach (const ColumnType &layout, layouts) {
             QHash<int, Table::Column *> group;
 
             foreach (Table::Column *column, columns) {
@@ -244,6 +266,11 @@ namespace DbNodes::Nodes {
     void TableNode::addRelation(const Relations::RelationPtr &relation)
     {
         relations.push_back(relation);
+    }
+
+    QString TableNode::generateId()
+    {
+        return "table:" + Helper::getCurrentTimeMS();
     }
 }
 

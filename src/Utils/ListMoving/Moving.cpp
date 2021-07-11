@@ -7,36 +7,51 @@
 
 namespace DbNodes::Utils::ListMoving
 {
-    Moving::Moving(QWidget *moveHandle, QObject *object): AbstractUtil(object), moveHandle(moveHandle) {}
+    /**
+     * Moving Constructor
+     * @param moveHandle (widget for drag and drop interactions)
+     * @param object
+     */
+    Moving::Moving(
+        QWidget *moveHandle,
+        QWidget *parentWidget
+    ): AbstractUtil(parentWidget), moveHandle(moveHandle), parentWidget(parentWidget) {}
 
+    /**
+     * Prepare target object for drag and drop
+     */
     void Moving::enable()
     {
-        if (moveHandle->geometry().contains(parentWidget()->mapFromGlobal(QCursor::pos()))) {
+        if (moveHandle->geometry().contains(parentWidget->mapFromGlobal(QCursor::pos()))) {
 
-            parentWidget()->setStyleSheet(
-                parentWidget()->styleSheet() + "QWidget{border: 1px solid #f36026;}"
+            parentWidget->setStyleSheet(
+                    // TODO: create style file
+                parentWidget->styleSheet() + "QWidget{border: 1px solid #f36026;}"
             );
 
             isMovable = true;
-            parentWidget()->raise();
+            parentWidget->raise();
         }
     }
 
-    QWidget *Moving::parentWidget()
-    {
-        return dynamic_cast<QWidget *>(parent());
-    }
-
+    /**
+     * Move picked out widget
+     * @return status of operation completing
+     */
     bool Moving::move()
     {
         if (isMovable) {
-            Helper::updateParentRecursive(parentWidget(), "WorkArea");
+            Helper::updateParentRecursive(parentWidget, "WorkArea");
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Stop moving and start events
+     * @param callback (action after stopping moving)
+     */
     void Moving::replace(const std::function<void ()> &callback)
     {
         if (isMovable) {
@@ -44,11 +59,12 @@ namespace DbNodes::Utils::ListMoving
 
             isMovable = false;
 
-            parentWidget()->setStyleSheet(
-                parentWidget()->styleSheet().split("QWidget{border: 1px solid #f36026;}")[0]
+            parentWidget->setStyleSheet(
+                    // TODO: replace to style file
+                parentWidget->styleSheet().split("QWidget{border: 1px solid #f36026;}")[0]
             );
         }
 
-        Helper::updateParentRecursive(parentWidget(), "WorkArea");
+        Helper::updateParentRecursive(parentWidget, "WorkArea");
     }
 }

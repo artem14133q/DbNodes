@@ -133,7 +133,7 @@ namespace DbNodes::Saving {
     void DbnFileResolver::loadColumns(const DbnFileStruct::TableObject &tableObject, Nodes::TablePtr &table)
     {
         foreach (const DbnFileStruct::ColumnObject &columnObject, tableObject.getColumns()) {
-            table->addColumnFromFile(
+            table->createColumn(
                 columnObject.getId(),
                 columnObject.getName(),
                 (Nodes::Table::Column::Type) columnObject.getColumnType(),

@@ -2,14 +2,14 @@
 // Created by artem on 11.01.2021.
 //
 
-#ifndef DBNODES_DBTABLETYPESFKDICTIONARY_H
-#define DBNODES_DBTABLETYPESFKDICTIONARY_H
+#ifndef DBNODES_DBTABLETYPESINDEXDICTIONARY_H
+#define DBNODES_DBTABLETYPESINDEXDICTIONARY_H
 
 #include "StructDictionary.h"
 
 namespace DbNodes::Dictionaries {
 
-    struct DbTableTypesFkDictionary: public Abstract::Dictionary<int, DbTableTypesFkDictionary>
+    struct DbTableTypesIndexDictionary: public Abstract::Dictionary<int, DbTableTypesIndexDictionary>
     {
         public:
             enum Type {
@@ -18,6 +18,9 @@ namespace DbNodes::Dictionaries {
                 Bigint
             };
 
+            /**
+             * @return autoincrement database types dictionary
+             */
             static DictMap getDictionary() {
                 return {
                     { Integer  ,   "integer"   },
@@ -30,4 +33,4 @@ namespace DbNodes::Dictionaries {
 }
 
 
-#endif //DBNODES_DBTABLETYPESFKDICTIONARY_H
+#endif //DBNODES_DBTABLETYPESINDEXDICTIONARY_H

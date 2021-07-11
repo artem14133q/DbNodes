@@ -17,9 +17,9 @@ namespace DbNodes::Utils::ListMoving {
             QWidget *moveHandle;
 
         public:
-            explicit Moving(QWidget *moveHandle, QObject *object = nullptr);
+            explicit Moving(QWidget *moveHandle, QWidget *parentWidget = nullptr);
 
-            QWidget *parentWidget();
+            QWidget *parentWidget;
 
             void enable();
             bool move();
@@ -28,7 +28,7 @@ namespace DbNodes::Utils::ListMoving {
             template<class T>
             T *getWidgetUnderMouse(const std::function<bool (T *)> &filter)
             {
-                foreach(T *w, parentWidget()->parentWidget()->findChildren<T *>())
+                foreach(T *w, parentWidget->parentWidget()->findChildren<T *>())
                 {
                     if (filter(w)) {
                         return w;

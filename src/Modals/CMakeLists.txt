@@ -7,14 +7,16 @@ set(RESOURCES
         RelationMaker.h
         ConfirmCloseProject.cpp
         ConfirmCloseProject.h
-        TableRename.cpp
-        TableRename.h
+        TableConstructor.cpp
+        TableConstructor.h
         Finder.cpp
         Finder.h
         Settings.cpp
         Settings.h
         ExceptionModal.cpp
-        ExceptionModal.h MinimapSettings.cpp MinimapSettings.h)
+        ExceptionModal.h
+        MinimapSettings.cpp
+        MinimapSettings.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

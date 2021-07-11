@@ -5,6 +5,7 @@
 #include "ConfirmCloseProject.h"
 #include "QPushButton"
 #include "QLabel"
+#include "QDebug"
 #include "../helper.h"
 
 namespace DbNodes::Modals {
@@ -14,6 +15,8 @@ namespace DbNodes::Modals {
         setWindowTitle(projectName);
         setStyleSheet(Helper::getStyleFromFile("subWindow"));
         initUi();
+
+        installEventFilter(this);
 
         Helper::moveToCenter(parentWidget(), this);
     }
@@ -38,6 +41,7 @@ namespace DbNodes::Modals {
         pbCloseAndSave = addButton(tr("Close and save"), QMessageBox::AcceptRole);
         pbCloseAndSave->setStyleSheet(buttonStyle);
         pbCloseAndSave->setFixedSize(120, 30);
+        pbCloseAndSave->setFocus();
     }
 
     ConfirmCloseProject::Type ConfirmCloseProject::getProjectCloseType()
@@ -55,5 +59,19 @@ namespace DbNodes::Modals {
     {
         closeEvent->ignore();
         accept();
+    }
+
+    bool ConfirmCloseProject::eventFilter(QObject *obj, QEvent *event)
+    {
+        if (event->type() == QEvent::KeyPress) {
+            auto *keyEvent = dynamic_cast<QKeyEvent *>(event);
+
+            if (keyEvent->key() == Qt::Key_Escape) {
+                close();
+                return true;
+            }
+        }
+
+        return QMessageBox::eventFilter(obj, event);
     }
 }

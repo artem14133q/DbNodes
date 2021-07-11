@@ -4,7 +4,15 @@ set(RESOURCES
         MultipleSelection/Repository.cpp
         MultipleSelection/Repository.h
         MultipleSelection/Selectable.cpp
-        MultipleSelection/Selectable.h RelationPath/Render.cpp RelationPath/Render.h AbstractUtil.cpp AbstractUtil.h ListMoving/Moving.cpp ListMoving/Moving.h)
+        MultipleSelection/Selectable.h
+        RelationPath/Render.cpp
+        RelationPath/Render.h
+        AbstractUtil.cpp
+        AbstractUtil.h
+        ListMoving/Moving.cpp
+        ListMoving/Moving.h
+        TableGenerator/TableGeneratorUtil.cpp
+        TableGenerator/TableGeneratorUtil.h)
 
 add_library(${LIBRARY_NAME} STATIC ${RESOURCES})
 

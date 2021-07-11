@@ -82,9 +82,9 @@ namespace DbNodes::Nodes::Table {
             [[nodiscard]] QStringList initTypes() const;
 
             void deleteColumn();
-            void setColumnName(const QString &);
-            void setColumnDbType(const QString &);
-            void setColumnIsNull(bool isNull);
+            void setColumnName(const QString &newColumnName);
+            void setColumnDbType(const QString &type);
+            void setColumnIsNull(const bool& isNull);
             void openRelationMaker();
     };
 

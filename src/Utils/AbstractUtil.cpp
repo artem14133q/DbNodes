@@ -6,7 +6,15 @@
 
 namespace DbNodes::Utils
 {
+    /**
+     * AbstractUtil Constructor
+     * @param object
+     */
     AbstractUtil::AbstractUtil(QObject *object): QObject(object) {}
 
+    /**
+     * Init default menu item for utils
+     * @param menu (target menu instance)
+     */
     void AbstractUtil::initDefaultActionsForUtil(QMenu *menu) {}
 }

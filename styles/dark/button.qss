@@ -8,6 +8,10 @@ QPushButton:hover {
      background-color: #2ba2df;
 }
 
+QPushButton:focus {
+     border: 2px solid #2ba2df;
+}
+
 QPushButton:disabled {
      border-color: grey;
      color: grey;

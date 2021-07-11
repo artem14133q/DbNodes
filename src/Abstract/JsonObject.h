@@ -13,6 +13,7 @@
 #include "QByteArray"
 #include "QVector"
 
+// TODO: create abstract template methods
 #define PROPERTY(type, field, getName, setName, toMethod)                                                   \
     [[nodiscard]] type getName() const { return json.value(field).toMethod(); }                             \
     void setName(const type &value) { json.insert(field, value); }

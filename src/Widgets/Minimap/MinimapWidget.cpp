@@ -158,7 +158,7 @@ namespace DbNodes::Widgets::Minimap{
 
     void MinimapWidget::calculateSize(int size)
     {
-        scaleCoefficient = largeSize / size;
+        scaleCoefficient = largeSize / (float)size;
 
         setFixedSize(
             workAreaSize.width() / scaleCoefficient + ADD_WIDTH,
